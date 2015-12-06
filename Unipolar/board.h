@@ -25,13 +25,16 @@ public:
 		data_[0] = data_[1] = data_[2] = 0xffffffffffffffff;
 	}
 	void Set(int pos) {
-		data_[pos >> 6] |= 1 << ((pos & 63) - 1);
+		data_[pos >> 6] |= 1 << (pos & 63);
 	}
 	void Reset() {
 		data_[0] = data_[1] = data_[2] = 0;
 	}
 	void Reset(int pos) {
-		data_[pos >> 6] &= ~(1 << ((pos & 63) - 1));
+		data_[pos >> 6] &= ~(1 << (pos & 63));
+	}
+	bool operator[](int pos) {
+		return data_[pos >> 6] & (1 << (pos & 63));
 	}
 	int Count() {
 		return __builtin_popcountll(data_[0]) + __builtin_popcountll(data_[1]) + __builtin_popcountll(data_[2]);
@@ -85,6 +88,7 @@ private:
 
 	List board_[BoardSizeSquare(BOARD_SIZE)];
 	std::set<PositionIndex> playable_pos[2]/*, suiside_pos[2]*/;
+	BitSet playable_bit[2];
 	static PositionIndex ADJ_POS[BoardSizeSquare(BOARD_SIZE)][5];
 };
 
@@ -107,6 +111,8 @@ template<int BOARD_SIZE>
 void Board<BOARD_SIZE>::ClearBoard() {
 	playable_pos[0].clear();
 	playable_pos[1].clear();
+	playable_bit[0].Set();
+	playable_bit[1].Set();
 	// suiside_pos[0].clear();
 	// suiside_pos[1].clear();
 	for (PositionIndex i = 0; i < BoardSizeSquare(BOARD_SIZE); ++i) {
@@ -156,7 +162,7 @@ std::set<PositionIndex> Board<BOARD_SIZE>::GetPlayablePosition(PointState state)
 }
 
 template<int BOARD_SIZE>
-double Board<BOARD_SIZE>::Evaluate(double (*evaluate_function)(List board[BoardSizeSquare(BOARD_SIZE)])){
+double Board<BOARD_SIZE>::Evaluate(double (*evaluate_function)(List board[BoardSizeSquare(BOARD_SIZE)])) {
 	return evaluate_function(board_);
 }
 
@@ -225,7 +231,7 @@ void Board<BOARD_SIZE>::RemoveChain(PositionIndex pos) {
 			board_[adj_pos].air_count = board_[adj_pos].air_set.Count();
 			if (board_[adj_pos].air_count == 2 && board_[adj_pos].state != EMPTY_POINT)
 				CheckNotOnlyOneAir(adj_pos, board_[adj_pos].state);
-			}
+		}
 	}
 }
 
@@ -236,6 +242,7 @@ void Board<BOARD_SIZE>::CheckEyeShape(PositionIndex pos) {
 		if (board_[ADJ_POS[pos][i]].state != state || board_[ADJ_POS[pos][i]].air_count == 1)
 			return;
 	playable_pos[state ^ 1].erase(pos);
+	playable_bit[state ^ 1].Reset(pos);
 	// suiside_pos[state ^ 1].insert(pos);
 }
 
@@ -243,16 +250,20 @@ template<int BOARD_SIZE>
 void Board<BOARD_SIZE>::CheckOnlyOneAir(PositionIndex pos, PointState state) {
 	if (board_[pos].air_count > 0)
 		return;
-	// PointState op_state = state ^ 1;
+	PointState op_state = state ^ 1;
 	// if (suiside_pos[op_state].find(pos) != suiside_pos[op_state].end()) {
 	// 	suiside_pos[op_state].erase(pos);
 	// 	playable_pos[op_state].insert(pos);
 	// }
-	playable_pos[state ^ 1].insert(pos);
+	if (!playable_bit[op_state][pos]) {
+		playable_pos[op_state].insert(pos);
+		playable_bit[op_state].Set(pos);
+	}
 	for (int i = 1; i <= ADJ_POS[pos][0]; ++i )
 		if (board_[ADJ_POS[pos][i]].state == state && board_[ADJ_POS[pos][i]].air_count > 1)
 			return;
 	playable_pos[state].erase(pos);
+	playable_bit[state].Reset(pos);
 	// suiside_pos[state].insert(pos);
 }
 
@@ -264,12 +275,16 @@ void Board<BOARD_SIZE>::CheckNotOnlyOneAir(PositionIndex pos, PointState state) 
 	// 	suiside_pos[state].erase(pos);
 	// 	playable_pos[state].insert(pos);
 	// }
-	playable_pos[state].insert(pos);
+	if (!playable_bit[state][pos]) {
+		playable_pos[state].insert(pos);
+		playable_bit[state].Set(pos);
+	}
 	for (int i = 1; i <= ADJ_POS[pos][0]; ++i )
 		if (board_[ADJ_POS[pos][i]].state != state && board_[ADJ_POS[pos][i]].air_count > 1
 		        || board_[ADJ_POS[pos][i]].state == state && board_[ADJ_POS[pos][i]].air_count == 1)
 			return;
 	playable_pos[state ^ 1].erase(pos);
+	playable_bit[state ^ 1].Reset(pos);
 	// suiside_pos[state ^ 1].insert(pos);
 }
 
