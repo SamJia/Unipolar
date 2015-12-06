@@ -85,10 +85,10 @@ private:
 	void CheckOnlyOneAir(PositionIndex pos, PointState state);
 	void CheckNotOnlyOneAir(PositionIndex pos, PointState state);
 
-
 	List board_[BoardSizeSquare(BOARD_SIZE)];
 	std::set<PositionIndex> playable_pos[2]/*, suiside_pos[2]*/;
 	BitSet playable_bit[2];
+	PositionIndex ko;
 	static PositionIndex ADJ_POS[BoardSizeSquare(BOARD_SIZE)][5];
 };
 
@@ -122,10 +122,15 @@ void Board<BOARD_SIZE>::ClearBoard() {
 	}
 	for (PositionIndex i = 0; i < BoardSizeSquare(BOARD_SIZE); ++i)
 		InitEmptyChain(i);
+	ko = -1;
 }
 
 template<int BOARD_SIZE>
 void Board<BOARD_SIZE>::PlayMove(const Move &move) {
+	if(ko >= 0){
+		CheckEyeShape(ko);
+		ko = -1;
+	}
 	if (move.position == POSITION_PASS)
 		return;
 	InitChain(move.position, move.state);
@@ -209,7 +214,6 @@ void Board<BOARD_SIZE>::InitEmptyChain(PositionIndex pos) {
 	board_[pos].air_count = board_[pos].air_set.Count();
 }
 
-
 template<int BOARD_SIZE>
 void Board<BOARD_SIZE>::InitChain(PositionIndex pos, PointState state) {
 	InitEmptyChain(pos);
@@ -223,15 +227,22 @@ void Board<BOARD_SIZE>::RemoveChain(PositionIndex pos) {
 	PositionIndex father = GetFather(pos);
 	for (PositionIndex i = father, tail = board_[father].tail; i != tail; i = board_[i].next)
 		board_[i].state = EMPTY_POINT;
+	PositionIndex adj_pos;
 	for (PositionIndex i = father, tail = board_[father].tail; i != tail; i = board_[i].next) {
-		PositionIndex adj_pos;
-		for (int i = 1; i <= ADJ_POS[pos][0]; ++i) {
-			adj_pos = ADJ_POS[pos][i];
-			board_[adj_pos].air_set.set(pos);
+		InitEmptyChain(i);
+		playable_pos[0].insert(i);
+		playable_pos[1].insert(i);
+		for (int j = 1; j <= ADJ_POS[i][0]; ++j) {
+			adj_pos = ADJ_POS[i][j];
+			board_[adj_pos].air_set.set(i);
 			board_[adj_pos].air_count = board_[adj_pos].air_set.Count();
 			if (board_[adj_pos].air_count == 2 && board_[adj_pos].state != EMPTY_POINT)
 				CheckNotOnlyOneAir(adj_pos, board_[adj_pos].state);
 		}
+	}
+	if(board_[father].air_count == 0){
+		ko = father;
+		playable_pos[board_[ADJ_POS[father][1]].state ^ 1].erase(father);
 	}
 }
 
