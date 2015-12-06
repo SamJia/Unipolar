@@ -21,6 +21,7 @@ namespace unipolar {
 
 typedef uint32_t HashKey;
 typedef int16_t PositionIndex;
+const PositionIndex POSITION_PASS = -1; 
 typedef char AirCount;
 
 typedef char PointState;
@@ -31,13 +32,20 @@ const PointState EMPTY_POINT = 2;
 const int MAIN_BOARD_SIZE = 13;
 
 enum Force {
-  BLACK_FORCE = 0,
-  WHITE_FORCE = 1
+    BLACK_FORCE = 0,
+    WHITE_FORCE = 1
 };
 
 
-constexpr BoardSizeSquare(const int board_size){
+constexpr BoardSizeSquare(const int board_size) {
     return board_size * board_size;
+}
+
+template<typename T>
+inline void Swap(T &a, T &b){
+    T tmp = a;
+    a = b;
+    b = a;
 }
 
 }
