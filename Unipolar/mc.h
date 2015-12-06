@@ -5,10 +5,10 @@
 using namespace unipolar;
 
 template <int BOARD_SIZE>
-class UCT {
+class MC {
 public:
-	UCT() = default;
-	~UCT() = default;
+	MC() = default;
+	~MC() = default;
 	static int Simulate(const Board &board, Force force);
 };
 
