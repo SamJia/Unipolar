@@ -21,7 +21,7 @@ namespace unipolar {
 
 typedef uint32_t HashKey;
 typedef int16_t PositionIndex;
-const PositionIndex POSITION_PASS = -1; 
+const PositionIndex POSITION_PASS = -1;
 typedef char AirCount;
 
 typedef char PointState;
@@ -47,6 +47,10 @@ inline void Swap(T &a, T &b){
     a = b;
     b = a;
 }
+
+typedef enum {NORMAL, LOOSER, WINNER} Result;
+typedef float Value;
+typedef int Count;
 
 }
 
