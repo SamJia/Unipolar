@@ -28,13 +28,13 @@ int Simulate(const Board &board, Force force) {
 	*/
 	srand(time(NULL));
 	Board mcBoard(board);
-	// PointState state[2];		
+	// PointState state[2];
 	// PositionIndex position[2];
 	// Move move[2];
 	// state[0] = force;		// Can we do this?
-	// state[1] = 1 - force;	
-	// move[0].state = state[0];  
-	// move[1].state = state[1];  
+	// state[1] = 1 - force;
+	// move[0].state = state[0];
+	// move[1].state = state[1];
 	// std::set<PositionIndex> playable_pos[2];
 	// // Do we have to wait for both players to give PASS?
 	// do {
@@ -58,12 +58,12 @@ int Simulate(const Board &board, Force force) {
 		move.state = force;
 		move.position = position;
 		mcBoard.PlayMove(move);
-		
+
 		force ^= 1;
 	} while(!playable_pos.empty());
 
 
-	return mcBoard.Evaluate(&EvalFunc);
+	return mcBoard.Evaluate(&EvalFunc, force);
 }
 
 /*
@@ -80,7 +80,7 @@ double EvalFunc(List board[BoradSizeSquare(BOARD_SIZE)], Force force) {
 			black_count++;
 	}
 	double black_ratio = double(black_count) / BoardSizeSquare(BOARD_SIZE);
-	return force == BLACK_FORCE ? black_ratio : 1 - black_ratio; 
+	return force == BLACK_FORCE ? black_ratio : 1 - black_ratio;
 }
 
 #endif
