@@ -71,7 +71,7 @@ public:
 	void ClearBoard();
 	void PlayMove(const Move &move);
 	std::set<PositionIndex> GetPlayablePosition(PointState state);
-	double Evaluate(double (*evaluate_function)(List board[BoardSizeSquare(BOARD_SIZE)]));
+	double Evaluate(double (*evaluate_function)(List board[BoardSizeSquare(BOARD_SIZE)], Force force));
 	// DISALLOW_COPY_AND_ASSIGN_AND_MOVE(Board)
 
 private:

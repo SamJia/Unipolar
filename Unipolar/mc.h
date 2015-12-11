@@ -13,7 +13,7 @@ public:
 	~MC() = default;
 	static int Simulate(const Board &board, Force force);
 private:
-	double EvalFunc(List Board[BoradSizeSquare(BOARD_SIZE)]);
+	double EvalFunc(List Board[BoradSizeSquare(BOARD_SIZE)], Force force);
 };
 
 int Simulate(const Board &board, Force force) {
@@ -73,13 +73,14 @@ Some ideas:
 Currently we choose the second method, but the number of real eyes is missing.
 Better if we can record the number of black force / black_real_eye within board.h.
 */
-double EvalFunc(List Board[BoradSizeSquare(BOARD_SIZE)]) {
+double EvalFunc(List board[BoradSizeSquare(BOARD_SIZE)], Force force) {
 	int black_count = 0;
 	for(int i = 0; i < BoardSizeSquare(BOARD_SIZE); ++i) {
-		if(board_[i].state == BLACK_POINT)
+		if(board[i].state == BLACK_POINT)
 			black_count++;
 	}
-	return double(black_count) / BoardSizeSquare(BOARD_SIZE);
+	double black_ratio = double(black_count) / BoardSizeSquare(BOARD_SIZE);
+	return force == BLACK_FORCE ? black_ratio : 1 - black_ratio; 
 }
 
 #endif
