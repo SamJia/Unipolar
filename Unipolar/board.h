@@ -71,7 +71,7 @@ public:
 	void ClearBoard();
 	void PlayMove(const Move &move);
 	std::set<PositionIndex> GetPlayablePosition(PointState state);
-	double Evaluate(double (*evaluate_function)(List board[BoardSizeSquare(BOARD_SIZE)]));
+	double Evaluate(double (*evaluate_function)(List board[BoardSizeSquare(BOARD_SIZE)]), Force force);
 	// DISALLOW_COPY_AND_ASSIGN_AND_MOVE(Board)
 
 private:
@@ -167,8 +167,8 @@ std::set<PositionIndex> Board<BOARD_SIZE>::GetPlayablePosition(PointState state)
 }
 
 template<int BOARD_SIZE>
-double Board<BOARD_SIZE>::Evaluate(double (*evaluate_function)(List board[BoardSizeSquare(BOARD_SIZE)])) {
-	return evaluate_function(board_);
+double Board<BOARD_SIZE>::Evaluate(double (*evaluate_function)(List board[BoardSizeSquare(BOARD_SIZE)]), Force force) {
+	return evaluate_function(board_, force);
 }
 
 

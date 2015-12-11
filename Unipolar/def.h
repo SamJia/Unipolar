@@ -37,7 +37,7 @@ enum Force {
 };
 
 
-constexpr BoardSizeSquare(const int board_size) {
+constexpr int BoardSizeSquare(const int board_size) {
     return board_size * board_size;
 }
 
