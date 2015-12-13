@@ -29,7 +29,7 @@ const PointState BLACK_POINT = 0;
 const PointState WHITE_POINT = 1;
 const PointState EMPTY_POINT = 2;
 
-const int MAIN_BOARD_SIZE = 13;
+const int BOARD_SIZE = 13;
 
 enum Force {
     BLACK_FORCE = 0,
@@ -37,7 +37,7 @@ enum Force {
 };
 
 
-constexpr BoardSizeSquare(const int board_size) {
+constexpr int BoardSizeSquare(const int board_size) {
     return board_size * board_size;
 }
 
@@ -45,7 +45,7 @@ template<typename T>
 inline void Swap(T &a, T &b){
     T tmp = a;
     a = b;
-    b = a;
+    b = tmp;
 }
 
 }
