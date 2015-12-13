@@ -78,11 +78,11 @@ Better if we can record the number of black force / black_real_eye within board.
 
 double MC::Evaluate(const Board &mcBoard, Force force) {
 	int black_count = 0;
-	for(PositionIndex i = 0; i < BoardSizeSquare(MAIN_BOARD_SIZE); ++i) {
+	for(PositionIndex i = 0; i < BoardSizeSquare(BOARD_SIZE); ++i) {
 		if(mcBoard.board_[i] == BLACK_POINT)
 			black_count++;
 	}
-	double black_ratio = double(black_count) / BoardSizeSquare(MAIN_BOARD_SIZE);
+	double black_ratio = double(black_count) / BoardSizeSquare(BOARD_SIZE);
 	return force == BLACK_FORCE ? black_ratio : 1 - black_ratio;
 }
 
