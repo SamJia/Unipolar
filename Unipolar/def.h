@@ -29,7 +29,7 @@ const PointState BLACK_POINT = 0;
 const PointState WHITE_POINT = 1;
 const PointState EMPTY_POINT = 2;
 
-const int MAIN_BOARD_SIZE = 13;
+const int BOARD_SIZE = 13;
 
 enum Force {
     BLACK_FORCE = 0,
@@ -45,10 +45,10 @@ template<typename T>
 inline void Swap(T &a, T &b){
     T tmp = a;
     a = b;
-    b = a;
+    b = tmp;
 }
 
-typedef enum {NORMAL, LOOSER, WINNER} Result;
+const float uctconst = 0.5;
 typedef float Value;
 typedef int Count;
 
