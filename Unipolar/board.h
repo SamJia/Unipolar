@@ -77,6 +77,7 @@ public:
 	static void Init();
 	void ClearBoard();
 	void PlayMove(const Move &move);
+<<<<<<< HEAD
 	std::set<PositionIndex> GetPlayablePosition(PointState state) {
 		return playable_pos_[state];
 	}
@@ -84,6 +85,10 @@ public:
 		return piece_count_[state];
 	}
 	friend class MC;
+=======
+	std::set<PositionIndex> GetPlayablePosition(PointState state);
+	double Evaluate(double (*evaluate_function)(List board[BoardSizeSquare(BOARD_SIZE)]), Force force);
+>>>>>>> origin/master
 	// DISALLOW_COPY_AND_ASSIGN_AND_MOVE(Board)
 	void Print() {
 		printf("   0  1  2  3  4  5  6  7  8  9  10 11 12\n");
@@ -268,7 +273,23 @@ void Board::PlayMove(const Move &move) {
 		DisAble(ko_, move.state ^ 1);
 }
 
+<<<<<<< HEAD
 PositionIndex Board::GetFather(PositionIndex pos) {
+=======
+template<int BOARD_SIZE>
+std::set<PositionIndex> Board<BOARD_SIZE>::GetPlayablePosition(PointState state) {
+	return playable_pos[state];
+}
+
+template<int BOARD_SIZE>
+double Board<BOARD_SIZE>::Evaluate(double (*evaluate_function)(List board[BoardSizeSquare(BOARD_SIZE)]), Force force) {
+	return evaluate_function(board_, force);
+}
+
+
+template<int BOARD_SIZE>
+PositionIndex Board<BOARD_SIZE>::GetFather(PositionIndex pos) {
+>>>>>>> origin/master
 	PositionIndex result;
 	for (result = pos; board_[result].father >= 0; result = board_[result].father);
 	for (int i = pos, tmp; board_[i].father >= 0;) {
