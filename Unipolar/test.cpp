@@ -5,8 +5,9 @@
 // #include <intrin.h>
 #include <ctime>
 // #include <bitset>
-#include "board.h"
+#include "board_.h"
 #include "def.h"
+#include "mc.h"
 #include <set>
 #define SQUARE(x) ((x)*(x))
 #define SIZE 10000000
@@ -28,18 +29,21 @@ using namespace std;
  };
 
  int main() {
- 	set<int> s;
- 	s.insert(1);
- 	s.insert(2);
- 	s.insert(3);
- 	s.insert(4);
- 	printf("%d\n", s[0]);
+ 	// set<int> s;
+ 	// s.insert(1);
+ 	// s.insert(2);
+ 	// s.insert(3);
+ 	// s.insert(4);
+ 	// printf("%d\n", s[0]);
 
 	unipolar::Force bf = unipolar::BLACK_FORCE;
 	Move mv;
 	mv.state = 1 - bf;
+	// printf("%d\n", mv.state);
+	Board board;
+	MC mc;
+	printf("%f\n", mc.Simulate(board, bf));
 
 
-	printf("%d\n", mv.state);
  }
 
