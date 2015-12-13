@@ -10,7 +10,7 @@
 #include <set>
 using namespace unipolar;
 
-template <int BOARD_SIZE>
+//template <int BOARD_SIZE>
 class UCT {
 private:
     struct Node {
@@ -21,49 +21,21 @@ private:
         Node(PositionIndex po = -1, Node *so = nullptr, Node *br = nullptr) : pos(po), num(0), val(0), mcval(0), son(so), bro(br) {}
     };
 public:
-    UCT();
-    ~UCT();
-    void deleteUCT(Node *node);
-    void GenChild(Node *node, Board<BOARD_SIZE> &board, PointState state);
-    float UCB(Node *node);
-    void FindBestChild(Node *node);
-    void FindBestUCT(Node *node);
-    int MCSimulation(Board<BOARD_SIZE> &board, Node *node, PointState state);
-    Move GenMove(const Board<BOARD_SIZE> &board, PointState state);
+    UCT() = default;
+    ~UCT() = default;
+    static void GenChild(Node *node, Board &board, PointState state);
+    static float UCB(Node *node, Count totalnum);
+    static void FindBestChild(Node *node, Count totalnum);
+    static void FindBestUCT(Node *node);
+    static int MCSimulation(Board &board, Node *node, PointState state, Count totalnum);
+    static Move GenMove(const Board &board, PointState state);
 
 private:
-    Node root;
+    Node *root;
 };
 
-template <int BOARD_SIZE>
-UCT<BOARD_SIZE>::UCT() {
-    Node root = new Node();
-}
-
-template <int BOARD_SIZE>
-UCT<BOARD_SIZE>::~UCT() {
-    deleteUCT(root);
-}
-
-template <int BOARD_SIZE>
-void UCT<BOARD_SIZE>::deleteUCT(Node *node) {
-    Node *act = node->son;
-    Node *del;
-    if(act == NULL) {
-        act = node;
-        while(act != NULL) {
-            del = act;
-            act = act->bro;
-            delete(del);
-        }
-    }
-    else
-        deleteUCT(act);
-}
-
-template <int BOARD_SIZE>
-void UCT<BOARD_SIZE>::GenChild(Node *node, Board<BOARD_SIZE> &board, PointState state) {
-    Board<BOARD_SIZE> actBoard(board);
+void UCT::GenChild(Node *node, Board &board, PointState state) {
+    Board actBoard(board);
     std::set<PositionIndex> playable;
     playable = actBoard.GetPlayablePosition(state);
     std::set<PositionIndex>::iterator it;
@@ -74,19 +46,17 @@ void UCT<BOARD_SIZE>::GenChild(Node *node, Board<BOARD_SIZE> &board, PointState 
     }
 }
 
-template <int BOARD_SIZE>
-float UCT<BOARD_SIZE>::UCB(Node *node) {
-    return node->val / node->num + uctconst * sqrt(logf(root->num) / node->num);
+float UCT::UCB(Node *node, Count totalnum) {
+    return node->val / node->num + uctconst * sqrt(logf(totalnum) / node->num);
 }
 
-template <int BOARD_SIZE>
-void UCT<BOARD_SIZE>::FindBestChild(Node *node) {
+void UCT::FindBestChild(Node *node, Count totalnum) {
     Node *act = node->son;
     Node *prebr = node;
-    float maxUCB = UCB(act);
+    float maxUCB = UCB(act, totalnum);
     float actUCB;
     while(act != NULL) {
-        actUCB = UCB(act);
+        actUCB = UCB(act, totalnum);
         if(actUCB > maxUCB) {
             maxUCB = actUCB;
             prebr->bro = act->bro;
@@ -98,8 +68,7 @@ void UCT<BOARD_SIZE>::FindBestChild(Node *node) {
     }
 }
 
-template <int BOARD_SIZE>
-void UCT<BOARD_SIZE>::FindBestUCT(Node *node) {
+void UCT::FindBestUCT(Node *node) {
     Node *act = node->son;
     Node *prebr = node;
     float maxval = act->val / act->num;
@@ -117,11 +86,10 @@ void UCT<BOARD_SIZE>::FindBestUCT(Node *node) {
     }
 }
 
-template <int BOARD_SIZE>
-int UCT<BOARD_SIZE>::MCSimulation(Board<BOARD_SIZE> &board, Node *node, PointState state) {
-    Board<BOARD_SIZE> actBoard(board);
+int UCT::MCSimulation(Board &board, Node *node, PointState state, Count totalnum) {
+    Board actBoard(board);
     Move move;
-    FindBestChild(node);
+    FindBestChild(node, totalnum);
     Node *act = node->son;
     move.state = state;
     move.position = act->pos;
@@ -130,34 +98,33 @@ int UCT<BOARD_SIZE>::MCSimulation(Board<BOARD_SIZE> &board, Node *node, PointSta
     if(act->son == NULL ) {
         if(act->num > 1) {
             GenChild(act, actBoard, 1 - state);
-            act->mcval = 1 - MCSimulation(actBoard, act, 1 - state);
+            act->mcval = 1 - MCSimulation(actBoard, act, 1 - state, totalnum);
             act->val += act->mcval;
         }
         else
-            act->mcval = act->val = MC.Simulate(actBoard, 1 - state);
+            act->mcval = act->val = MC::Simulate(actBoard, Force(1 - state));
     }
     else {
-        act->mcval = 1 - MCSimulation(actBoard, act, 1 - state);
+        act->mcval = 1 - MCSimulation(actBoard, act, 1 - state, totalnum);
         act->val += act->mcval;
     }
     return act->mcval;
 }
 
-template <int BOARD_SIZE>
-Move UCT<BOARD_SIZE>::GenMove(const Board<BOARD_SIZE> &board, PointState state) {
+Move UCT::GenMove(const Board &board, PointState state) {
     int t = clock();
-    UCT<BOARD_SIZE> uct;
+    UCT uct;
     Move nextstep;
-    Board<BOARD_SIZE> uctBoard(board);
-    uct->root->num = 1;
-    GenChild(uct->root, uctBoard, state);
+    Board uctBoard(board);
+    uct.root->num = 1;
+    GenChild(uct.root, uctBoard, state);
     while(clock() - t / CLOCKS_PER_SEC < 2) {
-        uct->root->num += 1;
-        MCSimulation(uct->root);
+        uct.root->num += 1;
+        MCSimulation(uctBoard, uct.root, state, uct.root->num);
     }
-    FindBestUCT(uct->root);
+    FindBestUCT(uct.root);
     nextstep.state = 1 - state;
-    nextstep.position = uct->root->son->pos;
+    nextstep.position = uct.root->son->pos;
     return nextstep;
 }
 
