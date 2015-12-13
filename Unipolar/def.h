@@ -48,7 +48,7 @@ inline void Swap(T &a, T &b){
     b = tmp;
 }
 
-typedef enum {NORMAL, LOOSER, WINNER} Result;
+const float uctconst = 0.5;
 typedef float Value;
 typedef int Count;
 
