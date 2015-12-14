@@ -11,7 +11,6 @@
 #include <float.h>
 using namespace unipolar;
 
-//template <int BOARD_SIZE>
 class UCT {
 private:
 	struct Node {
