@@ -25,6 +25,7 @@ public:
 	~UCT() = default;
 	void GenChild(Node *node, Board &board, PointState state);
 	float UCB(Node *node, Count totalnum);
+	float Score(Node *node);
 	Node *FindBestChild(Node *node);
 	Node *FindBestUCT(Node *node);
 	int MCSimulation(Board &board, Node *node, PointState state);
@@ -47,6 +48,12 @@ float UCT::UCB(Node *node, Count totalnum) {
 	return node->val / node->num + uctconst * sqrt(logf(totalnum) / node->num);
 }
 
+float UCT::Score(Node *node){
+	if (node->num == 0)
+		return 0;
+	return node->val / node->num;
+}
+
 UCT::Node *UCT::FindBestChild(Node *node) {
 	float maxUCB = UCB(node->son, node->num);
 	float actUCB;
@@ -62,13 +69,13 @@ UCT::Node *UCT::FindBestChild(Node *node) {
 }
 
 UCT::Node *UCT::FindBestUCT(Node *node) {
-	float maxUCB = UCB(node->son, node->num);
-	float actUCB;
+	float maxScore = Score(node->son);
+	float actScore;
 	Node *maxNode = node->son;
 	for (Node *p = node->son->bro; p; p = p->bro) {
-		actUCB = UCB(p, node->num);
-		if (actUCB > maxUCB) {
-			maxUCB = actUCB;
+		actScore = Score(p);
+		if (actScore > maxScore) {
+			maxScore = actScore;
 			maxNode = p;
 		}
 	}
