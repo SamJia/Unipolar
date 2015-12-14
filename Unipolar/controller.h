@@ -9,8 +9,10 @@
 #include "uct.h"
 
 #include <iostream>
+#include <fstream>
 using namespace std;
 
+// ofstream fout("D:\\Sam\\Lesson\\AI\\Project\\Unipolar\\unipolar.log", ios::app);
 class Controller {
 public:
 	Controller() = default;
@@ -28,13 +30,22 @@ private:
 	int GTPPlay(Board &board);
 	int GTPGenmove(Board &board);
 	int GTPShowboard(Board &board);
+	int GTPQuit();
 	float komi_;
 };
 
 int Controller::Run(Board &board) {
-	std::string command;
+	// printf("get in Run\n");
+	// board.PlayMove(Move(0, 0));
+	// printf("play move at 0,0 done\n");
+	// freopen("commands.txt", "r", stdin);
+	string command;
+	// command.resize(100);
+	// fout << "start reading commands" << endl;
 	while (true) {
 		cin >> command;
+		// scanf("%s", &command[0]);
+		// fout << "read command : " << command << endl;
 		if (command == "name")
 			GTPName();
 		else if (command == "protocol_version")
@@ -55,20 +66,25 @@ int Controller::Run(Board &board) {
 			GTPGenmove(board);
 		else if (command == "showboard")
 			GTPShowboard(board);
+		else if (command == "quit")
+			GTPQuit();
+		// else
+		// 	fout << "not match : " << command << endl;
+
 		getline(cin, command);
 	}
 }
 
 int Controller::GTPName(){
-	printf("= Unipolar\n");
+	printf("= Unipolar\n\n");
 }
 
 int Controller::GTPProtocolVersion(){
-	printf("= 2\n");
+	printf("= 2\n\n");
 }
 
 int Controller::GTPVersion(){
-	printf("= 1.0\n");
+	printf("= 1.0\n\n");
 }
 
 int Controller::GTPListCommands(){
@@ -76,17 +92,17 @@ int Controller::GTPListCommands(){
 }
 
 int Controller::GTPBoardsize(){
-	printf("= \n");
+	printf("= \n\n");
 }
 
 int Controller::GTPClearBoard(Board &board){
 	board.ClearBoard();
-	printf("= \n");
+	printf("= \n\n");
 }
 
 int Controller::GTPKomi(){
 	cin >> komi_;
-	printf("= \n");
+	printf("= \n\n");
 }
 
 int Controller::GTPPlay(Board &board){
@@ -97,29 +113,42 @@ int Controller::GTPPlay(Board &board){
 	cin >> color >> x_char >> y_str;
 	if(y_str != "ASS"){
 		x = (x_char > 'I' ? x_char - 1 : x_char) - 'A';
-		y = stoi(y_str.c_str());
+		y = stoi(y_str.c_str()) - 1;
 		state = color == 'B' ? BLACK_POINT : WHITE_POINT;
 		board.PlayMove(Move(state, x*BOARD_SIZE+y));
 	}
-	printf("= \n");
+	else
+		board.PlayMove(Move(state, POSITION_PASS));
+	printf("= \n\n");
 }
 
 int Controller::GTPGenmove(Board &board){
+	// printf("get in GTPGenmove\n");
+	// board.PlayMove(Move(0, 0));
+	// printf("play move at 0,0 done\n");
 	char color;
 	scanf(" %c", &color);
 	PointState state = color == 'b' ? BLACK_POINT : WHITE_POINT;
 	Move move = UCT().GenMove(board, state);
 	board.PlayMove(move);
-	int x = move.position / BOARD_SIZE, y = move.position % BOARD_SIZE;
+	if(move.position == POSITION_PASS){
+		printf("= PASS\n\n");
+		return 0;
+	}
+	int x = move.position / BOARD_SIZE, y = move.position % BOARD_SIZE + 1;
 	char x_char = (x > 7 ? x + 1 : x) + 'A';
-	printf("= %c%d\n", x_char, y);
+	printf("= %c%d\n\n", x_char, y);
 }
 
 int Controller::GTPShowboard(Board &board){
 	board.Print();
-	printf("= \n");
+	printf("= \n\n");
 }
 
+int Controller::GTPQuit(){
+	printf("= \n\n");
+	exit(0);
+}
 
 #endif
 

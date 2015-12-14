@@ -8,124 +8,123 @@
 #include <math.h>
 #include <time.h>
 #include <set>
+#include <float.h>
 using namespace unipolar;
 
 //template <int BOARD_SIZE>
 class UCT {
 private:
-    struct Node {
-        PositionIndex pos;
-        Count num;
-        Value val, mcval;
-        Node *son, *bro;
-        Node(PositionIndex po = -1, Node *so = nullptr, Node *br = nullptr) : pos(po), num(0), val(0), mcval(0), son(so), bro(br) {}
-    };
+	struct Node {
+		PositionIndex pos;
+		Count num;
+		Value val;
+		Node *son, *bro;
+		Node(PositionIndex po = -1, Node *so = nullptr, Node *br = nullptr) : pos(po), num(0), val(0), son(so), bro(br) {}
+	};
 public:
-    UCT() = default;
-    ~UCT() = default;
-    static void GenChild(Node *node, Board &board, PointState state);
-    static float UCB(Node *node, Count totalnum);
-    static void FindBestChild(Node *node, Count totalnum);
-    static void FindBestUCT(Node *node);
-    static int MCSimulation(Board &board, Node *node, PointState state, Count totalnum);
-    static Move GenMove(const Board &board, PointState state);
+	UCT() : root(new Node()) {};
+	~UCT() = default;
+	void GenChild(Node *node, Board &board, PointState state);
+	float UCB(Node *node, Count totalnum);
+	Node *FindBestChild(Node *node);
+	Node *FindBestUCT(Node *node);
+	int MCSimulation(Board &board, Node *node, PointState state);
+	Move GenMove(Board &board, PointState state);
 
 private:
-    Node *root;
+	Node *root;
 };
 
 void UCT::GenChild(Node *node, Board &board, PointState state) {
-    Board actBoard(board);
-    std::set<PositionIndex> playable;
-    playable = actBoard.GetPlayablePosition(state);
-    std::set<PositionIndex>::iterator it;
-    for(it = playable.begin(); it != playable.end(); it++) {
-        Node *newchild = new Node(*it, nullptr, nullptr);
-        newchild->bro = node->son;
-        node->son = newchild;
-    }
+	std::set<PositionIndex> &playable = board.GetPlayablePosition(state);
+	for (std::set<PositionIndex>::iterator it = playable.begin(); it != playable.end(); it++)
+		node->son = new Node(*it, nullptr, node->son);
+	node->son = new Node(POSITION_PASS, nullptr, node->son);
 }
 
 float UCT::UCB(Node *node, Count totalnum) {
-    return node->val / node->num + uctconst * sqrt(logf(totalnum) / node->num);
+	if (node->num == 0)
+		return DBL_MAX;
+	return node->val / node->num + uctconst * sqrt(logf(totalnum) / node->num);
 }
 
-void UCT::FindBestChild(Node *node, Count totalnum) {
-    Node *act = node->son;
-    Node *prebr = node;
-    float maxUCB = UCB(act, totalnum);
-    float actUCB;
-    while(act != NULL) {
-        actUCB = UCB(act, totalnum);
-        if(actUCB > maxUCB) {
-            maxUCB = actUCB;
-            prebr->bro = act->bro;
-            act->bro = node->son;
-            node->son = act;
-        }
-        prebr = act;
-        act = act->bro;
-    }
+UCT::Node *UCT::FindBestChild(Node *node) {
+	float maxUCB = UCB(node->son, node->num);
+	float actUCB;
+	Node *maxNode = node->son;
+	for (Node *p = node->son->bro; p; p = p->bro) {
+		actUCB = UCB(p, node->num);
+		if (actUCB > maxUCB) {
+			maxUCB = actUCB;
+			maxNode = p;
+		}
+	}
+	return maxNode;
 }
 
-void UCT::FindBestUCT(Node *node) {
-    Node *act = node->son;
-    Node *prebr = node;
-    float maxval = act->val / act->num;
-    float actval = 0;
-    while(act != NULL) {
-        actval = act->val / act->num;
-        if(actval > maxval) {
-            maxval = actval;
-            prebr->bro = act->bro;
-            act->bro = node->son;
-            node->son = act;
-        }
-        prebr = act;
-        act = act->bro;
-    }
+UCT::Node *UCT::FindBestUCT(Node *node) {
+	float maxUCB = UCB(node->son, node->num);
+	float actUCB;
+	Node *maxNode = node->son;
+	for (Node *p = node->son->bro; p; p = p->bro) {
+		actUCB = UCB(p, node->num);
+		if (actUCB > maxUCB) {
+			maxUCB = actUCB;
+			maxNode = p;
+		}
+	}
+	return maxNode;
 }
 
-int UCT::MCSimulation(Board &board, Node *node, PointState state, Count totalnum) {
-    Board actBoard(board);
-    Move move;
-    FindBestChild(node, totalnum);
-    Node *act = node->son;
-    move.state = state;
-    move.position = act->pos;
-    actBoard.PlayMove(move);
-    act->num += 1;
-    if(act->son == NULL ) {
-        if(act->num > 1) {
-            GenChild(act, actBoard, 1 - state);
-            act->mcval = 1 - MCSimulation(actBoard, act, 1 - state, totalnum);
-            act->val += act->mcval;
-        }
-        else
-            act->mcval = act->val = MC::Simulate(actBoard, Force(1 - state));
-    }
-    else {
-        act->mcval = 1 - MCSimulation(actBoard, act, 1 - state, totalnum);
-        act->val += act->mcval;
-    }
-    return act->mcval;
+int UCT::MCSimulation(Board &board, Node *node, PointState state) {
+	// board.Print();
+	Node *act = FindBestChild(node);
+	// printf("PlayMove %d %d\n", state, act->pos);
+	board.PlayMove(Move(state, act->pos));
+	// printf("playmovedone\n");
+	act->num += 1;
+	Value value_once;
+	if (act->son == nullptr) {
+		if (act->num > 1) {
+			GenChild(act, board, 1 - state);
+			value_once = 1 - MCSimulation(board, act, 1 - state);
+			act->val += value_once;
+		}
+		else {
+			// printf("Mc simulate\n");
+			value_once = act->val = MC().Simulate(board, 1 - state);			
+		}
+	}
+	else {
+		value_once = 1 - MCSimulation(board, act, 1 - state);
+		act->val += value_once;
+	}
+	return value_once;
 }
 
-Move UCT::GenMove(const Board &board, PointState state) {
-    int t = clock();
-    UCT uct;
-    Move nextstep;
-    Board uctBoard(board);
-    uct.root->num = 1;
-    GenChild(uct.root, uctBoard, state);
-    while(clock() - t / CLOCKS_PER_SEC < 2) {
-        uct.root->num += 1;
-        MCSimulation(uctBoard, uct.root, state, uct.root->num);
-    }
-    FindBestUCT(uct.root);
-    nextstep.state = 1 - state;
-    nextstep.position = uct.root->son->pos;
-    return nextstep;
+Move UCT::GenMove(Board &board, PointState state) {
+	// printf("state %d\n", state);
+	// printf("GenMove\n");
+	int t = clock();
+	Move nextstep;
+	root->num = 1;
+	// printf("GenChild\n");
+	GenChild(root, board, state);
+	int count = 0;
+	int end_time = t + CLOCKS_PER_SEC * 2.9;
+	while (clock() < end_time) {
+		++count;
+		root->num += 1;
+		// printf("once\n");
+		Board board_copy(board);
+		MCSimulation(board_copy, root, state);
+		// printf("one MCSimulation done\n");
+		// exit(0);
+	}
+	// printf("totally %d times of MC\n", count);
+	nextstep.state = state;
+	nextstep.position = FindBestUCT(root)->pos;
+	return nextstep;
 }
 
 #endif

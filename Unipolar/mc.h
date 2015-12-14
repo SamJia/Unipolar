@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <iterator>
-#include "board_.h"
+#include "board.h"
 #include "def.h"
 using namespace unipolar;
 
@@ -13,12 +13,12 @@ class MC {
 public:
 	MC() = default;
 	~MC() = default;
-	double Simulate(const Board &board, Force force);
+	double Simulate(Board &board, PointState state);
 private:
-	double Evaluate(const Board &Board, Force force);
+	double Evaluate(Board &Board, PointState state);
 };
 
-double MC::Simulate(const Board &board, Force force) {
+double MC::Simulate(Board &board, PointState state) {
 	/*
 	Basic idea:
 		Copy the board.
@@ -29,7 +29,7 @@ double MC::Simulate(const Board &board, Force force) {
 	Here it goes.
 	*/
 	srand(time(NULL));
-	Board mcBoard = board;
+	board.StartMC();
 	// PointState state[2];
 	// PositionIndex position[2];
 	// Move move[2];
@@ -40,32 +40,43 @@ double MC::Simulate(const Board &board, Force force) {
 	// std::set<PositionIndex> playable_pos[2];
 	// // Do we have to wait for both players to give PASS?
 	// do {
-	// 	playable_pos[0] = mcBoard.GetPlayablePosition(force);
+	// 	playable_pos[0] = board.GetPlayablePosition(force);
 	// 	position[0] = rand() % playable_pos[0].size();
 	// 	move[0].position = position[0];
-	// 	mcBoard.PlayMove(move[0]);
+	// 	board.PlayMove(move[0]);
 
-	// 	playable_pos[1] = mcBoard.GetPlayablePosition(1 - force);
+	// 	playable_pos[1] = board.GetPlayablePosition(1 - force);
 	// 	position[1] = rand() % playable_pos[1].size();
 	// 	move[1].position = position[1];
-	// 	mcBoard.PlayMove(move[1]);
+	// 	board.PlayMove(move[1]);
 	// } while(!playable_pos[0].empty() && !playable_pos[1].empty());
-	PointState state;
-	PositionIndex position;
-	std::set<PositionIndex> playable_pos;
+	PointState next_state = state;
 	Move mv;
-	playable_pos = mcBoard.GetPlayablePosition(force);
-
-	while(!playable_pos.empty()) {
+	int count = 0;
+	while(true/*!playable_pos.empty()*/) {
+		++count;
+		std::set<PositionIndex> &playable_pos = board.GetPlayablePositionMC(next_state);
+		// printf("playable_pos_set size %d\n", playable_pos.size());
+		if(playable_pos.size() == 0)
+			break;
 		std::set<PositionIndex>::iterator it = playable_pos.begin();
+		// printf("start advance\n");
 		std::advance(it, rand() % playable_pos.size());
-		mv.state = force;
+		// printf("advance done\n");
+		mv.state = next_state;
 		mv.position = *it;
-		mcBoard.PlayMove(mv);
-		force = static_cast<Force>(force ^ 1);
-		playable_pos = mcBoard.GetPlayablePosition(force);
+		// printf("PlayMove\n");
+		board.PlayMove(mv);
+		// printf("static_cast\n");
+		next_state ^= 1;
+		// printf("GetPlayablePosition\n");
+		// playable_pos = board.GetPlayablePosition(force);
+		// printf("one loop done\n");
 	}
-	return Evaluate(mcBoard, force);
+	// printf("Evaluate\n");
+	// board.Print();
+	// printf("totally %d times of play_move\n", count);
+	return Evaluate(board, state ^ 1);
 }
 
 /*
@@ -76,14 +87,9 @@ Currently we choose the second method, but the number of real eyes is missing.
 Better if we can record the number of black force / black_real_eye within board.h.
 */
 
-double MC::Evaluate(const Board &mcBoard, Force force) {
-	int black_count = 0;
-	for(PositionIndex i = 0; i < BoardSizeSquare(BOARD_SIZE); ++i) {
-		if(mcBoard.board_[i] == BLACK_POINT)
-			black_count++;
-	}
-	double black_ratio = double(black_count) / BoardSizeSquare(BOARD_SIZE);
-	return force == BLACK_FORCE ? black_ratio : 1 - black_ratio;
+double MC::Evaluate(Board &board, PointState state) {
+	int piece_count[] = {board.GetPieceCount(0), board.GetPieceCount(1)};
+	return double(piece_count[state]) / (piece_count[0] + piece_count[1]);
 }
 
 #endif

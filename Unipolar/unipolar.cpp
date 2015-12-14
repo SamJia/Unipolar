@@ -2,7 +2,9 @@
 
 int main(int argc, char const *argv[]) {
 	Controller controller;
+	Board::Init();
 	Board board;
-	controller.RUN(board);
+	board.ClearBoard();
+	controller.Run(board);
 	return 0;
 }
