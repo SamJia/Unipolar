@@ -2,21 +2,23 @@
 #define UNIPOLAR_MC_H_
 #include <stdlib.h>
 #include <time.h>
+#include <iterator>
 #include "board.h"
 #include "def.h"
 using namespace unipolar;
 
-template <int BOARD_SIZE>
+class Board;
+
 class MC {
 public:
 	MC() = default;
 	~MC() = default;
-	static int Simulate(const Board &board, Force force);
+	float Simulate(Board &board, PointState state);
 private:
-	double EvalFunc(List Board[BoradSizeSquare(BOARD_SIZE)], Force force);
+	float Evaluate(Board &Board, PointState state);
 };
 
-int Simulate(const Board &board, Force force) {
+float MC::Simulate(Board &board, PointState state) {
 	/*
 	Basic idea:
 		Copy the board.
@@ -26,8 +28,8 @@ int Simulate(const Board &board, Force force) {
 
 	Here it goes.
 	*/
-	srand(time(NULL));
-	Board mcBoard(board);
+	// srand(time(NULL));
+	board.StartMC();
 	// PointState state[2];
 	// PositionIndex position[2];
 	// Move move[2];
@@ -38,32 +40,56 @@ int Simulate(const Board &board, Force force) {
 	// std::set<PositionIndex> playable_pos[2];
 	// // Do we have to wait for both players to give PASS?
 	// do {
-	// 	playable_pos[0] = mcBoard.GetPlayablePosition(force);
+	// 	playable_pos[0] = board.GetPlayablePosition(force);
 	// 	position[0] = rand() % playable_pos[0].size();
 	// 	move[0].position = position[0];
-	// 	mcBoard.PlayMove(move[0]);
+	// 	board.PlayMove(move[0]);
 
-	// 	playable_pos[1] = mcBoard.GetPlayablePosition(1 - force);
+	// 	playable_pos[1] = board.GetPlayablePosition(1 - force);
 	// 	position[1] = rand() % playable_pos[1].size();
 	// 	move[1].position = position[1];
-	// 	mcBoard.PlayMove(move[1]);
+	// 	board.PlayMove(move[1]);
 	// } while(!playable_pos[0].empty() && !playable_pos[1].empty());
-	PointState state;
-	PositionIndex position;
-	std::set<PositionIndex> playable_pos;
-	Move move;
-	do {
-		playable_pos = mcBoard.GetPlayablePosition(force);
-		position = rand() % playable_pos.size();
-		move.state = force;
-		move.position = position;
-		mcBoard.PlayMove(move);
-
-		force ^= 1;
-	} while(!playable_pos.empty());
-
-
-	return mcBoard.Evaluate(&EvalFunc, force);
+	PointState next_state = state;
+	Move mv;
+	int count = 0;
+	bool last_pass = false;
+	while (true/*!playable_pos.empty()*/) {
+		++count;
+		if (count > 1000) {
+			board.Print();
+			printf("too much MC\n");
+			exit(0);
+		}
+		std::set<PositionIndex> &playable_pos = board.GetPlayablePositionMC(next_state);
+		next_state ^= 1;
+		// printf("playable_pos_set size %d\n", playable_pos.size());
+		if (playable_pos.size() == 0) {
+			// if (last_pass)
+			break;
+			last_pass = true;
+			continue;
+		}
+		std::set<PositionIndex>::iterator it = playable_pos.begin();
+		// printf("start advance\n");
+		std::advance(it, 0);
+		printf("%d, %d\n", next_state^1, *it);
+		// printf("advance done\n");
+		mv.state = next_state ^ 1;
+		mv.position = *it;
+		// printf("PlayMove\n");
+		board.PlayMove(mv);
+		last_pass = false;
+		// printf("static_cast\n");
+		// printf("GetPlayablePosition\n");
+		// playable_pos = board.GetPlayablePosition(force);
+		// printf("one loop done\n");
+	}
+	// board.Print();
+	// printf("Evaluate\n");
+	// board.Print();
+	// printf("totally %d times of play_move\n", count);
+	return Evaluate(board, state ^ 1);
 }
 
 /*
@@ -73,14 +99,11 @@ Some ideas:
 Currently we choose the second method, but the number of real eyes is missing.
 Better if we can record the number of black force / black_real_eye within board.h.
 */
-double EvalFunc(List board[BoradSizeSquare(BOARD_SIZE)], Force force) {
-	int black_count = 0;
-	for(int i = 0; i < BoardSizeSquare(BOARD_SIZE); ++i) {
-		if(board[i].state == BLACK_POINT)
-			black_count++;
-	}
-	double black_ratio = double(black_count) / BoardSizeSquare(BOARD_SIZE);
-	return force == BLACK_FORCE ? black_ratio : 1 - black_ratio;
+
+float MC::Evaluate(Board &board, PointState state) {
+	return board.GetPieceCount(state) > board.GetPieceCount(state ^ 1);
+	// int piece_count[] = {board.GetPieceCount(0), board.GetPieceCount(1)};
+	// return float(piece_count[state]) / (piece_count[0] + piece_count[1]);
 }
 
 #endif

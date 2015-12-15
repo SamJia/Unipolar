@@ -1,10 +1,11 @@
 #include "controller.h"
-#include "board.h"
 
 int main(int argc, char const *argv[]) {
+	srand(time(0));
 	Controller controller;
-	Board main_board;
-	controller.RUN();
-
+	Board::Init();
+	Board board;
+	board.ClearBoard();
+	controller.Run(board);
 	return 0;
 }

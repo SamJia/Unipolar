@@ -22,9 +22,9 @@ namespace unipolar {
 typedef uint32_t HashKey;
 typedef int16_t PositionIndex;
 const PositionIndex POSITION_PASS = -1;
-typedef char AirCount;
+typedef int AirCount;
 
-typedef char PointState;
+typedef int PointState;
 const PointState BLACK_POINT = 0;
 const PointState WHITE_POINT = 1;
 const PointState EMPTY_POINT = 2;
@@ -48,7 +48,7 @@ inline void Swap(T &a, T &b){
     b = tmp;
 }
 
-typedef enum {NORMAL, LOOSER, WINNER} Result;
+const float uctconst = 1;
 typedef float Value;
 typedef int Count;
 
