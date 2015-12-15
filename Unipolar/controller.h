@@ -32,6 +32,8 @@ private:
 	int GTPGenmove(Board &board);
 	int GTPShowboard(Board &board);
 	int GTPQuit();
+	int GTPFinalScore(){printf("= \n\n");}
+	int GTPFinalStatusList(){printf("= \n\n");}
 	float komi_;
 };
 
@@ -69,41 +71,53 @@ int Controller::Run(Board &board) {
 			GTPShowboard(board);
 		else if (command == "quit")
 			GTPQuit();
+		else if (command == "final_score")
+			GTPFinalScore();
+		else if (command == "final_status_list")
+			GTPFinalStatusList();
 		// else
 		// 	fout << "not match : " << command << endl;
 
 		getline(cin, command);
 	}
+	return 0;
 }
 
 int Controller::GTPName(){
 	printf("= Unipolar\n\n");
+	return 0;
 }
 
 int Controller::GTPProtocolVersion(){
 	printf("= 2\n\n");
+	return 0;
 }
 
 int Controller::GTPVersion(){
 	printf("= 1.0\n\n");
+	return 0;
 }
 
 int Controller::GTPListCommands(){
-	printf("= name\nprotocol_version\nversion\nlist_commands\nboardsize\nclear_board\nkomi\nplay\ngenmove\nshowboard\nquit\n\n");
+	printf("= name\nprotocol_version\nversion\nlist_commands\nboardsize\nclear_board\nkomi\nplay\ngenmove\nshowboard\nquit\nfinal_score\nfinal_status_list\n\n");
+	return 0;
 }
 
 int Controller::GTPBoardsize(){
 	printf("= \n\n");
+	return 0;
 }
 
 int Controller::GTPClearBoard(Board &board){
 	board.ClearBoard();
 	printf("= \n\n");
+	return 0;
 }
 
 int Controller::GTPKomi(){
 	cin >> komi_;
 	printf("= \n\n");
+	return 0;
 }
 
 int Controller::GTPPlay(Board &board){
@@ -112,15 +126,18 @@ int Controller::GTPPlay(Board &board){
 	int x, y;
 	PointState state;
 	cin >> color >> x_char >> y_str;
-	if(y_str != "ASS"){
+	if(y_str != "ASS" and y_str != "ass"){
 		x = (x_char > 'I' ? x_char - 1 : x_char) - 'A';
 		y = atoi(y_str.c_str()) - 1;
 		state = color == 'B' ? BLACK_POINT : WHITE_POINT;
 		board.PlayMove(Move(state, x*BOARD_SIZE+y));
 	}
-	else
+	else{
+
 		board.PlayMove(Move(state, POSITION_PASS));
+	}
 	printf("= \n\n");
+	return 0;
 }
 
 int Controller::GTPGenmove(Board &board){
@@ -139,11 +156,13 @@ int Controller::GTPGenmove(Board &board){
 	int x = move.position / BOARD_SIZE, y = move.position % BOARD_SIZE + 1;
 	char x_char = (x > 7 ? x + 1 : x) + 'A';
 	printf("= %c%d\n\n", x_char, y);
+	return 0;
 }
 
 int Controller::GTPShowboard(Board &board){
 	board.Print();
 	printf("= \n\n");
+	return 0;
 }
 
 int Controller::GTPQuit(){

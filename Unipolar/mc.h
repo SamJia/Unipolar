@@ -65,8 +65,8 @@ float MC::Simulate(Board &board, PointState state) {
 		next_state ^= 1;
 		// printf("playable_pos_set size %d\n", playable_pos.size());
 		if (playable_pos.size() == 0) {
-			// if (last_pass)
-			break;
+			if (last_pass)
+				break;
 			last_pass = true;
 			continue;
 		}
