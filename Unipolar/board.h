@@ -87,9 +87,6 @@ public:
 		return playable_pos_[state];
 		// return playable_pos_no_eye_[state];
 	}
-	std::set<PositionIndex> &GetPlayablePositionMC(PointState state) {
-		return playable_pos_no_eye_[state];
-	}
 	PositionIndex GetPieceCount(PointState state) {
 		return piece_count_[state];
 	}
@@ -225,21 +222,6 @@ private:
 			playable_pos_[state].erase(pos);
 			playable_bit_[state].reset(pos);
 		}
-		if (playable_bit_no_eye_[state][pos]) {
-			playable_pos_no_eye_[state].erase(pos);
-			playable_bit_no_eye_[state].reset(pos);
-		}
-	}
-
-	void SetEye(PositionIndex pos, PointState state) {
-		if (playable_bit_no_eye_[state][pos]) {
-			playable_pos_no_eye_[state].erase(pos);
-			playable_bit_no_eye_[state].reset(pos);
-		}
-	}
-
-	void StartMC(){
-		mc_ = true;
 	}
 
 	void SetEye(PositionIndex pos, PointState state) {
