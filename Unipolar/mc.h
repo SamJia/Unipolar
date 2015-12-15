@@ -72,14 +72,16 @@ float MC::Simulate(Board &board, PointState state) {
 		}
 		std::set<PositionIndex>::iterator it = playable_pos.begin();
 		// printf("start advance\n");
-		std::advance(it, 0);
-		printf("%d, %d\n", next_state^1, *it);
+		std::advance(it, rand() * playable_pos.size() / (RAND_MAX + 1));
+		// printf("%d, %d\n", next_state^1, *it);
 		// printf("advance done\n");
 		mv.state = next_state ^ 1;
 		mv.position = *it;
 		// printf("PlayMove\n");
 		board.PlayMove(mv);
 		last_pass = false;
+		// if(count > 30)
+		// 	board.Print();
 		// printf("static_cast\n");
 		// printf("GetPlayablePosition\n");
 		// playable_pos = board.GetPlayablePosition(force);
@@ -100,9 +102,10 @@ Better if we can record the number of black force / black_real_eye within board.
 */
 
 float MC::Evaluate(Board &board, PointState state) {
-	return board.GetPieceCount(state) > board.GetPieceCount(state ^ 1);
+	// return board.GetPieceCount(state) > board.GetPieceCount(state ^ 1);
 	// int piece_count[] = {board.GetPieceCount(0), board.GetPieceCount(1)};
-	// return float(piece_count[state]) / (piece_count[0] + piece_count[1]);
+	int piece_count[] = {board.GetAreaCount(0), board.GetAreaCount(1)};
+	return float(piece_count[state]) / (piece_count[0] + piece_count[1]);
 }
 
 #endif

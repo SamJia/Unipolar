@@ -90,6 +90,9 @@ public:
 	PositionIndex GetPieceCount(PointState state) {
 		return piece_count_[state];
 	}
+	PositionIndex GetAreaCount(PointState state) {
+		return piece_count_[state] + eye_[state].count();
+	}
 	friend class MC;
 	// DISALLOW_COPY_AND_ASSIGN_AND_MOVE(Board)
 	void Print() {
@@ -134,6 +137,8 @@ public:
 		printf("\n");
 		printf("BLACK playable_bit_:\n");
 		playable_bit_[BLACK_POINT].Print();
+		printf("BLACK eye_:\n");
+		eye_[BLACK_POINT].Print();
 		printf("\n");
 		printf("WHITE playable_pos_:\n");
 		for (std::set<PositionIndex>::iterator it = playable_pos_[WHITE_POINT].begin(); it != playable_pos_[WHITE_POINT].end(); ++it)
@@ -141,6 +146,8 @@ public:
 		printf("\n");
 		printf("WHITE playable_bit_:\n");
 		playable_bit_[WHITE_POINT].Print();
+		printf("WHITE eye_:\n");
+		eye_[WHITE_POINT].Print();
 		printf("\n");
 		printf("Chain_set:\n");
 		for (int i = 0; i < BoardSizeSquare(BOARD_SIZE); ++i) {
@@ -210,11 +217,15 @@ private:
 	void CheckSuisidePoint(PositionIndex pos);
 
 	void Able(PositionIndex pos, PointState state) {
+		if(mc_ && eye_[state][pos])
+			return;
 		// printf("able %d %d\n", pos, state);
 		if (!playable_bit_[state][pos]) {
 			playable_pos_[state].insert(pos);
 			playable_bit_[state].set(pos);
 		}
+		// if(pos == 3)
+		// 	Print();
 	}
 	void DisAble(PositionIndex pos, PointState state) {
 		// printf("disable %d %d\n", pos, state);
@@ -227,10 +238,19 @@ private:
 	void SetEye(PositionIndex pos, PointState state) {
 		// if (playable_bit_no_eye_[state][pos]) {
 			// playable_pos_no_eye_[state].erase(pos);
-			eye[state].set(pos);
+			eye_[state].set(pos);
 		// }
 		if(mc_)
 			DisAble(pos, state);
+	}
+
+	void RemoveEye(PositionIndex pos, PointState state) {
+		// if (playable_bit_no_eye_[state][pos]) {
+			// playable_pos_no_eye_[state].erase(pos);
+			eye_[state].reset(pos);
+		// }
+		// if(mc_)
+		// 	DisAble(pos, state);
 	}
 
 	void StartMC(){
@@ -239,9 +259,9 @@ private:
 		for(int i = 0; i < 2; ++i){
 			base = 0;
 			for(int j = 0; j < 3; ++j){
-				while(eye[i].data_[j]){
-					DisAble(base + __builtin_ctzll(eye[i].data_[j]), i);
-					eye[i].data_[j] &= eye[i].data_[j] - 1;
+				while(eye_[i].data_[j]){
+					DisAble(base + __builtin_ctzll(eye_[i].data_[j]), i);
+					eye_[i].data_[j] &= eye_[i].data_[j] - 1;
 				}
 				base += 64;
 			}
@@ -250,7 +270,7 @@ private:
 
 	List board_[BoardSizeSquare(BOARD_SIZE)];
 	std::set<PositionIndex> playable_pos_[2]/*, playable_pos_no_eye_[2]*//*, suiside_pos[2]*/;
-	BitSet playable_bit_[2], eye[2]/*, playable_bit_no_eye_[2]*/;
+	BitSet playable_bit_[2], eye_[2]/*, playable_bit_no_eye_[2]*/;
 	PositionIndex piece_count_[2];
 	PositionIndex ko_;
 	bool mc_;
@@ -278,8 +298,8 @@ void Board::ClearBoard() {
 	playable_bit_[1].set();
 	// playable_bit_no_eye_[0].set();
 	// playable_bit_no_eye_[1].set();
-	eye[0].reset();
-	eye[1].reset();
+	eye_[0].reset();
+	eye_[1].reset();
 	for (PositionIndex i = 0; i < BoardSizeSquare(BOARD_SIZE); ++i) {
 		playable_pos_[0].insert(i);
 		playable_pos_[1].insert(i);
@@ -417,6 +437,8 @@ void Board::ToEmpty(PositionIndex pos) {
 	board_[pos].state = EMPTY_POINT;
 	Able(pos, 0);
 	Able(pos, 1);
+	RemoveEye(pos, 0);
+	RemoveEye(pos, 1);
 }
 
 void Board::FromEmpty(PositionIndex pos, PointState state) {
@@ -424,6 +446,8 @@ void Board::FromEmpty(PositionIndex pos, PointState state) {
 	board_[pos].state = state;
 	DisAble(pos, 0);
 	DisAble(pos, 1);
+	RemoveEye(pos, 0);
+	RemoveEye(pos, 1);
 }
 
 void Board::RemoveChain(PositionIndex pos) {
@@ -463,6 +487,7 @@ void Board::RemoveChain(PositionIndex pos) {
 		ko_ = father;
 		CheckSuisidePoint(father);
 	}
+	// Print();
 }
 
 
@@ -474,6 +499,7 @@ void Board::CheckSuisidePoint(PositionIndex pos) {
 		exit(0);
 	}
 	if (board_[pos].air_count > 0) {
+		// printf("air_count at pos %d is %d, greater than zero\n", pos, board_[pos].air_count);
 		Able(pos, BLACK_POINT);
 		Able(pos, WHITE_POINT);
 		return;
@@ -487,8 +513,10 @@ void Board::CheckSuisidePoint(PositionIndex pos) {
 	}
 	// printf("%d %d %d %d\n", air[0][0], air[0][1], air[1][0], air[1][1]);
 	//white eat black or white connect to air
-	if (air[BLACK_POINT][0] | air[WHITE_POINT][1])
+	if (air[BLACK_POINT][0] | air[WHITE_POINT][1]){
+		// printf("able %d at pos %d\n", WHITE_POINT, pos);
 		Able(pos, WHITE_POINT);
+	}
 	else {
 		if ((air[WHITE_POINT][0] | air[WHITE_POINT][1]) == 0)
 			SetEye(pos, BLACK_POINT);

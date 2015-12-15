@@ -134,7 +134,7 @@ Move UCT::GenMove(Board &board, PointState state) {
 		// printf("one MCSimulation done\n");
 		// exit(0);
 	}
-	printf("totally %d times of MC\n", count);
+	// printf("totally %d times of MC\n", count);
 	nextstep.state = state;
 	nextstep.position = FindBestUCT(root)->pos;
 	return nextstep;
