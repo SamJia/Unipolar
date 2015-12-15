@@ -85,7 +85,6 @@ float MC::Simulate(Board &board, PointState state) {
 		// playable_pos = board.GetPlayablePosition(force);
 		// printf("one loop done\n");
 	}
-	// board.Print();
 	// printf("Evaluate\n");
 	// board.Print();
 	// printf("totally %d times of play_move\n", count);
