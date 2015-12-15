@@ -38,6 +38,8 @@ public:
 	Node *FindBestUCT(Node *node);
 	float MCSimulation(Board &board, Node *node, PointState state);
 	Move GenMove(Board &board, PointState state);
+	void CopyUCT(Node *node, float **valueboard, int **numboard);
+	void PrintUCT();
 
 private:
 	Node *root;
@@ -138,6 +140,54 @@ Move UCT::GenMove(Board &board, PointState state) {
 	nextstep.state = state;
 	nextstep.position = FindBestUCT(root)->pos;
 	return nextstep;
+}
+
+void UCT::CopyUCT(Node *node, float **valueboard, int **numboard) {
+    Node *act = node->son;
+    if(act->son != nullptr)
+        CopyUCT(act, valueboard, numboard);
+    while(act != nullptr) {
+        valueboard[act->pos / BOARD_SIZE][act->pos % BOARD_SIZE] = Score(act);
+        numboard[act->pos / BOARD_SIZE][act->pos % BOARD_SIZE] = act->num;
+        act = act->bro;
+    }
+}
+
+void UCT::PrintUCT() {
+    float **uctval;
+    int **uctnum;
+    uctval = new float*[BOARD_SIZE];
+    uctnum = new int*[BOARD_SIZE];
+    for(int k = 0; k < BOARD_SIZE; ++k) {
+        uctval[k] = new float[BOARD_SIZE];
+        uctnum[k] = new int[BOARD_SIZE];
+    }
+    int i, j;
+    CopyUCT(root, uctval, uctnum);
+    printf("---THE VALUE MATRIX---\n");
+    printf("   0    1    2    3    4    5    6    7    8    9    10   11   12\n");
+    for(int x = 0; x < BOARD_SIZE; ++x) {
+        printf("%02d ", x);
+        for(int y = 0; y < BOARD_SIZE; ++y) {
+            printf("%.2f ", uctval[x][y]);
+        }
+        printf("\n");
+    }
+    printf("---THE NUMBER MATRIX---\n");
+    printf("   0    1    2    3    4    5    6    7    8    9    10   11   12\n");
+    for(int x = 0; x < BOARD_SIZE; ++x) {
+        printf("%02d ", x);
+        for(int y = 0; y < BOARD_SIZE; ++y) {
+            printf("%d   ", uctnum[x][y]);
+        }
+        printf("\n");
+    }
+    Node *act = FindBestUCT(root);
+    i = act->pos / BOARD_SIZE;
+    j = act->pos % BOARD_SIZE;
+    printf("The best next step: (%d, %d)\n", i, j);
+    delete(uctval);
+    delete(uctnum);
 }
 
 #endif
