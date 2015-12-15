@@ -3,6 +3,7 @@
 #include <string>
 #include <stdarg.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <assert.h>
 #include "def.h"
 #include "board.h"
@@ -113,7 +114,7 @@ int Controller::GTPPlay(Board &board){
 	cin >> color >> x_char >> y_str;
 	if(y_str != "ASS"){
 		x = (x_char > 'I' ? x_char - 1 : x_char) - 'A';
-		y = stoi(y_str.c_str()) - 1;
+		y = atoi(y_str.c_str()) - 1;
 		state = color == 'B' ? BLACK_POINT : WHITE_POINT;
 		board.PlayMove(Move(state, x*BOARD_SIZE+y));
 	}
