@@ -392,14 +392,17 @@ void Board::PlayMove(const Move &move) {
 
 PositionIndex Board::GetFather(PositionIndex pos) {
 	PositionIndex result;
-	for (result = pos; board_[result].father >= 0; result = board_[result].father) {
+	if(board_[pos].father < 0)
+		return pos;
+	else if(board_[board_[pos].father].father < 0)
+		return board_[pos].father;
+	for (result = board_[board_[pos].father].father; board_[result].father >= 0; result = board_[result].father) {
 		// printf("get father\n");
-		if (board_[result].father == result) {
-			Print();
-			printf("get father loop %d\n", result);
-			exit(0);
-		}
-
+		// if (board_[result].father == result) {
+		// 	Print();
+		// 	printf("get father loop %d\n", result);
+		// 	exit(0);
+		// }
 	}
 	for (int i = pos, tmp; board_[i].father >= 0;) {
 		tmp = i;
