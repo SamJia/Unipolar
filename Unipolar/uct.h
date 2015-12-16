@@ -127,7 +127,7 @@ Move UCT::GenMove(Board &board, PointState state) {
 	// printf("GenChild\n");
 	GenChild(root, board, state);
 	int count = 0;
-	int end_time = t + CLOCKS_PER_SEC * 0.1;
+	int end_time = t + CLOCKS_PER_SEC * 1;
 	while (clock() < end_time) {
 		++count;
 		// std::cout<<end_time<<clock()<<std::endl;

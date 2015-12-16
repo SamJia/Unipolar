@@ -8,12 +8,15 @@
 #include "def.h"
 #include "board.h"
 #include "uct.h"
+#include "joseki.h"
 
 #include <iostream>
 #include <fstream>
 using namespace std;
 
 // ofstream fout("D:\\Sam\\Lesson\\AI\\Project\\Unipolar\\unipolar.log", ios::app);
+string seq;
+
 class Controller {
 public:
 	Controller() = default;
@@ -29,7 +32,7 @@ private:
 	int GTPClearBoard(Board &board);
 	int GTPKomi();
 	int GTPPlay(Board &board);
-	int GTPGenmove(Board &board);
+	int GTPGenmove(Board &board,TireTree &joseki, string &seq);
 	int GTPShowboard(Board &board);
 	int GTPQuit();
 	int GTPFinalScore(){printf("= \n\n");}
@@ -42,6 +45,14 @@ int Controller::Run(Board &board) {
 	// board.PlayMove(Move(0, 0));
 	// printf("play move at 0,0 done\n");
 	// freopen("commands.txt", "r", stdin);
+	//Load the joseki
+	TireTree joseki;
+	ifstream in("static_40.dic");
+	string a;
+	while (getline(in,a)){
+		joseki.insert(a);
+	}
+
 	string command;
 	// command.resize(100);
 	// fout << "start reading commands" << endl;
@@ -66,7 +77,7 @@ int Controller::Run(Board &board) {
 		else if (command == "play")
 			GTPPlay(board);
 		else if (command == "genmove")
-			GTPGenmove(board);
+			GTPGenmove(board,joseki,seq);
 		else if (command == "showboard")
 			GTPShowboard(board);
 		else if (command == "quit")
@@ -84,7 +95,7 @@ int Controller::Run(Board &board) {
 }
 
 int Controller::GTPName(){
-	printf("= Unipolar\n\n");
+	printf("= Unipolar_with_jsk\n\n");
 	return 0;
 }
 
@@ -125,7 +136,10 @@ int Controller::GTPPlay(Board &board){
 	string y_str;
 	int x, y;
 	PointState state;
+	char *tmp_str = new char[50000];
 	cin >> color >> x_char >> y_str;
+	sprintf(tmp_str,"%s %c %c %s",seq.c_str(),color, x_char,y_str.c_str());
+	seq = string(tmp_str);
 	if(y_str != "ASS" and y_str != "ass"){
 		x = (x_char > 'I' ? x_char - 1 : x_char) - 'A';
 		y = atoi(y_str.c_str()) - 1;
@@ -133,21 +147,27 @@ int Controller::GTPPlay(Board &board){
 		board.PlayMove(Move(state, x*BOARD_SIZE+y));
 	}
 	else{
-
 		board.PlayMove(Move(state, POSITION_PASS));
 	}
 	printf("= \n\n");
 	return 0;
 }
 
-int Controller::GTPGenmove(Board &board){
+int Controller::GTPGenmove(Board &board, TireTree &joseki, string &seq){
 	// printf("get in GTPGenmove\n");
 	// board.PlayMove(Move(0, 0));
 	// printf("play move at 0,0 done\n");
 	char color;
 	scanf(" %c", &color);
 	PointState state = color == 'b' ? BLACK_POINT : WHITE_POINT;
-	Move move = UCT().GenMove(board, state);
+	int posi = joseki.findBest(seq);
+	Move move;
+
+	if (posi >= 0){
+		move = Move(state, posi);
+	}else{
+		move = UCT().GenMove(board, state);	
+	}
 	board.PlayMove(move);
 	if(move.position == POSITION_PASS){
 		printf("= PASS\n\n");
