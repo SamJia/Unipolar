@@ -47,7 +47,7 @@ int Controller::Run(Board &board) {
 	// freopen("commands.txt", "r", stdin);
 	//Load the joseki
 	TireTree joseki;
-	ifstream in("static_40.dic");
+	ifstream in("C:\\Users\\user\\Documents\\GitHub\\Unipolar\\Unipolar\\static_40.dic");
 	string a;
 	while (getline(in,a)){
 		joseki.insert(a);
@@ -176,6 +176,11 @@ int Controller::GTPGenmove(Board &board, TireTree &joseki, string &seq){
 	int x = move.position / BOARD_SIZE, y = move.position % BOARD_SIZE + 1;
 	char x_char = (x > 7 ? x + 1 : x) + 'A';
 	printf("= %c%d\n\n", x_char, y);
+
+	char *tmp_str = new char[50000];
+	sprintf(tmp_str,"%s %c %c %d",seq.c_str(),color-'a'+'A', x_char,y);
+	seq = string(tmp_str);
+
 	return 0;
 }
 

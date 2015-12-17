@@ -5,6 +5,7 @@
 #include <sstream>
 #include <cstdlib>
 #include <string>
+#include <time.h>
 
 using namespace std;
 
@@ -25,8 +26,10 @@ private:
 	// bool isEqual();
 	node *root;
 public:
+	int state;
 	TireTree() {
 		root = new node(-1, -1);
+		state = -1;
 	}
 	~TireTree() {
 		remove(root);
@@ -47,6 +50,7 @@ void TireTree::remove(node *n) {
 }
 
 void TireTree::insert(string &seq) {
+	state = 1;
 	char color;
 	string x, y;
 	int len = seq.length(), idx = 0;
@@ -141,23 +145,31 @@ int TireTree::find(string &pattern) {
 	    }
 	    color = '\0';
 	    mid_seq >> color;
-	    if (color == '\0') return tmpp->num;
+	    if (color == '\0' && tmp) return tmp->num;
 	}
     color = '\0';
     mid_seq >> color;
-	if (color == '\0') return tmpp->num;
+	if (color == '\0' && tmp) return tmp->num;
 	return 0;
 }
 
 int TireTree::findBest(string &pattern) {
+	// cout<<pattern<<'|';
+	// if (pattern=="") {
+	// 	int posi_set[] = {127,139,48};
+	// 	return posi_set[rand()%3];
+	// }
+	// cout<<"from findBest:"<<pattern<<endl;
 	stringstream mid_seq(pattern);
 	char color;
 	string x, y;
 	node *tmp = root->child, *tmpp = root;
 	mid_seq >> color;
+	// cout<<"from findBest:1";
 	while(tmp && mid_seq >> x >> y) {
-		// cout<<color<<x<<y<<endl;
+		// cout<<"in"<<color<<x<<y<<endl;
 		// cout << tmp->color<<tmp->x<<tmp->y<<endl;
+		// cout<<"from findBest:2";
 	    if ((color == 'B' && tmp->color == 0 || 
 			color == 'W' && tmp->color == 1) &&
 			tmp->x == x && tmp->y == y) {
@@ -188,19 +200,22 @@ int TireTree::findBest(string &pattern) {
     mid_seq >> color;
 	int MAX = -1;
 	node *max_node = NULL;
-	if (color == '\0' && tmpp){
-		tmp = tmpp->child;
+	if (color == '\0' && tmp){
 		while(tmp) {
 		    if (tmp->num > MAX){
+		    	// cout<<"from findBest:3";
 		    	MAX = tmp->num;
 		    	max_node = tmp;
-		    	tmp = tmp->brother;
 		    }
+	    	tmp = tmp->brother;
 		}
 	}
+	// cout<<"from findBest:4";
 	if (!max_node)
 		return -1;
 	else{
+		// cout<<"from findBest:5";
+		// cout<<max_node->x<<' '<<max_node->y<<endl;
 		char x_char = max_node->x[0];
 		int x = (x_char > 'I' ? x_char - 1 : x_char) - 'A';
 		int y = y = atoi(max_node->y.c_str()) - 1;

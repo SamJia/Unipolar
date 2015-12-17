@@ -100,7 +100,6 @@ float UCT::MCSimulation(Board &board, Node *node, PointState state) {
 	// printf("playmovedone\n");
 	act->num += 1;
 	Value value_once;
-	std::cout<<"sb\n";
 	if (act->son == nullptr) {
 		if (act->num > 1) {
 			GenChild(act, board, 1 - state);
@@ -127,7 +126,7 @@ Move UCT::GenMove(Board &board, PointState state) {
 	// printf("GenChild\n");
 	GenChild(root, board, state);
 	int count = 0;
-	int end_time = t + CLOCKS_PER_SEC * 1;
+	int end_time = t + CLOCKS_PER_SEC * 20;
 	while (clock() < end_time) {
 		++count;
 		// std::cout<<end_time<<clock()<<std::endl;
