@@ -9,7 +9,10 @@ int main(){
 	double value = 0;
 	Board board;
 	board.ClearBoard();
+	// for(auto i : board.GetPlayablePosition(0))
+	// 	printf("%d ", i);
 	board.PlayMove(Move(0, 0));
+	board.StartMC();
 	// Board board_copy(board);
 	// printf("%f", MC().Simulate(board_copy, 1));
 	// board_copy.Print();
@@ -20,6 +23,7 @@ int main(){
 	printf("value:%f\n", value);
 	board.ClearBoard();
 	board.PlayMove(Move(0, 56));
+	board.StartMC();
 	value = 0;
 	for(int i = 0; i < 10000; ++i){
 		Board board_copy(board);

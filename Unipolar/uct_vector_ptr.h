@@ -19,7 +19,7 @@ private:
 		PositionIndex pos;
 		Count num;
 		Value val;
-		std::vector<Node> sons;		// use pointer or not?
+		std::vector<Node *> sons;		// use pointer or not?
 		// Node *son, *bro;
 		Node(PositionIndex po = -1) : pos(po), num(0), val(0) {}
 		~Node() = default;
@@ -48,9 +48,9 @@ void UCT::GenChild(Node *node, Board &board, PointState state) {
 	node->sons.reserve(playable.size()+1);
 	PositionIndex i = 0;
 	for (; i < playable.size(); ++i) {
-		node->sons.push_back(Node(playable[i]));
+		node->sons.push_back(new Node(playable[i]));
 	}
-	node->sons.push_back(Node(POSITION_PASS));
+	node->sons.push_back(new Node(POSITION_PASS));
 }
 
 float UCT::UCB(Node *node, Count totalnum) {
@@ -68,11 +68,9 @@ float UCT::Score(Node *node){
 UCT::Node *UCT::FindBestChild(Node *node) {
 	float maxUCB = -1, actUCB;
 	Node *maxNode, *p;
-	// std::vector<Node> sons = node->sons;
+	// std::vector<PositionIndex> sons = node->sons;
 	for(PositionIndex i = 0; i < node->sons.size(); ++i) {
-		p = &node->sons[i];
-		// printf("1\n");
-	// for(p : node->so)
+		p = node->sons[i];
 		actUCB = UCB(p, node->num);
 		if(actUCB > maxUCB) {
 			maxUCB = actUCB;
@@ -86,7 +84,7 @@ UCT::Node *UCT::FindBestUCT(Node *node) {
 	float maxUCB = -1, actUCB;
 	Node *maxNode, *p;
 	for(PositionIndex i = 0; i < node->sons.size(); ++i) {
-		p = &node->sons[i];
+		p = node->sons[i];
 		actUCB = Score(p);
 		if(actUCB > maxUCB) {
 			maxUCB = actUCB;
@@ -149,11 +147,11 @@ Move UCT::GenMove(Board &board, PointState state) {
 }
 
 void UCT::CopyUCT(Node *node, float **valueboard, int **numboard) {
-    Node act;
+    Node *act;
 	for(PositionIndex i = 0; i < node->sons.size(); ++i) {
 		act = node->sons[i];
-        valueboard[act.pos / BOARD_SIZE][act.pos % BOARD_SIZE] = UCB(&act, node->num);
-        numboard[act.pos / BOARD_SIZE][act.pos % BOARD_SIZE] = act.num;
+        valueboard[act->pos / BOARD_SIZE][act->pos % BOARD_SIZE] = UCB(act, node->num);
+        numboard[act->pos / BOARD_SIZE][act->pos % BOARD_SIZE] = act->num;
 	}
 }
 

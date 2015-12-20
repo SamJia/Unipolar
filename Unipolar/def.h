@@ -48,7 +48,7 @@ inline void Swap(T &a, T &b){
     b = tmp;
 }
 
-const float uctconst = 1;
+const float uctconst = 1.44;
 typedef float Value;
 typedef int Count;
 
