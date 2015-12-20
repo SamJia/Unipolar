@@ -28,28 +28,7 @@ float MC::Simulate(Board &board, PointState state) {
 
 	Here it goes.
 	*/
-	// srand(time(NULL));
 	board.StartMC();
-	// PointState state[2];
-	// PositionIndex position[2];
-	// Move move[2];
-	// state[0] = force;		// Can we do this?
-	// state[1] = 1 - force;
-	// move[0].state = state[0];
-	// move[1].state = state[1];
-	// std::set<PositionIndex> playable_pos[2];
-	// // Do we have to wait for both players to give PASS?
-	// do {
-	// 	playable_pos[0] = board.GetPlayablePosition(force);
-	// 	position[0] = rand() % playable_pos[0].size();
-	// 	move[0].position = position[0];
-	// 	board.PlayMove(move[0]);
-
-	// 	playable_pos[1] = board.GetPlayablePosition(1 - force);
-	// 	position[1] = rand() % playable_pos[1].size();
-	// 	move[1].position = position[1];
-	// 	board.PlayMove(move[1]);
-	// } while(!playable_pos[0].empty() && !playable_pos[1].empty());
 	PointState next_state = state;
 	Move mv;
 	int count = 0;
@@ -105,7 +84,7 @@ float MC::Evaluate(Board &board, PointState state) {
 	// return board.GetPieceCount(state) > board.GetPieceCount(state ^ 1);
 	// int piece_count[] = {board.GetPieceCount(0), board.GetPieceCount(1)};
 	int piece_count[] = {board.GetAreaCount(0), board.GetAreaCount(1)};
-	return float(piece_count[state]) / (piece_count[0] + piece_count[1]);
+	return 2*piece_count[state] > (piece_count[0] + piece_count[1])? 1 : 0;
 }
 
 #endif

@@ -8,7 +8,9 @@
 // #include "board_.h"
 #include "def.h"
 #include "mc.h"
+#include "uct.h"
 #include <set>
+#include <stdio.h>
 #define SQUARE(x) ((x)*(x))
 #define SIZE 10000000
 using namespace std;
@@ -46,15 +48,27 @@ using namespace std;
  };
 
  int main() {
- 	Test2 t;
- 	set<Test> &s = t.fun();
- 	printf("%d\n", s.size());
+ 	//Test2 t;
+ 	//set<Test> &s = t.fun();
+ 	//printf("%d\n", s.size());
 
-	// unipolar::Force bf = unipolar::BLACK_FORCE;
-	// Move mv;
-	// mv.state = 1 - bf;
-	// // printf("%d\n", mv.state);
-	// Board board;
+	Board::Init();
+	Board board;
+	board.ClearBoard();
+	int n = 20;
+	int p1, p2;
+	PointState s = 0;
+	while(n >= 0) {
+        scanf("%d %d", &p1, &p2);
+        int p = p1*13+p2;
+        board.PlayMove(Move(s, p));
+        UCT uct;
+        //printf("---START---\n");
+        Move np = uct.GenMove(board, 1 - s);
+        uct.PrintUCT();
+        board.PlayMove(np);
+        board.Print();
+	}
 	// MC mc;
 	// printf("%f\n", mc.Simulate(board, bf));
 

@@ -3,6 +3,7 @@
 #include "board.h"
 #include "def.h"
 #include "mc.h"
+#include <cstring>
 #include <assert.h>
 #include <stdlib.h>
 #include <math.h>
@@ -100,9 +101,8 @@ float UCT::MCSimulation(Board &board, Node *node, PointState state) {
 	// printf("playmovedone\n");
 	act->num += 1;
 	Value value_once;
-	std::cout<<"sb\n";
 	if (act->son == nullptr) {
-		if (act->num > 1) {
+		if (act->num > 1) { // modified!
 			GenChild(act, board, 1 - state);
 			value_once = 1 - MCSimulation(board, act, 1 - state);
 		}
@@ -127,7 +127,7 @@ Move UCT::GenMove(Board &board, PointState state) {
 	// printf("GenChild\n");
 	GenChild(root, board, state);
 	int count = 0;
-	int end_time = t + CLOCKS_PER_SEC * 0.1;
+	int end_time = t + CLOCKS_PER_SEC * 10;
 	while (clock() < end_time) {
 		++count;
 		// std::cout<<end_time<<clock()<<std::endl;
@@ -145,10 +145,11 @@ Move UCT::GenMove(Board &board, PointState state) {
 
 void UCT::CopyUCT(Node *node, float **valueboard, int **numboard) {
     Node *act = node->son;
-    if(act->son != nullptr)
-        CopyUCT(act, valueboard, numboard);
+    //if(act->son != nullptr)
+    //    CopyUCT(act, valueboard, numboard);
     while(act != nullptr) {
-        valueboard[act->pos / BOARD_SIZE][act->pos % BOARD_SIZE] = Score(act);
+        // valueboard[act->pos / BOARD_SIZE][act->pos % BOARD_SIZE] = Score(act);
+        valueboard[act->pos / BOARD_SIZE][act->pos % BOARD_SIZE] = UCB(act, node->num);
         numboard[act->pos / BOARD_SIZE][act->pos % BOARD_SIZE] = act->num;
         act = act->bro;
     }
@@ -161,16 +162,22 @@ void UCT::PrintUCT() {
     uctnum = new int*[BOARD_SIZE];
     for(int k = 0; k < BOARD_SIZE; ++k) {
         uctval[k] = new float[BOARD_SIZE];
+        memset(uctval[k],0,sizeof(uctval[k]));
         uctnum[k] = new int[BOARD_SIZE];
+        memset(uctnum[k],0,sizeof(uctnum[k]));
     }
     int i, j;
+    printf("The total simulation time is %d\n", root->num);
     CopyUCT(root, uctval, uctnum);
     printf("---THE VALUE MATRIX---\n");
     printf("   0    1    2    3    4    5    6    7    8    9    10   11   12\n");
     for(int x = 0; x < BOARD_SIZE; ++x) {
         printf("%02d ", x);
         for(int y = 0; y < BOARD_SIZE; ++y) {
-            printf("%.2f ", uctval[x][y]);
+        	if(uctval[x][y] > 1000)
+        		printf("0.00 ");
+        	else
+	            printf("%.2f ", uctval[x][y]);
         }
         printf("\n");
     }
@@ -179,7 +186,10 @@ void UCT::PrintUCT() {
     for(int x = 0; x < BOARD_SIZE; ++x) {
         printf("%02d ", x);
         for(int y = 0; y < BOARD_SIZE; ++y) {
-            printf("%d   ", uctnum[x][y]);
+        	if(uctnum[x][y] > 1000)
+        		printf("00  ");
+        	else
+	            printf("%02d   ", uctnum[x][y]);
         }
         printf("\n");
     }

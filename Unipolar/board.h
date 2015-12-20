@@ -111,7 +111,7 @@ public:
 					printf("O  ");
 			printf("\n");
 		}
-		printf("   0  1  2  3  4  5  6  7  8  9  10 11 12\n");
+		/*printf("   0  1  2  3  4  5  6  7  8  9  10 11 12\n");
 		for (int i = 0 ; i < BOARD_SIZE; ++i) {
 			if (i < 10)
 				printf("%d  ", i);
@@ -164,7 +164,7 @@ public:
 		printf("\n");
 		printf("Ko:%d\n", ko_);
 		printf("BLACK piece count%d\n", piece_count_[BLACK_POINT]);
-		printf("WHITE piece count%d\n", piece_count_[WHITE_POINT]);
+		printf("WHITE piece count%d\n", piece_count_[WHITE_POINT]);*/
 	}
 
 	int Check() {
