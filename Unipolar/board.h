@@ -3,6 +3,7 @@
 // #include <intrin.h>
 #include <cstring>
 #include <set>
+#include <vector>
 #include <iostream>
 #include <cstdio>
 
@@ -25,7 +26,8 @@ public:
 	};
 	~BitSet() = default;
 	void set() {
-		data_[0] = data_[1] = data_[2] = 0xffffffffffffffff;
+		data_[0] = data_[1] = 0xffffffffffffffff;
+		data_[2] = 0x1ffffffffff;
 	}
 	void set(int pos) {
 		data_[pos >> 6] |= (uint64_t)1 << (pos & 63);
@@ -60,6 +62,12 @@ public:
 				printf("%d ", i);
 		printf("\n");
 	}
+	void PrintBinary() {
+		// printf("%x %x %x\n", data_[0], data_[1], data_[2]);
+		for (int i = 0; i < BoardSizeSquare(BOARD_SIZE); ++i)
+			printf("%d", (bool)(*this)[i]);
+		printf("\n");
+	}
 	friend class Board;
 private:
 	uint64_t data_[3];
@@ -80,12 +88,63 @@ public:
 	static void Init();
 	void ClearBoard();
 	void PlayMove(const Move &move);
-	std::set<PositionIndex> &GetPlayablePosition(PointState state) {
-		return playable_pos_[state];
+	std::vector<PositionIndex> GetPlayablePosition(PointState state) {
+		int base = 0;
+		uint64_t tmp;
+		std::vector<PositionIndex> playable_pos;
+		playable_pos.reserve(playable_bit_[state].count());
+		for (int j = 0; j < 3; ++j) {
+			tmp = playable_bit_[state].data_[j];
+			while (tmp) {
+				playable_pos.push_back(base + __builtin_ctzll(tmp));
+				tmp &= tmp - 1;
+			}
+			base += 64;
+		}
+		// for (int i = 0; i < BoardSizeSquare(BOARD_SIZE); ++i)
+		// 	if (playable_bit_[state][i])
+		// 		playable_pos.push_back(i);
+		return playable_pos;
 	}
-	std::set<PositionIndex> &GetPlayablePositionMC(PointState state) {
-		return playable_pos_[state];
-		// return playable_pos_no_eye_[state];
+	std::vector<PositionIndex> GetPlayablePositionMC(PointState state) {
+		int base = 0;
+		uint64_t tmp;
+		std::vector<PositionIndex> playable_pos;
+		playable_pos.reserve(playable_bit_[state].count());
+		for (int j = 0; j < 3; ++j) {
+			tmp = playable_bit_[state].data_[j];
+			while (tmp) {
+				playable_pos.push_back(base + __builtin_ctzll(tmp));
+				tmp &= tmp - 1;
+			}
+			base += 64;
+		}
+		return playable_pos;
+	}
+	int GetPlayableCount(PointState state) {
+		return playable_bit_[state].count();
+	}
+	PositionIndex GetPlayable(PointState state, int number) {
+		// printf("number:%d\n", number);
+		int base = 0;
+		uint64_t tmp;
+		for (int j = 0; j < 3; ++j) {
+			tmp = playable_bit_[state].data_[j];
+			if (__builtin_popcountll(tmp) <= number)
+				number -= __builtin_popcountll(tmp);
+			else {
+				for (; number; --number) {
+					tmp &= tmp - 1;
+				}
+				return __builtin_ctzll(tmp) + base;
+			}
+			base += 64;
+		}
+	}
+	void PrintVector(std::vector<PositionIndex> v) {
+		for (auto i : v)
+			printf("%d ", i);
+		printf("\n");
 	}
 	PositionIndex GetPieceCount(PointState state) {
 		return piece_count_[state];
@@ -131,19 +190,19 @@ public:
 				printf("%3d", board_[i * 13 + j].father);
 			printf("\n");
 		}
-		printf("BLACK playable_pos_:\n");
-		for (std::set<PositionIndex>::iterator it = playable_pos_[BLACK_POINT].begin(); it != playable_pos_[BLACK_POINT].end(); ++it)
-			printf("%d ", *it);
-		printf("\n");
+		// printf("BLACK playable_pos_:\n");
+		// for (std::set<PositionIndex>::iterator it = playable_pos_[BLACK_POINT].begin(); it != playable_pos_[BLACK_POINT].end(); ++it)
+		// 	printf("%d ", *it);
+		// printf("\n");
 		printf("BLACK playable_bit_:\n");
 		playable_bit_[BLACK_POINT].Print();
 		printf("BLACK eye_:\n");
 		eye_[BLACK_POINT].Print();
 		printf("\n");
-		printf("WHITE playable_pos_:\n");
-		for (std::set<PositionIndex>::iterator it = playable_pos_[WHITE_POINT].begin(); it != playable_pos_[WHITE_POINT].end(); ++it)
-			printf("%d ", *it);
-		printf("\n");
+		// printf("WHITE playable_pos_:\n");
+		// for (std::set<PositionIndex>::iterator it = playable_pos_[WHITE_POINT].begin(); it != playable_pos_[WHITE_POINT].end(); ++it)
+		// 	printf("%d ", *it);
+		// printf("\n");
 		printf("WHITE playable_bit_:\n");
 		playable_bit_[WHITE_POINT].Print();
 		printf("WHITE eye_:\n");
@@ -207,7 +266,7 @@ public:
 		return -1;
 	}
 
-private:
+// private:
 	PositionIndex GetFather(PositionIndex pos);
 	void Merge(PositionIndex pos1, PositionIndex pos2);
 	void ToEmpty(PositionIndex pos);
@@ -217,51 +276,53 @@ private:
 	void CheckSuisidePoint(PositionIndex pos);
 
 	void Able(PositionIndex pos, PointState state) {
-		if(mc_ && eye_[state][pos])
+		if (mc_ && eye_[state][pos])
 			return;
 		// printf("able %d %d\n", pos, state);
-		if (!playable_bit_[state][pos]) {
-			playable_pos_[state].insert(pos);
-			playable_bit_[state].set(pos);
-		}
+		// if (!playable_bit_[state][pos]) {
+		// playable_pos_[state].insert(pos);
+		playable_bit_[state].set(pos);
+		// }
 		// if(pos == 3)
 		// 	Print();
 	}
 	void DisAble(PositionIndex pos, PointState state) {
 		// printf("disable %d %d\n", pos, state);
-		if (playable_bit_[state][pos]) {
-			playable_pos_[state].erase(pos);
-			playable_bit_[state].reset(pos);
-		}
+		// if (playable_bit_[state][pos]) {
+		// playable_pos_[state].erase(pos);
+		playable_bit_[state].reset(pos);
+		// }
 	}
 
 	void SetEye(PositionIndex pos, PointState state) {
 		// if (playable_bit_no_eye_[state][pos]) {
-			// playable_pos_no_eye_[state].erase(pos);
-			eye_[state].set(pos);
+		// playable_pos_no_eye_[state].erase(pos);
+		eye_[state].set(pos);
 		// }
-		if(mc_)
+		if (mc_)
 			DisAble(pos, state);
 	}
 
 	void RemoveEye(PositionIndex pos, PointState state) {
 		// if (playable_bit_no_eye_[state][pos]) {
-			// playable_pos_no_eye_[state].erase(pos);
-			eye_[state].reset(pos);
+		// playable_pos_no_eye_[state].erase(pos);
+		eye_[state].reset(pos);
 		// }
 		// if(mc_)
 		// 	DisAble(pos, state);
 	}
 
-	void StartMC(){
+	void StartMC() {
 		mc_ = true;
 		int base;
-		for(int i = 0; i < 2; ++i){
+		uint64_t tmp;
+		for (int i = 0; i < 2; ++i) {
 			base = 0;
-			for(int j = 0; j < 3; ++j){
-				while(eye_[i].data_[j]){
-					DisAble(base + __builtin_ctzll(eye_[i].data_[j]), i);
-					eye_[i].data_[j] &= eye_[i].data_[j] - 1;
+			for (int j = 0; j < 3; ++j) {
+				tmp = eye_[i].data_[j];
+				while (tmp) {
+					DisAble(base + __builtin_ctzll(tmp), i);
+					tmp &= tmp - 1;
 				}
 				base += 64;
 			}
@@ -269,7 +330,7 @@ private:
 	}
 
 	List board_[BoardSizeSquare(BOARD_SIZE)];
-	std::set<PositionIndex> playable_pos_[2]/*, playable_pos_no_eye_[2]*//*, suiside_pos[2]*/;
+	// std::set<PositionIndex> playable_pos_[2]/*, playable_pos_no_eye_[2]*//*, suiside_pos[2]*/;
 	BitSet playable_bit_[2], eye_[2]/*, playable_bit_no_eye_[2]*/;
 	PositionIndex piece_count_[2];
 	PositionIndex ko_;
@@ -301,8 +362,8 @@ void Board::ClearBoard() {
 	eye_[0].reset();
 	eye_[1].reset();
 	for (PositionIndex i = 0; i < BoardSizeSquare(BOARD_SIZE); ++i) {
-		playable_pos_[0].insert(i);
-		playable_pos_[1].insert(i);
+		// playable_pos_[0].insert(i);
+		// playable_pos_[1].insert(i);
 		// playable_pos_no_eye_[0].insert(i);
 		// playable_pos_no_eye_[1].insert(i);
 		board_[i].father = -1;
@@ -392,9 +453,9 @@ void Board::PlayMove(const Move &move) {
 
 PositionIndex Board::GetFather(PositionIndex pos) {
 	PositionIndex result;
-	if(board_[pos].father < 0)
+	if (board_[pos].father < 0)
 		return pos;
-	else if(board_[board_[pos].father].father < 0)
+	else if (board_[board_[pos].father].father < 0)
 		return board_[pos].father;
 	for (result = board_[board_[pos].father].father; board_[result].father >= 0; result = board_[result].father) {
 		// printf("get father\n");
@@ -440,8 +501,8 @@ void Board::ToEmpty(PositionIndex pos) {
 	board_[pos].state = EMPTY_POINT;
 	Able(pos, 0);
 	Able(pos, 1);
-	RemoveEye(pos, 0);
-	RemoveEye(pos, 1);
+	// RemoveEye(pos, 0);
+	// RemoveEye(pos, 1);
 }
 
 void Board::FromEmpty(PositionIndex pos, PointState state) {
@@ -516,7 +577,7 @@ void Board::CheckSuisidePoint(PositionIndex pos) {
 	}
 	// printf("%d %d %d %d\n", air[0][0], air[0][1], air[1][0], air[1][1]);
 	//white eat black or white connect to air
-	if (air[BLACK_POINT][0] | air[WHITE_POINT][1]){
+	if (air[BLACK_POINT][0] | air[WHITE_POINT][1]) {
 		// printf("able %d at pos %d\n", WHITE_POINT, pos);
 		Able(pos, WHITE_POINT);
 	}

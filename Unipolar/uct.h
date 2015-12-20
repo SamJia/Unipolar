@@ -46,10 +46,13 @@ private:
 };
 
 void UCT::GenChild(Node *node, Board &board, PointState state) {
-	std::set<PositionIndex> &playable = board.GetPlayablePosition(state);
-	for (std::set<PositionIndex>::iterator it = playable.begin(); it != playable.end(); it++)
-		node->son = new Node(*it, nullptr, node->son);
-	node->son = new Node(POSITION_PASS, nullptr, node->son);
+	node->son = new Node(POSITION_PASS, nullptr, nullptr);
+	std::vector<PositionIndex> playable = board.GetPlayablePosition(state);
+	for(int i = 0, size = playable.size(); i < size; ++i)
+		node->son = new Node(playable[i], nullptr, node->son);
+
+	// for (std::vector<PositionIndex>::iterator it = playable.begin(); it != playable.end(); it++)
+		// node->son = new Node(*it, nullptr, node->son);
 }
 
 float UCT::UCB(Node *node, Count totalnum) {
@@ -100,8 +103,9 @@ float UCT::MCSimulation(Board &board, Node *node, PointState state) {
 	// printf("playmovedone\n");
 	act->num += 1;
 	Value value_once;
-	std::cout<<"sb\n";
-	if (act->son == nullptr) {
+	if(node->pos == POSITION_PASS && act->pos == POSITION_PASS)
+		value_once = MC().Evaluate(board, state);
+	else if (act->son == nullptr) {
 		if (act->num > 1) {
 			GenChild(act, board, 1 - state);
 			value_once = 1 - MCSimulation(board, act, 1 - state);
@@ -127,17 +131,19 @@ Move UCT::GenMove(Board &board, PointState state) {
 	// printf("GenChild\n");
 	GenChild(root, board, state);
 	int count = 0;
-	int end_time = t + CLOCKS_PER_SEC * 0.1;
+	int end_time = t + CLOCKS_PER_SEC * 5.9;
 	while (clock() < end_time) {
 		++count;
 		// std::cout<<end_time<<clock()<<std::endl;
 		root->num += 1;
 		Board board_copy(board);
+		board.StartMC();
 		MCSimulation(board_copy, root, state);
 		// printf("one MCSimulation done\n");
 		// exit(0);
 	}
 	// printf("totally %d times of MC\n", count);
+	// PrintUCT();
 	nextstep.state = state;
 	nextstep.position = FindBestUCT(root)->pos;
 	return nextstep;
