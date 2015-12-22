@@ -2,784 +2,679 @@ Flat profile:
 
 Each sample counts as 0.01 seconds.
   %   cumulative   self              self     total           
- time   seconds   seconds    calls  ms/call  ms/call  name    
- 58.04      1.66     1.66                             _mcount_private
- 25.17      2.38     0.72                             __fentry__
-  3.85      2.49     0.11 92674408     0.00     0.00  short&& std::forward<short>(std::remove_reference<short>::type&)
-  2.10      2.55     0.06 23168602     0.00     0.00  decltype (_S_construct({parm#1}, {parm#2}, (forward<short>)({parm#3}))) std::allocator_traits<std::allocator<short> >::construct<short, short>(std::allocator<short>&, short*, short&&)
-  2.10      2.61     0.06 23168602     0.00     0.00  std::vector<short, std::allocator<short> >::push_back(short&&)
-  1.75      2.66     0.05   335509     0.00     0.00  Board::GetPlayablePositionMC(int)
-  1.40      2.70     0.04 23168602     0.00     0.00  void __gnu_cxx::new_allocator<short>::construct<short, short>(short*, short&&)
-  0.70      2.72     0.02 23168602     0.00     0.00  void std::vector<short, std::allocator<short> >::emplace_back<short>(short&&)
-  0.70      2.74     0.02   336951     0.00     0.00  Board::PlayMove(Move const&)
-  0.35      2.75     0.01 23168602     0.00     0.00  std::enable_if<std::__and_<std::allocator_traits<std::allocator<short> >::__construct_helper<short, short>::type>::value, void>::type std::allocator_traits<std::allocator<short> >::_S_construct<short, short>(std::allocator<short>&, short*, short&&)
-  0.35      2.76     0.01 23168602     0.00     0.00  operator new(unsigned long long, void*)
-  0.35      2.77     0.01  5023165     0.00     0.00  Board::GetFather(short)
-  0.35      2.78     0.01  2742733     0.00     0.00  BitSet::reset(int)
-  0.35      2.79     0.01   614481     0.00     0.00  Board::Able(short, int)
-  0.35      2.80     0.01   335509     0.00     0.00  std::allocator<short>::~allocator()
-  0.35      2.81     0.01   334073     0.00     0.00  short* std::copy<std::move_iterator<short*>, short*>(std::move_iterator<short*>, std::move_iterator<short*>, short*)
-  0.35      2.82     0.01   331034     0.00     0.00  Board::Merge(short, short)
-  0.35      2.83     0.01   245228     0.00     0.00  Board::CheckSuisidePoint(short)
-  0.35      2.84     0.01     1610     0.01     0.29  UCT::MCSimulation(Board&, UCT::Node*, int)
-  0.35      2.85     0.01        1    10.00    10.00  UCT::Node::~Node()
-  0.35      2.86     0.01                             __logl_internal
-  0.00      2.86     0.00 23168602     0.00     0.00  std::remove_reference<short&>::type&& std::move<short&>(short&)
-  0.00      2.86     0.00  6039162     0.00     0.00  std::remove_reference<short*&>::type&& std::move<short*&>(short*&)
-  0.00      2.86     0.00  2234706     0.00     0.00  BitSet::count()
-  0.00      2.86     0.00  2013054     0.00     0.00  void std::swap<short*>(short*&, short*&)
-  0.00      2.86     0.00  2011958     0.00     0.00  std::_Vector_base<short, std::allocator<short> >::_M_get_Tp_allocator()
-  0.00      2.86     0.00  1016862     0.00     0.00  BitSet::set(int)
-  0.00      2.86     0.00  1008303     0.00     0.00  __gnu_cxx::new_allocator<short>::~new_allocator()
-  0.00      2.86     0.00  1006867     0.00     0.00  void std::_Destroy_aux<true>::__destroy<short*>(short*, short*)
-  0.00      2.86     0.00  1006867     0.00     0.00  std::_Vector_base<short, std::allocator<short> >::_M_deallocate(short*, unsigned long long)
-  0.00      2.86     0.00  1006867     0.00     0.00  void std::_Destroy<short*>(short*, short*)
-  0.00      2.86     0.00  1006867     0.00     0.00  void std::_Destroy<short*, short>(short*, short*, std::allocator<short>&)
-  0.00      2.86     0.00  1003655     0.00     0.00  std::vector<short, std::allocator<short> >::size() const
-  0.00      2.86     0.00  1002219     0.00     0.00  std::_Iter_base<short*, false>::_S_base(short*)
-  0.00      2.86     0.00  1002219     0.00     0.00  std::_Niter_base<short*>::iterator_type std::__niter_base<short*>(short*)
-  0.00      2.86     0.00   830807     0.00     0.00  Board::DisAble(short, int)
-  0.00      2.86     0.00   673894     0.00     0.00  Board::RemoveEye(short, int)
-  0.00      2.86     0.00   672794     0.00     0.00  std::allocator<short>::~allocator()
-  0.00      2.86     0.00   672794     0.00     0.00  std::_Vector_base<short, std::allocator<short> >::_Vector_impl::~_Vector_impl()
-  0.00      2.86     0.00   672794     0.00     0.00  std::_Vector_base<short, std::allocator<short> >::~_Vector_base()
-  0.00      2.86     0.00   672794     0.00     0.00  std::vector<short, std::allocator<short> >::~vector()
-  0.00      2.86     0.00   671188     0.00     0.00  std::_Vector_base<short, std::allocator<short> >::_M_get_Tp_allocator() const
-  0.00      2.86     0.00   671018     0.00     0.00  __gnu_cxx::new_allocator<short>::new_allocator(__gnu_cxx::new_allocator<short> const&)
-  0.00      2.86     0.00   671018     0.00     0.00  std::_Vector_base<short, std::allocator<short> >::_Vector_impl::_M_swap_data(std::_Vector_base<short, std::allocator<short> >::_Vector_impl&)
-  0.00      2.86     0.00   669752     0.00     0.00  __gnu_cxx::new_allocator<short>::max_size() const
-  0.00      2.86     0.00   668146     0.00     0.00  std::move_iterator<short*>::base() const
-  0.00      2.86     0.00   668146     0.00     0.00  std::_Iter_base<std::move_iterator<short*>, true>::_S_base(std::move_iterator<short*>)
-  0.00      2.86     0.00   668146     0.00     0.00  std::move_iterator<short*>::move_iterator(short*)
-  0.00      2.86     0.00   668146     0.00     0.00  std::_Miter_base<std::move_iterator<short*> >::iterator_type std::__miter_base<std::move_iterator<short*> >(std::move_iterator<short*>)
-  0.00      2.86     0.00   668146     0.00     0.00  std::move_iterator<short*> std::__make_move_if_noexcept_iterator<short*, std::move_iterator<short*> >(short*)
-  0.00      2.86     0.00   614467     0.00     0.00  BitSet::operator[](int)
-  0.00      2.86     0.00   516553     0.00     0.00  UCT::UCB(UCT::Node*, int)
-  0.00      2.86     0.00   362464     0.00     0.00  std::vector<short, std::allocator<short> >::operator[](unsigned long long)
-  0.00      2.86     0.00   337285     0.00     0.00  __gnu_cxx::new_allocator<short>::new_allocator()
-  0.00      2.86     0.00   337285     0.00     0.00  std::allocator<short>::allocator()
-  0.00      2.86     0.00   337285     0.00     0.00  std::_Vector_base<short, std::allocator<short> >::_Vector_impl::_Vector_impl()
-  0.00      2.86     0.00   337285     0.00     0.00  std::_Vector_base<short, std::allocator<short> >::_Vector_base()
-  0.00      2.86     0.00   337285     0.00     0.00  std::vector<short, std::allocator<short> >::vector()
-  0.00      2.86     0.00   336947     0.00     0.00  Board::FromEmpty(short, int)
-  0.00      2.86     0.00   335679     0.00     0.00  std::vector<short, std::allocator<short> >::capacity() const
-  0.00      2.86     0.00   335679     0.00     0.00  std::vector<short, std::allocator<short> >::max_size() const
-  0.00      2.86     0.00   335679     0.00     0.00  unsigned long long std::allocator_traits<std::allocator<short> >::_S_max_size<std::allocator<short> const, void>(std::allocator<short> const&, int)
-  0.00      2.86     0.00   335679     0.00     0.00  std::allocator_traits<std::allocator<short> >::max_size(std::allocator<short> const&)
-  0.00      2.86     0.00   335679     0.00     0.00  std::vector<short, std::allocator<short> >::reserve(unsigned long long)
-  0.00      2.86     0.00   335509     0.00     0.00  std::_Vector_base<short, std::allocator<short> >::get_allocator() const
-  0.00      2.86     0.00   335509     0.00     0.00  std::allocator<short>::allocator(std::allocator<short> const&)
-  0.00      2.86     0.00   335509     0.00     0.00  std::allocator<short>::allocator(std::allocator<short> const&)
-  0.00      2.86     0.00   335509     0.00     0.00  std::_Vector_base<short, std::allocator<short> >::_Vector_impl::_Vector_impl(std::allocator<short> const&)
-  0.00      2.86     0.00   335509     0.00     0.00  std::_Vector_base<short, std::allocator<short> >::_Vector_base(std::allocator<short> const&)
-  0.00      2.86     0.00   335509     0.00     0.00  std::vector<short, std::allocator<short> >::_M_move_assign(std::vector<short, std::allocator<short> >&&, std::integral_constant<bool, true>)
-  0.00      2.86     0.00   335509     0.00     0.00  std::vector<short, std::allocator<short> >::vector(std::allocator<short> const&)
-  0.00      2.86     0.00   335509     0.00     0.00  std::vector<short, std::allocator<short> >::operator=(std::vector<short, std::allocator<short> >&&)
-  0.00      2.86     0.00   335509     0.00     0.00  void std::__alloc_on_move<std::allocator<short> >(std::allocator<short>&, std::allocator<short>&)
-  0.00      2.86     0.00   335509     0.00     0.00  void std::__do_alloc_on_move<std::allocator<short> >(std::allocator<short>&, std::allocator<short>&, std::integral_constant<bool, true>)
-  0.00      2.86     0.00   335509     0.00     0.00  std::remove_reference<std::allocator<short>&>::type&& std::move<std::allocator<short>&>(std::allocator<short>&)
-  0.00      2.86     0.00   335509     0.00     0.00  std::remove_reference<std::vector<short, std::allocator<short> >&>::type&& std::move<std::vector<short, std::allocator<short> >&>(std::vector<short, std::allocator<short> >&)
-  0.00      2.86     0.00   334073     0.00     0.00  __gnu_cxx::new_allocator<short>::deallocate(short*, unsigned long long)
-  0.00      2.86     0.00   334073     0.00     0.00  __gnu_cxx::new_allocator<short>::allocate(unsigned long long, void const*)
-  0.00      2.86     0.00   334073     0.00     0.00  short* std::__copy_move<true, true, std::random_access_iterator_tag>::__copy_m<short>(short const*, short const*, short*)
-  0.00      2.86     0.00   334073     0.00     0.00  std::_Vector_base<short, std::allocator<short> >::_M_allocate(unsigned long long)
-  0.00      2.86     0.00   334073     0.00     0.00  std::allocator_traits<std::allocator<short> >::deallocate(std::allocator<short>&, short*, unsigned long long)
-  0.00      2.86     0.00   334073     0.00     0.00  std::allocator_traits<std::allocator<short> >::allocate(std::allocator<short>&, unsigned long long)
-  0.00      2.86     0.00   334073     0.00     0.00  short* std::__uninitialized_copy<true>::__uninit_copy<std::move_iterator<short*>, short*>(std::move_iterator<short*>, std::move_iterator<short*>, short*)
-  0.00      2.86     0.00   334073     0.00     0.00  short* std::vector<short, std::allocator<short> >::_M_allocate_and_copy<std::move_iterator<short*> >(unsigned long long, std::move_iterator<short*>, std::move_iterator<short*>)
-  0.00      2.86     0.00   334073     0.00     0.00  short* std::__copy_move_a<true, short*, short*>(short*, short*, short*)
-  0.00      2.86     0.00   334073     0.00     0.00  short* std::__copy_move_a2<true, short*, short*>(short*, short*, short*)
-  0.00      2.86     0.00   334073     0.00     0.00  short* std::uninitialized_copy<std::move_iterator<short*>, short*>(std::move_iterator<short*>, std::move_iterator<short*>, short*)
-  0.00      2.86     0.00   334073     0.00     0.00  short* std::__uninitialized_copy_a<std::move_iterator<short*>, short*, short>(std::move_iterator<short*>, std::move_iterator<short*>, short*, std::allocator<short>&)
-  0.00      2.86     0.00   272780     0.00     0.00  BitSet::merge(BitSet const&)
-  0.00      2.86     0.00   113747     0.00     0.00  BitSet::GetAirPos()
-  0.00      2.86     0.00   108810     0.00     0.00  BitSet::reset()
-  0.00      2.86     0.00   108295     0.00     0.00  Board::ToEmpty(short)
-  0.00      2.86     0.00    55184     0.00     0.00  Board::SetEye(short, int)
-  0.00      2.86     0.00    51784     0.00     0.00  Board::RemoveChain(short)
-  0.00      2.86     0.00    47664     0.00     0.00  void unipolar::Swap<short>(short&, short&)
-  0.00      2.86     0.00    28732     0.00     0.00  UCT::Node::Node(short, UCT::Node*, UCT::Node*)
-  0.00      2.86     0.00     4654     0.00     0.00  Move::Move(int, short)
-  0.00      2.86     0.00     3220     0.00     0.00  Board::GetPieceCount(int)
-  0.00      2.86     0.00     3047     0.00     0.00  UCT::FindBestChild(UCT::Node*)
-  0.00      2.86     0.00     1610     0.00     0.00  MC::Evaluate(Board&, int)
-  0.00      2.86     0.00     1606     0.00     0.28  MC::Simulate(Board&, int)
-  0.00      2.86     0.00     1606     0.00     0.00  Board::StartMC()
-  0.00      2.86     0.00      679     0.00     0.00  unipolar::BoardSizeSquare(int)
-  0.00      2.86     0.00      173     0.00     0.00  BitSet::BitSet()
-  0.00      2.86     0.00      170     0.00     0.00  UCT::Score(UCT::Node*)
-  0.00      2.86     0.00      170     0.00     0.00  UCT::GenChild(UCT::Node*, Board&, int)
-  0.00      2.86     0.00      170     0.00     0.00  Board::GetPlayablePosition(int)
-  0.00      2.86     0.00      169     0.00     0.00  Board::List::List()
-  0.00      2.86     0.00       26     0.00     0.00  bool std::operator==<char, std::char_traits<char>, std::allocator<char> >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, char const*)
-  0.00      2.86     0.00        5     0.00     0.00  __gcc_deregister_frame
-  0.00      2.86     0.00        4     0.00     0.00  BitSet::set()
-  0.00      2.86     0.00        2     0.00     0.00  Board::ClearBoard()
-  0.00      2.86     0.00        1     0.00   470.00  Controller::GTPGenmove(Board&)
-  0.00      2.86     0.00        1     0.00     0.00  Controller::GTPClearBoard(Board&)
-  0.00      2.86     0.00        1     0.00   470.00  Controller::Run(Board&)
-  0.00      2.86     0.00        1     0.00     0.00  Controller::GTPQuit()
-  0.00      2.86     0.00        1     0.00     0.00  Controller::Controller()
-  0.00      2.86     0.00        1     0.00     0.00  UCT::FindBestUCT(UCT::Node*)
-  0.00      2.86     0.00        1     0.00   460.00  UCT::GenMove(Board&, int)
-  0.00      2.86     0.00        1     0.00     0.00  UCT::UCT()
-  0.00      2.86     0.00        1     0.00    10.00  UCT::~UCT()
-  0.00      2.86     0.00        1     0.00     0.00  Board::Init()
-  0.00      2.86     0.00        1     0.00     0.00  Board::Board()
+ time   seconds   seconds    calls   s/call   s/call  name    
+ 17.41      0.51     0.51                             _mcount_private
+ 16.72      1.00     0.49                             __fentry__
+ 13.65      1.40     0.40  4133478     0.00     0.00  Board::PlayMove(Move const&)
+ 11.26      1.73     0.33 41691815     0.00     0.00  Board::GetFather(short)
+  7.51      1.95     0.22  4094243     0.00     0.00  Board::GetPlayable(int, int)
+  5.12      2.10     0.15  3027771     0.00     0.00  Board::CheckSuisidePoint(short)
+  4.10      2.22     0.12   639316     0.00     0.00  Board::RemoveChain(short)
+  3.75      2.33     0.11  6650241     0.00     0.00  UCT::UCB(UCT::Node*, int)
+  3.07      2.42     0.09  4052117     0.00     0.00  Board::Merge(short, short)
+  2.39      2.49     0.07 33648401     0.00     0.00  BitSet::reset(int)
+  1.71      2.54     0.05                             __logl_internal
+  1.71      2.59     0.05                             log
+  1.71      2.64     0.05                             sqrt
+  1.37      2.68     0.04 27427664     0.00     0.00  BitSet::count()
+  1.37      2.72     0.04  4133453     0.00     0.00  Board::FromEmpty(short, int)
+  1.37      2.76     0.04    39234     0.00     0.00  UCT::FindBestChild(UCT::Node*)
+  1.02      2.79     0.03 10198686     0.00     0.00  Board::DisAble(short, int)
+  1.02      2.82     0.03  7570834     0.00     0.00  Board::Able(short, int)
+  1.02      2.85     0.03    19684     0.00     0.00  MC::Simulate(Board&, int)
+  0.68      2.87     0.02 12478082     0.00     0.00  BitSet::set(int)
+  0.68      2.89     0.02  4113927     0.00     0.00  Board::GetPlayableCount(int)
+  0.68      2.91     0.02  3341106     0.00     0.00  BitSet::merge(BitSet const&)
+  0.68      2.93     0.02                             logf
+  0.00      2.93     0.00  8266906     0.00     0.00  Board::RemoveEye(short, int)
+  0.00      2.93     0.00  7570834     0.00     0.00  BitSet::operator[](int)
+  0.00      2.93     0.00  1410143     0.00     0.00  BitSet::GetAirPos()
+  0.00      2.93     0.00  1328223     0.00     0.00  BitSet::reset()
+  0.00      2.93     0.00  1327879     0.00     0.00  Board::ToEmpty(short)
+  0.00      2.93     0.00   676030     0.00     0.00  Board::SetEye(short, int)
+  0.00      2.93     0.00   584123     0.00     0.00  void unipolar::Swap<short>(short&, short&)
+  0.00      2.93     0.00   122260     0.00     0.00  short&& std::forward<short>(std::remove_reference<short>::type&)
+  0.00      2.93     0.00    58919     0.00     0.00  Move::Move(int, short)
+  0.00      2.93     0.00    39414     0.00     0.00  Board::GetAreaCount(int)
+  0.00      2.93     0.00    39391     0.00     0.00  Board::StartMC()
+  0.00      2.93     0.00    30748     0.00     0.00  UCT::Node::Node(short, UCT::Node*, UCT::Node*)
+  0.00      2.93     0.00    30565     0.00     0.00  void __gnu_cxx::new_allocator<short>::construct<short, short>(short*, short&&)
+  0.00      2.93     0.00    30565     0.00     0.00  std::enable_if<std::__and_<std::allocator_traits<std::allocator<short> >::__construct_helper<short, short>::type>::value, void>::type std::allocator_traits<std::allocator<short> >::_S_construct<short, short>(std::allocator<short>&, short*, short&&)
+  0.00      2.93     0.00    30565     0.00     0.00  decltype (_S_construct({parm#1}, {parm#2}, (forward<short>)({parm#3}))) std::allocator_traits<std::allocator<short> >::construct<short, short>(std::allocator<short>&, short*, short&&)
+  0.00      2.93     0.00    30565     0.00     0.00  void std::vector<short, std::allocator<short> >::emplace_back<short>(short&&)
+  0.00      2.93     0.00    30565     0.00     0.00  std::vector<short, std::allocator<short> >::push_back(short&&)
+  0.00      2.93     0.00    30565     0.00     0.00  std::vector<short, std::allocator<short> >::operator[](unsigned long long)
+  0.00      2.93     0.00    30565     0.00     0.00  std::remove_reference<short&>::type&& std::move<short&>(short&)
+  0.00      2.93     0.00    30565     0.00     0.00  operator new(unsigned long long, void*)
+  0.00      2.93     0.00    20230     0.00     0.00  std::_Vector_base<short, std::allocator<short> >::_M_get_Tp_allocator()
+  0.00      2.93     0.00    20048     0.00     0.00  void std::_Destroy_aux<true>::__destroy<short*>(short*, short*)
+  0.00      2.93     0.00    20048     0.00     0.00  std::_Vector_base<short, std::allocator<short> >::_M_deallocate(short*, unsigned long long)
+  0.00      2.93     0.00    20048     0.00     0.00  void std::_Destroy<short*>(short*, short*)
+  0.00      2.93     0.00    20048     0.00     0.00  void std::_Destroy<short*, short>(short*, short*, std::allocator<short>&)
+  0.00      2.93     0.00    19866     0.00     0.00  __gnu_cxx::new_allocator<short>::new_allocator()
+  0.00      2.93     0.00    19866     0.00     0.00  __gnu_cxx::new_allocator<short>::~new_allocator()
+  0.00      2.93     0.00    19866     0.00     0.00  std::allocator<short>::allocator()
+  0.00      2.93     0.00    19866     0.00     0.00  std::allocator<short>::~allocator()
+  0.00      2.93     0.00    19866     0.00     0.00  std::_Vector_base<short, std::allocator<short> >::_Vector_impl::_Vector_impl()
+  0.00      2.93     0.00    19866     0.00     0.00  std::_Vector_base<short, std::allocator<short> >::_Vector_impl::~_Vector_impl()
+  0.00      2.93     0.00    19866     0.00     0.00  std::_Vector_base<short, std::allocator<short> >::_Vector_base()
+  0.00      2.93     0.00    19866     0.00     0.00  std::_Vector_base<short, std::allocator<short> >::~_Vector_base()
+  0.00      2.93     0.00    19866     0.00     0.00  std::vector<short, std::allocator<short> >::vector()
+  0.00      2.93     0.00    19866     0.00     0.00  std::vector<short, std::allocator<short> >::~vector()
+  0.00      2.93     0.00    19707     0.00     0.00  MC::Evaluate(Board&, int)
+  0.00      2.93     0.00    19707     0.00     0.00  UCT::MCSimulation(Board&, UCT::Node*, int)
+  0.00      2.93     0.00     4802     0.00     0.00  bool std::operator==<char, std::char_traits<char>, std::allocator<char> >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, char const*)
+  0.00      2.93     0.00      546     0.00     0.00  std::_Iter_base<short*, false>::_S_base(short*)
+  0.00      2.93     0.00      546     0.00     0.00  std::_Niter_base<short*>::iterator_type std::__niter_base<short*>(short*)
+  0.00      2.93     0.00      509     0.00     0.00  unipolar::BoardSizeSquare(int)
+  0.00      2.93     0.00      364     0.00     0.00  __gnu_cxx::new_allocator<short>::max_size() const
+  0.00      2.93     0.00      364     0.00     0.00  std::move_iterator<short*>::base() const
+  0.00      2.93     0.00      364     0.00     0.00  std::vector<short, std::allocator<short> >::size() const
+  0.00      2.93     0.00      364     0.00     0.00  std::_Iter_base<std::move_iterator<short*>, true>::_S_base(std::move_iterator<short*>)
+  0.00      2.93     0.00      364     0.00     0.00  std::move_iterator<short*>::move_iterator(short*)
+  0.00      2.93     0.00      364     0.00     0.00  std::_Miter_base<std::move_iterator<short*> >::iterator_type std::__miter_base<std::move_iterator<short*> >(std::move_iterator<short*>)
+  0.00      2.93     0.00      364     0.00     0.00  std::move_iterator<short*> std::__make_move_if_noexcept_iterator<short*, std::move_iterator<short*> >(short*)
+  0.00      2.93     0.00      182     0.00     0.00  UCT::GenChild(UCT::Node*, Board&, int)
+  0.00      2.93     0.00      182     0.00     0.00  Board::GetPlayablePosition(int)
+  0.00      2.93     0.00      182     0.00     0.00  __gnu_cxx::new_allocator<short>::deallocate(short*, unsigned long long)
+  0.00      2.93     0.00      182     0.00     0.00  __gnu_cxx::new_allocator<short>::allocate(unsigned long long, void const*)
+  0.00      2.93     0.00      182     0.00     0.00  std::_Vector_base<short, std::allocator<short> >::_M_get_Tp_allocator() const
+  0.00      2.93     0.00      182     0.00     0.00  std::vector<short, std::allocator<short> >::capacity() const
+  0.00      2.93     0.00      182     0.00     0.00  std::vector<short, std::allocator<short> >::max_size() const
+  0.00      2.93     0.00      182     0.00     0.00  short* std::__copy_move<true, true, std::random_access_iterator_tag>::__copy_m<short>(short const*, short const*, short*)
+  0.00      2.93     0.00      182     0.00     0.00  std::_Vector_base<short, std::allocator<short> >::_M_allocate(unsigned long long)
+  0.00      2.93     0.00      182     0.00     0.00  std::allocator_traits<std::allocator<short> >::deallocate(std::allocator<short>&, short*, unsigned long long)
+  0.00      2.93     0.00      182     0.00     0.00  unsigned long long std::allocator_traits<std::allocator<short> >::_S_max_size<std::allocator<short> const, void>(std::allocator<short> const&, int)
+  0.00      2.93     0.00      182     0.00     0.00  std::allocator_traits<std::allocator<short> >::allocate(std::allocator<short>&, unsigned long long)
+  0.00      2.93     0.00      182     0.00     0.00  std::allocator_traits<std::allocator<short> >::max_size(std::allocator<short> const&)
+  0.00      2.93     0.00      182     0.00     0.00  short* std::__uninitialized_copy<true>::__uninit_copy<std::move_iterator<short*>, short*>(std::move_iterator<short*>, std::move_iterator<short*>, short*)
+  0.00      2.93     0.00      182     0.00     0.00  short* std::vector<short, std::allocator<short> >::_M_allocate_and_copy<std::move_iterator<short*> >(unsigned long long, std::move_iterator<short*>, std::move_iterator<short*>)
+  0.00      2.93     0.00      182     0.00     0.00  std::vector<short, std::allocator<short> >::reserve(unsigned long long)
+  0.00      2.93     0.00      182     0.00     0.00  short* std::__copy_move_a<true, short*, short*>(short*, short*, short*)
+  0.00      2.93     0.00      182     0.00     0.00  short* std::__copy_move_a2<true, short*, short*>(short*, short*, short*)
+  0.00      2.93     0.00      182     0.00     0.00  short* std::uninitialized_copy<std::move_iterator<short*>, short*>(std::move_iterator<short*>, std::move_iterator<short*>, short*)
+  0.00      2.93     0.00      182     0.00     0.00  short* std::__uninitialized_copy_a<std::move_iterator<short*>, short*, short>(std::move_iterator<short*>, std::move_iterator<short*>, short*, std::allocator<short>&)
+  0.00      2.93     0.00      182     0.00     0.00  short* std::copy<std::move_iterator<short*>, short*>(std::move_iterator<short*>, std::move_iterator<short*>, short*)
+  0.00      2.93     0.00      173     0.00     0.00  BitSet::BitSet()
+  0.00      2.93     0.00      170     0.00     0.00  UCT::Score(UCT::Node*)
+  0.00      2.93     0.00      169     0.00     0.00  Board::List::List()
+  0.00      2.93     0.00        2     0.00     0.00  BitSet::set()
+  0.00      2.93     0.00        2     0.00     0.00  __gcc_deregister_frame
+  0.00      2.93     0.00        1     0.00     1.76  Controller::GTPGenmove(Board&)
+  0.00      2.93     0.00        1     0.00     1.76  Controller::Run(Board&)
+  0.00      2.93     0.00        1     0.00     0.00  Controller::Controller()
+  0.00      2.93     0.00        1     0.00     0.00  UCT::FindBestUCT(UCT::Node*)
+  0.00      2.93     0.00        1     0.00     0.00  UCT::Node::~Node()
+  0.00      2.93     0.00        1     0.00     1.76  UCT::GenMove(Board&, int)
+  0.00      2.93     0.00        1     0.00     0.00  UCT::UCT()
+  0.00      2.93     0.00        1     0.00     0.00  UCT::~UCT()
+  0.00      2.93     0.00        1     0.00     0.00  Board::ClearBoard()
+  0.00      2.93     0.00        1     0.00     0.00  Board::Init()
+  0.00      2.93     0.00        1     0.00     0.00  Board::Board()
 
 			Call graph
 
 
-granularity: each sample hit covers 4 byte(s) for 0.35% of 2.86 seconds
+granularity: each sample hit covers 4 byte(s) for 0.34% of 2.93 seconds
 
 index % time    self  children    called     name
                                                  <spontaneous>
-[1]     58.0    1.66    0.00                 _mcount_private [1]
+[1]     60.1    0.00    1.76                 main [1]
+                0.00    1.76       1/1           Controller::Run(Board&) [3]
+                0.00    0.00       1/1           Board::ClearBoard() [34]
+                0.00    0.00       1/1           Controller::Controller() [201]
+                0.00    0.00       1/1           Board::Init() [206]
+                0.00    0.00       1/1           Board::Board() [207]
+-----------------------------------------------
+                0.00    1.76       1/1           Controller::Run(Board&) [3]
+[2]     60.1    0.00    1.76       1         Controller::GTPGenmove(Board&) [2]
+                0.00    1.76       1/1           UCT::GenMove(Board&, int) [4]
+                0.00    0.00       1/4133478     Board::PlayMove(Move const&) [7]
+                0.00    0.00       1/1           UCT::UCT() [204]
+                0.00    0.00       1/1           UCT::~UCT() [205]
+                0.00    0.00       1/2           __gcc_deregister_frame [200]
+-----------------------------------------------
+                0.00    1.76       1/1           main [1]
+[3]     60.1    0.00    1.76       1         Controller::Run(Board&) [3]
+                0.00    1.76       1/1           Controller::GTPGenmove(Board&) [2]
+                0.00    0.00    4802/4802        bool std::operator==<char, std::char_traits<char>, std::allocator<char> >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, char const*) [166]
+-----------------------------------------------
+                0.00    1.76       1/1           Controller::GTPGenmove(Board&) [2]
+[4]     60.1    0.00    1.76       1         UCT::GenMove(Board&, int) [4]
+                0.00    1.76   19707/19707       UCT::MCSimulation(Board&, UCT::Node*, int) [5]
+                0.00    0.00       1/182         UCT::GenChild(UCT::Node*, Board&, int) [35]
+                0.00    0.00   19707/39391       Board::StartMC() [141]
+                0.00    0.00       1/58919       Move::Move(int, short) [140]
+                0.00    0.00       1/2           __gcc_deregister_frame [200]
+                0.00    0.00       1/1           UCT::FindBestUCT(UCT::Node*) [202]
+-----------------------------------------------
+                               19527             UCT::MCSimulation(Board&, UCT::Node*, int) [5]
+                0.00    1.76   19707/19707       UCT::GenMove(Board&, int) [4]
+[5]     60.1    0.00    1.76   19707+19527   UCT::MCSimulation(Board&, UCT::Node*, int) [5]
+                0.03    1.57   19684/19684       MC::Simulate(Board&, int) [6]
+                0.04    0.11   39234/39234       UCT::FindBestChild(UCT::Node*) [15]
+                0.00    0.01   39234/4133478     Board::PlayMove(Move const&) [7]
+                0.00    0.00     181/182         UCT::GenChild(UCT::Node*, Board&, int) [35]
+                0.00    0.00      23/19707       MC::Evaluate(Board&, int) [33]
+                0.00    0.00   39234/58919       Move::Move(int, short) [140]
+                               19527             UCT::MCSimulation(Board&, UCT::Node*, int) [5]
+-----------------------------------------------
+                0.03    1.57   19684/19684       UCT::MCSimulation(Board&, UCT::Node*, int) [5]
+[6]     54.5    0.03    1.57   19684         MC::Simulate(Board&, int) [6]
+                0.40    0.93 4094243/4133478     Board::PlayMove(Move const&) [7]
+                0.22    0.00 4094243/4094243     Board::GetPlayable(int, int) [13]
+                0.02    0.01 4113927/4113927     Board::GetPlayableCount(int) [25]
+                0.00    0.00   19684/19707       MC::Evaluate(Board&, int) [33]
+                0.00    0.00   19684/39391       Board::StartMC() [141]
+                0.00    0.00   19684/58919       Move::Move(int, short) [140]
+                0.00    0.00   19684/19866       std::vector<short, std::allocator<short> >::vector() [164]
+                0.00    0.00   19684/19866       std::vector<short, std::allocator<short> >::~vector() [165]
+-----------------------------------------------
+                0.00    0.00       1/4133478     Controller::GTPGenmove(Board&) [2]
+                0.00    0.01   39234/4133478     UCT::MCSimulation(Board&, UCT::Node*, int) [5]
+                0.40    0.93 4094243/4133478     MC::Simulate(Board&, int) [6]
+[7]     45.5    0.40    0.93 4133478         Board::PlayMove(Move const&) [7]
+                0.12    0.13  639316/639316      Board::RemoveChain(short) [12]
+                0.12    0.08 2374349/3027771     Board::CheckSuisidePoint(short) [11]
+                0.09    0.09 4052117/4052117     Board::Merge(short, short) [14]
+                0.15    0.00 19316262/41691815     Board::GetFather(short) [10]
+                0.04    0.06 4133453/4133453     Board::FromEmpty(short, int) [17]
+                0.03    0.00 15182809/33648401     BitSet::reset(int) [18]
+                0.02    0.00 15182809/27427664     BitSet::count() [24]
+                0.00    0.00  115284/10198686     Board::DisAble(short, int) [19]
+                0.00    0.00 1166049/1410143     BitSet::GetAirPos() [136]
 -----------------------------------------------
                                                  <spontaneous>
-[2]     25.2    0.72    0.00                 __fentry__ [2]
+[8]     17.4    0.51    0.00                 _mcount_private [8]
 -----------------------------------------------
                                                  <spontaneous>
-[3]     16.4    0.00    0.47                 main [3]
-                0.00    0.47       1/1           Controller::Run(Board&) [5]
-                0.00    0.00       1/1           Controller::Controller() [242]
-                0.00    0.00       1/1           Board::Init() [245]
-                0.00    0.00       1/1           Board::Board() [246]
-                0.00    0.00       1/2           Board::ClearBoard() [239]
+[9]     16.7    0.49    0.00                 __fentry__ [9]
 -----------------------------------------------
-                0.00    0.47       1/1           Controller::Run(Board&) [5]
-[4]     16.4    0.00    0.47       1         Controller::GTPGenmove(Board&) [4]
-                0.00    0.46       1/1           UCT::GenMove(Board&, int) [6]
-                0.00    0.01       1/1           UCT::~UCT() [33]
-                0.00    0.00       1/336951      Board::PlayMove(Move const&) [16]
-                0.00    0.00       2/5           __gcc_deregister_frame [237]
-                0.00    0.00       1/1           UCT::UCT() [244]
+                0.04    0.00 5389373/41691815     Board::RemoveChain(short) [12]
+                0.06    0.00 8104234/41691815     Board::Merge(short, short) [14]
+                0.07    0.00 8881946/41691815     Board::CheckSuisidePoint(short) [11]
+                0.15    0.00 19316262/41691815     Board::PlayMove(Move const&) [7]
+[10]    11.3    0.33    0.00 41691815         Board::GetFather(short) [10]
 -----------------------------------------------
-                0.00    0.47       1/1           main [3]
-[5]     16.4    0.00    0.47       1         Controller::Run(Board&) [5]
-                0.00    0.47       1/1           Controller::GTPGenmove(Board&) [4]
-                0.00    0.00      26/26          bool std::operator==<char, std::char_traits<char>, std::allocator<char> >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, char const*) [236]
-                0.00    0.00       1/1           Controller::GTPClearBoard(Board&) [240]
-                0.00    0.00       1/1           Controller::GTPQuit() [241]
+                0.03    0.02  653422/3027771     Board::RemoveChain(short) [12]
+                0.12    0.08 2374349/3027771     Board::PlayMove(Move const&) [7]
+[11]     8.8    0.15    0.11 3027771         Board::CheckSuisidePoint(short) [11]
+                0.07    0.00 8881946/41691815     Board::GetFather(short) [10]
+                0.02    0.01 4915076/7570834     Board::Able(short, int) [23]
+                0.00    0.00 1140466/10198686     Board::DisAble(short, int) [19]
+                0.00    0.00  676030/676030      Board::SetEye(short, int) [31]
 -----------------------------------------------
-                0.00    0.46       1/1           Controller::GTPGenmove(Board&) [4]
-[6]     16.1    0.00    0.46       1         UCT::GenMove(Board&, int) [6]
-                0.01    0.45    1610/1610        UCT::MCSimulation(Board&, UCT::Node*, int) [7]
-                0.00    0.00       1/170         UCT::GenChild(UCT::Node*, Board&, int) [40]
-                0.00    0.00       1/4654        Move::Move(int, short) [227]
-                0.00    0.00       1/5           __gcc_deregister_frame [237]
-                0.00    0.00       1/1           UCT::FindBestUCT(UCT::Node*) [243]
+                0.12    0.13  639316/639316      Board::PlayMove(Move const&) [7]
+[12]     8.4    0.12    0.13  639316         Board::RemoveChain(short) [12]
+                0.03    0.02  653422/3027771     Board::CheckSuisidePoint(short) [11]
+                0.04    0.00 5389373/41691815     Board::GetFather(short) [10]
+                0.00    0.01 1327879/1327879     Board::ToEmpty(short) [30]
+                0.01    0.00 4750057/12478082     BitSet::set(int) [27]
+                0.01    0.00 4750057/27427664     BitSet::count() [24]
+                0.00    0.00  244094/1410143     BitSet::GetAirPos() [136]
 -----------------------------------------------
-                                1437             UCT::MCSimulation(Board&, UCT::Node*, int) [7]
-                0.01    0.45    1610/1610        UCT::GenMove(Board&, int) [6]
-[7]     16.1    0.01    0.45    1610+1437    UCT::MCSimulation(Board&, UCT::Node*, int) [7]
-                0.00    0.45    1606/1606        MC::Simulate(Board&, int) [8]
-                0.00    0.00    3047/336951      Board::PlayMove(Move const&) [16]
-                0.00    0.00     169/170         UCT::GenChild(UCT::Node*, Board&, int) [40]
-                0.00    0.00    3047/3047        UCT::FindBestChild(UCT::Node*) [229]
-                0.00    0.00    3047/4654        Move::Move(int, short) [227]
-                0.00    0.00       4/1610        MC::Evaluate(Board&, int) [230]
-                                1437             UCT::MCSimulation(Board&, UCT::Node*, int) [7]
+                0.22    0.00 4094243/4094243     MC::Simulate(Board&, int) [6]
+[13]     7.5    0.22    0.00 4094243         Board::GetPlayable(int, int) [13]
 -----------------------------------------------
-                0.00    0.45    1606/1606        UCT::MCSimulation(Board&, UCT::Node*, int) [7]
-[8]     15.7    0.00    0.45    1606         MC::Simulate(Board&, int) [8]
-                0.05    0.32  335509/335509      Board::GetPlayablePositionMC(int) [9]
-                0.02    0.05  333903/336951      Board::PlayMove(Move const&) [16]
-                0.00    0.01  335509/335509      std::vector<short, std::allocator<short> >::operator=(std::vector<short, std::allocator<short> >&&) [26]
-                0.00    0.00  669412/1003655     std::vector<short, std::allocator<short> >::size() const [176]
-                0.00    0.00  337115/672794      std::vector<short, std::allocator<short> >::~vector() [182]
-                0.00    0.00  333903/362464      std::vector<short, std::allocator<short> >::operator[](unsigned long long) [194]
-                0.00    0.00    1606/1606        Board::StartMC() [231]
-                0.00    0.00    1606/4654        Move::Move(int, short) [227]
-                0.00    0.00    1606/337285      std::vector<short, std::allocator<short> >::vector() [199]
-                0.00    0.00    1606/1610        MC::Evaluate(Board&, int) [230]
+                0.09    0.09 4052117/4052117     Board::PlayMove(Move const&) [7]
+[14]     6.1    0.09    0.09 4052117         Board::Merge(short, short) [14]
+                0.06    0.00 8104234/41691815     Board::GetFather(short) [10]
+                0.02    0.00 3341106/3341106     BitSet::merge(BitSet const&) [28]
+                0.00    0.00 3341106/27427664     BitSet::count() [24]
+                0.00    0.00  584123/584123      void unipolar::Swap<short>(short&, short&) [138]
 -----------------------------------------------
-                0.05    0.32  335509/335509      MC::Simulate(Board&, int) [8]
-[9]     12.9    0.05    0.32  335509         Board::GetPlayablePositionMC(int) [9]
-                0.06    0.25 23140041/23168602     std::vector<short, std::allocator<short> >::push_back(short&&) [10]
-                0.00    0.01  335509/335679      std::vector<short, std::allocator<short> >::reserve(unsigned long long) [23]
-                0.00    0.00  335509/337285      std::vector<short, std::allocator<short> >::vector() [199]
-                0.00    0.00  335509/2234706     BitSet::count() [167]
+                0.04    0.11   39234/39234       UCT::MCSimulation(Board&, UCT::Node*, int) [5]
+[15]     5.1    0.04    0.11   39234         UCT::FindBestChild(UCT::Node*) [15]
+                0.11    0.00 6650241/6650241     UCT::UCB(UCT::Node*, int) [16]
 -----------------------------------------------
-                0.00    0.00   28561/23168602     Board::GetPlayablePosition(int) [41]
-                0.06    0.25 23140041/23168602     Board::GetPlayablePositionMC(int) [9]
-[10]    10.8    0.06    0.25 23168602         std::vector<short, std::allocator<short> >::push_back(short&&) [10]
-                0.02    0.23 23168602/23168602     void std::vector<short, std::allocator<short> >::emplace_back<short>(short&&) [11]
-                0.00    0.00 23168602/23168602     std::remove_reference<short&>::type&& std::move<short&>(short&) [165]
+                0.11    0.00 6650241/6650241     UCT::FindBestChild(UCT::Node*) [15]
+[16]     3.8    0.11    0.00 6650241         UCT::UCB(UCT::Node*, int) [16]
 -----------------------------------------------
-                0.02    0.23 23168602/23168602     std::vector<short, std::allocator<short> >::push_back(short&&) [10]
-[11]     8.7    0.02    0.23 23168602         void std::vector<short, std::allocator<short> >::emplace_back<short>(short&&) [11]
-                0.06    0.14 23168602/23168602     decltype (_S_construct({parm#1}, {parm#2}, (forward<short>)({parm#3}))) std::allocator_traits<std::allocator<short> >::construct<short, short>(std::allocator<short>&, short*, short&&) [12]
-                0.03    0.00 23168602/92674408     short&& std::forward<short>(std::remove_reference<short>::type&) [14]
+                0.04    0.06 4133453/4133453     Board::PlayMove(Move const&) [7]
+[17]     3.4    0.04    0.06 4133453         Board::FromEmpty(short, int) [17]
+                0.02    0.02 8266906/10198686     Board::DisAble(short, int) [19]
+                0.00    0.02 8266906/8266906     Board::RemoveEye(short, int) [29]
 -----------------------------------------------
-                0.06    0.14 23168602/23168602     void std::vector<short, std::allocator<short> >::emplace_back<short>(short&&) [11]
-[12]     7.1    0.06    0.14 23168602         decltype (_S_construct({parm#1}, {parm#2}, (forward<short>)({parm#3}))) std::allocator_traits<std::allocator<short> >::construct<short, short>(std::allocator<short>&, short*, short&&) [12]
-                0.01    0.11 23168602/23168602     std::enable_if<std::__and_<std::allocator_traits<std::allocator<short> >::__construct_helper<short, short>::type>::value, void>::type std::allocator_traits<std::allocator<short> >::_S_construct<short, short>(std::allocator<short>&, short*, short&&) [13]
-                0.03    0.00 23168602/92674408     short&& std::forward<short>(std::remove_reference<short>::type&) [14]
+                0.02    0.00 8266906/33648401     Board::RemoveEye(short, int) [29]
+                0.02    0.00 10198686/33648401     Board::DisAble(short, int) [19]
+                0.03    0.00 15182809/33648401     Board::PlayMove(Move const&) [7]
+[18]     2.4    0.07    0.00 33648401         BitSet::reset(int) [18]
 -----------------------------------------------
-                0.01    0.11 23168602/23168602     decltype (_S_construct({parm#1}, {parm#2}, (forward<short>)({parm#3}))) std::allocator_traits<std::allocator<short> >::construct<short, short>(std::allocator<short>&, short*, short&&) [12]
-[13]     4.0    0.01    0.11 23168602         std::enable_if<std::__and_<std::allocator_traits<std::allocator<short> >::__construct_helper<short, short>::type>::value, void>::type std::allocator_traits<std::allocator<short> >::_S_construct<short, short>(std::allocator<short>&, short*, short&&) [13]
-                0.04    0.04 23168602/23168602     void __gnu_cxx::new_allocator<short>::construct<short, short>(short*, short&&) [15]
-                0.03    0.00 23168602/92674408     short&& std::forward<short>(std::remove_reference<short>::type&) [14]
------------------------------------------------
-                0.03    0.00 23168602/92674408     void __gnu_cxx::new_allocator<short>::construct<short, short>(short*, short&&) [15]
-                0.03    0.00 23168602/92674408     std::enable_if<std::__and_<std::allocator_traits<std::allocator<short> >::__construct_helper<short, short>::type>::value, void>::type std::allocator_traits<std::allocator<short> >::_S_construct<short, short>(std::allocator<short>&, short*, short&&) [13]
-                0.03    0.00 23168602/92674408     decltype (_S_construct({parm#1}, {parm#2}, (forward<short>)({parm#3}))) std::allocator_traits<std::allocator<short> >::construct<short, short>(std::allocator<short>&, short*, short&&) [12]
-                0.03    0.00 23168602/92674408     void std::vector<short, std::allocator<short> >::emplace_back<short>(short&&) [11]
-[14]     3.8    0.11    0.00 92674408         short&& std::forward<short>(std::remove_reference<short>::type&) [14]
------------------------------------------------
-                0.04    0.04 23168602/23168602     std::enable_if<std::__and_<std::allocator_traits<std::allocator<short> >::__construct_helper<short, short>::type>::value, void>::type std::allocator_traits<std::allocator<short> >::_S_construct<short, short>(std::allocator<short>&, short*, short&&) [13]
-[15]     2.7    0.04    0.04 23168602         void __gnu_cxx::new_allocator<short>::construct<short, short>(short*, short&&) [15]
-                0.03    0.00 23168602/92674408     short&& std::forward<short>(std::remove_reference<short>::type&) [14]
-                0.01    0.00 23168602/23168602     operator new(unsigned long long, void*) [19]
------------------------------------------------
-                0.00    0.00       1/336951      Controller::GTPGenmove(Board&) [4]
-                0.00    0.00    3047/336951      UCT::MCSimulation(Board&, UCT::Node*, int) [7]
-                0.02    0.05  333903/336951      MC::Simulate(Board&, int) [8]
-[16]     2.4    0.02    0.05  336951         Board::PlayMove(Move const&) [16]
-                0.01    0.01  192501/245228      Board::CheckSuisidePoint(short) [17]
-                0.01    0.00  331034/331034      Board::Merge(short, short) [18]
-                0.00    0.01   51784/51784       Board::RemoveChain(short) [35]
-                0.01    0.00 2813011/5023165     Board::GetFather(short) [20]
-                0.00    0.00  336947/336947      Board::FromEmpty(short, int) [36]
-                0.00    0.00 1238032/2742733     BitSet::reset(int) [21]
-                0.00    0.00    9164/830807      Board::DisAble(short, int) [38]
-                0.00    0.00 1238032/2234706     BitSet::count() [167]
-                0.00    0.00   94271/113747      BitSet::GetAirPos() [223]
------------------------------------------------
-                0.00    0.00   52727/245228      Board::RemoveChain(short) [35]
-                0.01    0.01  192501/245228      Board::PlayMove(Move const&) [16]
-[17]     0.6    0.01    0.01  245228         Board::CheckSuisidePoint(short) [17]
-                0.01    0.00  397891/614481      Board::Able(short, int) [22]
-                0.00    0.00  720548/5023165     Board::GetFather(short) [20]
-                0.00    0.00   92565/830807      Board::DisAble(short, int) [38]
-                0.00    0.00   55184/55184       Board::SetEye(short, int) [42]
------------------------------------------------
-                0.01    0.00  331034/331034      Board::PlayMove(Move const&) [16]
-[18]     0.4    0.01    0.00  331034         Board::Merge(short, short) [18]
-                0.00    0.00  662068/5023165     Board::GetFather(short) [20]
-                0.00    0.00  272780/272780      BitSet::merge(BitSet const&) [222]
-                0.00    0.00  272780/2234706     BitSet::count() [167]
-                0.00    0.00   47664/47664       void unipolar::Swap<short>(short&, short&) [225]
------------------------------------------------
-                0.01    0.00 23168602/23168602     void __gnu_cxx::new_allocator<short>::construct<short, short>(short*, short&&) [15]
-[19]     0.3    0.01    0.00 23168602         operator new(unsigned long long, void*) [19]
------------------------------------------------
-                0.00    0.00  662068/5023165     Board::Merge(short, short) [18]
-                0.00    0.00  720548/5023165     Board::CheckSuisidePoint(short) [17]
-                0.00    0.00  827538/5023165     Board::RemoveChain(short) [35]
-                0.01    0.00 2813011/5023165     Board::PlayMove(Move const&) [16]
-[20]     0.3    0.01    0.00 5023165         Board::GetFather(short) [20]
------------------------------------------------
-                0.00    0.00  673894/2742733     Board::RemoveEye(short, int) [39]
-                0.00    0.00  830807/2742733     Board::DisAble(short, int) [38]
-                0.00    0.00 1238032/2742733     Board::PlayMove(Move const&) [16]
-[21]     0.3    0.01    0.00 2742733         BitSet::reset(int) [21]
------------------------------------------------
-                0.00    0.00  216590/614481      Board::ToEmpty(short) [37]
-                0.01    0.00  397891/614481      Board::CheckSuisidePoint(short) [17]
-[22]     0.3    0.01    0.00  614481         Board::Able(short, int) [22]
-                0.00    0.00  614467/614467      BitSet::operator[](int) [192]
-                0.00    0.00  572553/1016862     BitSet::set(int) [170]
------------------------------------------------
-                0.00    0.00     170/335679      Board::GetPlayablePosition(int) [41]
-                0.00    0.01  335509/335679      Board::GetPlayablePositionMC(int) [9]
-[23]     0.3    0.00    0.01  335679         std::vector<short, std::allocator<short> >::reserve(unsigned long long) [23]
-                0.00    0.01  334073/334073      short* std::vector<short, std::allocator<short> >::_M_allocate_and_copy<std::move_iterator<short*> >(unsigned long long, std::move_iterator<short*>, std::move_iterator<short*>) [28]
-                0.00    0.00  668146/668146      std::move_iterator<short*> std::__make_move_if_noexcept_iterator<short*, std::move_iterator<short*> >(short*) [191]
-                0.00    0.00  335679/335679      std::vector<short, std::allocator<short> >::max_size() const [201]
-                0.00    0.00  335679/335679      std::vector<short, std::allocator<short> >::capacity() const [200]
-                0.00    0.00  334073/1003655     std::vector<short, std::allocator<short> >::size() const [176]
-                0.00    0.00  334073/2011958     std::_Vector_base<short, std::allocator<short> >::_M_get_Tp_allocator() [169]
-                0.00    0.00  334073/1006867     void std::_Destroy<short*, short>(short*, short*, std::allocator<short>&) [175]
-                0.00    0.00  334073/1006867     std::_Vector_base<short, std::allocator<short> >::_M_deallocate(short*, unsigned long long) [173]
------------------------------------------------
-                0.01    0.00  335509/335509      std::vector<short, std::allocator<short> >::_M_move_assign(std::vector<short, std::allocator<short> >&&, std::integral_constant<bool, true>) [25]
-[24]     0.3    0.01    0.00  335509         std::allocator<short>::~allocator() [24]
-                0.00    0.00  335509/1008303     __gnu_cxx::new_allocator<short>::~new_allocator() [171]
------------------------------------------------
-                0.00    0.01  335509/335509      std::vector<short, std::allocator<short> >::operator=(std::vector<short, std::allocator<short> >&&) [26]
-[25]     0.3    0.00    0.01  335509         std::vector<short, std::allocator<short> >::_M_move_assign(std::vector<short, std::allocator<short> >&&, std::integral_constant<bool, true>) [25]
-                0.01    0.00  335509/335509      std::allocator<short>::~allocator() [24]
-                0.00    0.00  671018/671018      std::_Vector_base<short, std::allocator<short> >::_Vector_impl::_M_swap_data(std::_Vector_base<short, std::allocator<short> >::_Vector_impl&) [185]
-                0.00    0.00  671018/2011958     std::_Vector_base<short, std::allocator<short> >::_M_get_Tp_allocator() [169]
-                0.00    0.00  335509/335509      std::_Vector_base<short, std::allocator<short> >::get_allocator() const [204]
-                0.00    0.00  335509/335509      std::vector<short, std::allocator<short> >::vector(std::allocator<short> const&) [209]
-                0.00    0.00  335509/335509      void std::__alloc_on_move<std::allocator<short> >(std::allocator<short>&, std::allocator<short>&) [210]
-                0.00    0.00  335509/672794      std::vector<short, std::allocator<short> >::~vector() [182]
------------------------------------------------
-                0.00    0.01  335509/335509      MC::Simulate(Board&, int) [8]
-[26]     0.3    0.00    0.01  335509         std::vector<short, std::allocator<short> >::operator=(std::vector<short, std::allocator<short> >&&) [26]
-                0.00    0.01  335509/335509      std::vector<short, std::allocator<short> >::_M_move_assign(std::vector<short, std::allocator<short> >&&, std::integral_constant<bool, true>) [25]
-                0.00    0.00  335509/335509      std::remove_reference<std::vector<short, std::allocator<short> >&>::type&& std::move<std::vector<short, std::allocator<short> >&>(std::vector<short, std::allocator<short> >&) [213]
------------------------------------------------
-                0.00    0.01  334073/334073      short* std::uninitialized_copy<std::move_iterator<short*>, short*>(std::move_iterator<short*>, std::move_iterator<short*>, short*) [29]
-[27]     0.3    0.00    0.01  334073         short* std::__uninitialized_copy<true>::__uninit_copy<std::move_iterator<short*>, short*>(std::move_iterator<short*>, std::move_iterator<short*>, short*) [27]
-                0.01    0.00  334073/334073      short* std::copy<std::move_iterator<short*>, short*>(std::move_iterator<short*>, std::move_iterator<short*>, short*) [31]
------------------------------------------------
-                0.00    0.01  334073/334073      std::vector<short, std::allocator<short> >::reserve(unsigned long long) [23]
-[28]     0.3    0.00    0.01  334073         short* std::vector<short, std::allocator<short> >::_M_allocate_and_copy<std::move_iterator<short*> >(unsigned long long, std::move_iterator<short*>, std::move_iterator<short*>) [28]
-                0.00    0.01  334073/334073      short* std::__uninitialized_copy_a<std::move_iterator<short*>, short*, short>(std::move_iterator<short*>, std::move_iterator<short*>, short*, std::allocator<short>&) [30]
-                0.00    0.00  334073/334073      std::_Vector_base<short, std::allocator<short> >::_M_allocate(unsigned long long) [217]
-                0.00    0.00  334073/2011958     std::_Vector_base<short, std::allocator<short> >::_M_get_Tp_allocator() [169]
------------------------------------------------
-                0.00    0.01  334073/334073      short* std::__uninitialized_copy_a<std::move_iterator<short*>, short*, short>(std::move_iterator<short*>, std::move_iterator<short*>, short*, std::allocator<short>&) [30]
-[29]     0.3    0.00    0.01  334073         short* std::uninitialized_copy<std::move_iterator<short*>, short*>(std::move_iterator<short*>, std::move_iterator<short*>, short*) [29]
-                0.00    0.01  334073/334073      short* std::__uninitialized_copy<true>::__uninit_copy<std::move_iterator<short*>, short*>(std::move_iterator<short*>, std::move_iterator<short*>, short*) [27]
------------------------------------------------
-                0.00    0.01  334073/334073      short* std::vector<short, std::allocator<short> >::_M_allocate_and_copy<std::move_iterator<short*> >(unsigned long long, std::move_iterator<short*>, std::move_iterator<short*>) [28]
-[30]     0.3    0.00    0.01  334073         short* std::__uninitialized_copy_a<std::move_iterator<short*>, short*, short>(std::move_iterator<short*>, std::move_iterator<short*>, short*, std::allocator<short>&) [30]
-                0.00    0.01  334073/334073      short* std::uninitialized_copy<std::move_iterator<short*>, short*>(std::move_iterator<short*>, std::move_iterator<short*>, short*) [29]
------------------------------------------------
-                0.01    0.00  334073/334073      short* std::__uninitialized_copy<true>::__uninit_copy<std::move_iterator<short*>, short*>(std::move_iterator<short*>, std::move_iterator<short*>, short*) [27]
-[31]     0.3    0.01    0.00  334073         short* std::copy<std::move_iterator<short*>, short*>(std::move_iterator<short*>, std::move_iterator<short*>, short*) [31]
-                0.00    0.00  668146/668146      std::_Miter_base<std::move_iterator<short*> >::iterator_type std::__miter_base<std::move_iterator<short*> >(std::move_iterator<short*>) [190]
-                0.00    0.00  334073/334073      short* std::__copy_move_a2<true, short*, short*>(short*, short*, short*) [221]
------------------------------------------------
-                               28731             UCT::Node::~Node() [32]
-                0.01    0.00       1/1           UCT::~UCT() [33]
-[32]     0.3    0.01    0.00       1+28731   UCT::Node::~Node() [32]
-                               28731             UCT::Node::~Node() [32]
------------------------------------------------
-                0.00    0.01       1/1           Controller::GTPGenmove(Board&) [4]
-[33]     0.3    0.00    0.01       1         UCT::~UCT() [33]
-                0.01    0.00       1/1           UCT::Node::~Node() [32]
+                0.00    0.00  115284/10198686     Board::PlayMove(Move const&) [7]
+                0.00    0.00  676030/10198686     Board::SetEye(short, int) [31]
+                0.00    0.00 1140466/10198686     Board::CheckSuisidePoint(short) [11]
+                0.02    0.02 8266906/10198686     Board::FromEmpty(short, int) [17]
+[19]     1.7    0.03    0.02 10198686         Board::DisAble(short, int) [19]
+                0.02    0.00 10198686/33648401     BitSet::reset(int) [18]
 -----------------------------------------------
                                                  <spontaneous>
-[34]     0.3    0.01    0.00                 __logl_internal [34]
------------------------------------------------
-                0.00    0.01   51784/51784       Board::PlayMove(Move const&) [16]
-[35]     0.3    0.00    0.01   51784         Board::RemoveChain(short) [35]
-                0.00    0.00   52727/245228      Board::CheckSuisidePoint(short) [17]
-                0.00    0.00  108295/108295      Board::ToEmpty(short) [37]
-                0.00    0.00  827538/5023165     Board::GetFather(short) [20]
-                0.00    0.00  387877/1016862     BitSet::set(int) [170]
-                0.00    0.00  387877/2234706     BitSet::count() [167]
-                0.00    0.00   19476/113747      BitSet::GetAirPos() [223]
------------------------------------------------
-                0.00    0.00  336947/336947      Board::PlayMove(Move const&) [16]
-[36]     0.2    0.00    0.00  336947         Board::FromEmpty(short, int) [36]
-                0.00    0.00  673894/830807      Board::DisAble(short, int) [38]
-                0.00    0.00  673894/673894      Board::RemoveEye(short, int) [39]
------------------------------------------------
-                0.00    0.00  108295/108295      Board::RemoveChain(short) [35]
-[37]     0.1    0.00    0.00  108295         Board::ToEmpty(short) [37]
-                0.00    0.00  216590/614481      Board::Able(short, int) [22]
-                0.00    0.00  108295/108810      BitSet::reset() [224]
------------------------------------------------
-                0.00    0.00    9164/830807      Board::PlayMove(Move const&) [16]
-                0.00    0.00   55184/830807      Board::SetEye(short, int) [42]
-                0.00    0.00   92565/830807      Board::CheckSuisidePoint(short) [17]
-                0.00    0.00  673894/830807      Board::FromEmpty(short, int) [36]
-[38]     0.1    0.00    0.00  830807         Board::DisAble(short, int) [38]
-                0.00    0.00  830807/2742733     BitSet::reset(int) [21]
------------------------------------------------
-                0.00    0.00  673894/673894      Board::FromEmpty(short, int) [36]
-[39]     0.1    0.00    0.00  673894         Board::RemoveEye(short, int) [39]
-                0.00    0.00  673894/2742733     BitSet::reset(int) [21]
------------------------------------------------
-                0.00    0.00       1/170         UCT::GenMove(Board&, int) [6]
-                0.00    0.00     169/170         UCT::MCSimulation(Board&, UCT::Node*, int) [7]
-[40]     0.0    0.00    0.00     170         UCT::GenChild(UCT::Node*, Board&, int) [40]
-                0.00    0.00     170/170         Board::GetPlayablePosition(int) [41]
-                0.00    0.00   28731/28732       UCT::Node::Node(short, UCT::Node*, UCT::Node*) [226]
-                0.00    0.00   28561/362464      std::vector<short, std::allocator<short> >::operator[](unsigned long long) [194]
-                0.00    0.00     170/1003655     std::vector<short, std::allocator<short> >::size() const [176]
-                0.00    0.00     170/672794      std::vector<short, std::allocator<short> >::~vector() [182]
------------------------------------------------
-                0.00    0.00     170/170         UCT::GenChild(UCT::Node*, Board&, int) [40]
-[41]     0.0    0.00    0.00     170         Board::GetPlayablePosition(int) [41]
-                0.00    0.00   28561/23168602     std::vector<short, std::allocator<short> >::push_back(short&&) [10]
-                0.00    0.00     170/335679      std::vector<short, std::allocator<short> >::reserve(unsigned long long) [23]
-                0.00    0.00     170/337285      std::vector<short, std::allocator<short> >::vector() [199]
-                0.00    0.00     170/2234706     BitSet::count() [167]
------------------------------------------------
-                0.00    0.00   55184/55184       Board::CheckSuisidePoint(short) [17]
-[42]     0.0    0.00    0.00   55184         Board::SetEye(short, int) [42]
-                0.00    0.00   55184/830807      Board::DisAble(short, int) [38]
-                0.00    0.00   55184/1016862     BitSet::set(int) [170]
------------------------------------------------
-                0.00    0.00 23168602/23168602     std::vector<short, std::allocator<short> >::push_back(short&&) [10]
-[165]    0.0    0.00    0.00 23168602         std::remove_reference<short&>::type&& std::move<short&>(short&) [165]
------------------------------------------------
-                0.00    0.00 6039162/6039162     void std::swap<short*>(short*&, short*&) [168]
-[166]    0.0    0.00    0.00 6039162         std::remove_reference<short*&>::type&& std::move<short*&>(short*&) [166]
------------------------------------------------
-                0.00    0.00     170/2234706     Board::GetPlayablePosition(int) [41]
-                0.00    0.00     338/2234706     Board::ClearBoard() [239]
-                0.00    0.00  272780/2234706     Board::Merge(short, short) [18]
-                0.00    0.00  335509/2234706     Board::GetPlayablePositionMC(int) [9]
-                0.00    0.00  387877/2234706     Board::RemoveChain(short) [35]
-                0.00    0.00 1238032/2234706     Board::PlayMove(Move const&) [16]
-[167]    0.0    0.00    0.00 2234706         BitSet::count() [167]
------------------------------------------------
-                0.00    0.00 2013054/2013054     std::_Vector_base<short, std::allocator<short> >::_Vector_impl::_M_swap_data(std::_Vector_base<short, std::allocator<short> >::_Vector_impl&) [185]
-[168]    0.0    0.00    0.00 2013054         void std::swap<short*>(short*&, short*&) [168]
-                0.00    0.00 6039162/6039162     std::remove_reference<short*&>::type&& std::move<short*&>(short*&) [166]
------------------------------------------------
-                0.00    0.00  334073/2011958     short* std::vector<short, std::allocator<short> >::_M_allocate_and_copy<std::move_iterator<short*> >(unsigned long long, std::move_iterator<short*>, std::move_iterator<short*>) [28]
-                0.00    0.00  334073/2011958     std::vector<short, std::allocator<short> >::reserve(unsigned long long) [23]
-                0.00    0.00  671018/2011958     std::vector<short, std::allocator<short> >::_M_move_assign(std::vector<short, std::allocator<short> >&&, std::integral_constant<bool, true>) [25]
-                0.00    0.00  672794/2011958     std::vector<short, std::allocator<short> >::~vector() [182]
-[169]    0.0    0.00    0.00 2011958         std::_Vector_base<short, std::allocator<short> >::_M_get_Tp_allocator() [169]
------------------------------------------------
-                0.00    0.00    1248/1016862     Board::ClearBoard() [239]
-                0.00    0.00   55184/1016862     Board::SetEye(short, int) [42]
-                0.00    0.00  387877/1016862     Board::RemoveChain(short) [35]
-                0.00    0.00  572553/1016862     Board::Able(short, int) [22]
-[170]    0.0    0.00    0.00 1016862         BitSet::set(int) [170]
------------------------------------------------
-                0.00    0.00  335509/1008303     std::allocator<short>::~allocator() [24]
-                0.00    0.00  672794/1008303     std::allocator<short>::~allocator() [179]
-[171]    0.0    0.00    0.00 1008303         __gnu_cxx::new_allocator<short>::~new_allocator() [171]
------------------------------------------------
-                0.00    0.00 1006867/1006867     void std::_Destroy<short*>(short*, short*) [174]
-[172]    0.0    0.00    0.00 1006867         void std::_Destroy_aux<true>::__destroy<short*>(short*, short*) [172]
------------------------------------------------
-                0.00    0.00  334073/1006867     std::vector<short, std::allocator<short> >::reserve(unsigned long long) [23]
-                0.00    0.00  672794/1006867     std::_Vector_base<short, std::allocator<short> >::~_Vector_base() [181]
-[173]    0.0    0.00    0.00 1006867         std::_Vector_base<short, std::allocator<short> >::_M_deallocate(short*, unsigned long long) [173]
-                0.00    0.00  334073/334073      std::allocator_traits<std::allocator<short> >::deallocate(std::allocator<short>&, short*, unsigned long long) [218]
------------------------------------------------
-                0.00    0.00 1006867/1006867     void std::_Destroy<short*, short>(short*, short*, std::allocator<short>&) [175]
-[174]    0.0    0.00    0.00 1006867         void std::_Destroy<short*>(short*, short*) [174]
-                0.00    0.00 1006867/1006867     void std::_Destroy_aux<true>::__destroy<short*>(short*, short*) [172]
------------------------------------------------
-                0.00    0.00  334073/1006867     std::vector<short, std::allocator<short> >::reserve(unsigned long long) [23]
-                0.00    0.00  672794/1006867     std::vector<short, std::allocator<short> >::~vector() [182]
-[175]    0.0    0.00    0.00 1006867         void std::_Destroy<short*, short>(short*, short*, std::allocator<short>&) [175]
-                0.00    0.00 1006867/1006867     void std::_Destroy<short*>(short*, short*) [174]
------------------------------------------------
-                0.00    0.00     170/1003655     UCT::GenChild(UCT::Node*, Board&, int) [40]
-                0.00    0.00  334073/1003655     std::vector<short, std::allocator<short> >::reserve(unsigned long long) [23]
-                0.00    0.00  669412/1003655     MC::Simulate(Board&, int) [8]
-[176]    0.0    0.00    0.00 1003655         std::vector<short, std::allocator<short> >::size() const [176]
------------------------------------------------
-                0.00    0.00 1002219/1002219     std::_Niter_base<short*>::iterator_type std::__niter_base<short*>(short*) [178]
-[177]    0.0    0.00    0.00 1002219         std::_Iter_base<short*, false>::_S_base(short*) [177]
------------------------------------------------
-                0.00    0.00 1002219/1002219     short* std::__copy_move_a2<true, short*, short*>(short*, short*, short*) [221]
-[178]    0.0    0.00    0.00 1002219         std::_Niter_base<short*>::iterator_type std::__niter_base<short*>(short*) [178]
-                0.00    0.00 1002219/1002219     std::_Iter_base<short*, false>::_S_base(short*) [177]
------------------------------------------------
-                0.00    0.00  672794/672794      std::_Vector_base<short, std::allocator<short> >::_Vector_impl::~_Vector_impl() [180]
-[179]    0.0    0.00    0.00  672794         std::allocator<short>::~allocator() [179]
-                0.00    0.00  672794/1008303     __gnu_cxx::new_allocator<short>::~new_allocator() [171]
------------------------------------------------
-                0.00    0.00  672794/672794      std::_Vector_base<short, std::allocator<short> >::~_Vector_base() [181]
-[180]    0.0    0.00    0.00  672794         std::_Vector_base<short, std::allocator<short> >::_Vector_impl::~_Vector_impl() [180]
-                0.00    0.00  672794/672794      std::allocator<short>::~allocator() [179]
------------------------------------------------
-                0.00    0.00  672794/672794      std::vector<short, std::allocator<short> >::~vector() [182]
-[181]    0.0    0.00    0.00  672794         std::_Vector_base<short, std::allocator<short> >::~_Vector_base() [181]
-                0.00    0.00  672794/1006867     std::_Vector_base<short, std::allocator<short> >::_M_deallocate(short*, unsigned long long) [173]
-                0.00    0.00  672794/672794      std::_Vector_base<short, std::allocator<short> >::_Vector_impl::~_Vector_impl() [180]
------------------------------------------------
-                0.00    0.00     170/672794      UCT::GenChild(UCT::Node*, Board&, int) [40]
-                0.00    0.00  335509/672794      std::vector<short, std::allocator<short> >::_M_move_assign(std::vector<short, std::allocator<short> >&&, std::integral_constant<bool, true>) [25]
-                0.00    0.00  337115/672794      MC::Simulate(Board&, int) [8]
-[182]    0.0    0.00    0.00  672794         std::vector<short, std::allocator<short> >::~vector() [182]
-                0.00    0.00  672794/2011958     std::_Vector_base<short, std::allocator<short> >::_M_get_Tp_allocator() [169]
-                0.00    0.00  672794/1006867     void std::_Destroy<short*, short>(short*, short*, std::allocator<short>&) [175]
-                0.00    0.00  672794/672794      std::_Vector_base<short, std::allocator<short> >::~_Vector_base() [181]
------------------------------------------------
-                0.00    0.00  335509/671188      std::_Vector_base<short, std::allocator<short> >::get_allocator() const [204]
-                0.00    0.00  335679/671188      std::vector<short, std::allocator<short> >::max_size() const [201]
-[183]    0.0    0.00    0.00  671188         std::_Vector_base<short, std::allocator<short> >::_M_get_Tp_allocator() const [183]
------------------------------------------------
-                0.00    0.00  335509/671018      std::allocator<short>::allocator(std::allocator<short> const&) [205]
-                0.00    0.00  335509/671018      std::allocator<short>::allocator(std::allocator<short> const&) [206]
-[184]    0.0    0.00    0.00  671018         __gnu_cxx::new_allocator<short>::new_allocator(__gnu_cxx::new_allocator<short> const&) [184]
------------------------------------------------
-                0.00    0.00  671018/671018      std::vector<short, std::allocator<short> >::_M_move_assign(std::vector<short, std::allocator<short> >&&, std::integral_constant<bool, true>) [25]
-[185]    0.0    0.00    0.00  671018         std::_Vector_base<short, std::allocator<short> >::_Vector_impl::_M_swap_data(std::_Vector_base<short, std::allocator<short> >::_Vector_impl&) [185]
-                0.00    0.00 2013054/2013054     void std::swap<short*>(short*&, short*&) [168]
------------------------------------------------
-                0.00    0.00  334073/669752      __gnu_cxx::new_allocator<short>::allocate(unsigned long long, void const*) [215]
-                0.00    0.00  335679/669752      unsigned long long std::allocator_traits<std::allocator<short> >::_S_max_size<std::allocator<short> const, void>(std::allocator<short> const&, int) [202]
-[186]    0.0    0.00    0.00  669752         __gnu_cxx::new_allocator<short>::max_size() const [186]
------------------------------------------------
-                0.00    0.00  668146/668146      std::_Iter_base<std::move_iterator<short*>, true>::_S_base(std::move_iterator<short*>) [188]
-[187]    0.0    0.00    0.00  668146         std::move_iterator<short*>::base() const [187]
------------------------------------------------
-                0.00    0.00  668146/668146      std::_Miter_base<std::move_iterator<short*> >::iterator_type std::__miter_base<std::move_iterator<short*> >(std::move_iterator<short*>) [190]
-[188]    0.0    0.00    0.00  668146         std::_Iter_base<std::move_iterator<short*>, true>::_S_base(std::move_iterator<short*>) [188]
-                0.00    0.00  668146/668146      std::move_iterator<short*>::base() const [187]
------------------------------------------------
-                0.00    0.00  668146/668146      std::move_iterator<short*> std::__make_move_if_noexcept_iterator<short*, std::move_iterator<short*> >(short*) [191]
-[189]    0.0    0.00    0.00  668146         std::move_iterator<short*>::move_iterator(short*) [189]
------------------------------------------------
-                0.00    0.00  668146/668146      short* std::copy<std::move_iterator<short*>, short*>(std::move_iterator<short*>, std::move_iterator<short*>, short*) [31]
-[190]    0.0    0.00    0.00  668146         std::_Miter_base<std::move_iterator<short*> >::iterator_type std::__miter_base<std::move_iterator<short*> >(std::move_iterator<short*>) [190]
-                0.00    0.00  668146/668146      std::_Iter_base<std::move_iterator<short*>, true>::_S_base(std::move_iterator<short*>) [188]
------------------------------------------------
-                0.00    0.00  668146/668146      std::vector<short, std::allocator<short> >::reserve(unsigned long long) [23]
-[191]    0.0    0.00    0.00  668146         std::move_iterator<short*> std::__make_move_if_noexcept_iterator<short*, std::move_iterator<short*> >(short*) [191]
-                0.00    0.00  668146/668146      std::move_iterator<short*>::move_iterator(short*) [189]
------------------------------------------------
-                0.00    0.00  614467/614467      Board::Able(short, int) [22]
-[192]    0.0    0.00    0.00  614467         BitSet::operator[](int) [192]
------------------------------------------------
-                0.00    0.00  516553/516553      UCT::FindBestChild(UCT::Node*) [229]
-[193]    0.0    0.00    0.00  516553         UCT::UCB(UCT::Node*, int) [193]
------------------------------------------------
-                0.00    0.00   28561/362464      UCT::GenChild(UCT::Node*, Board&, int) [40]
-                0.00    0.00  333903/362464      MC::Simulate(Board&, int) [8]
-[194]    0.0    0.00    0.00  362464         std::vector<short, std::allocator<short> >::operator[](unsigned long long) [194]
------------------------------------------------
-                0.00    0.00  337285/337285      std::allocator<short>::allocator() [196]
-[195]    0.0    0.00    0.00  337285         __gnu_cxx::new_allocator<short>::new_allocator() [195]
------------------------------------------------
-                0.00    0.00  337285/337285      std::_Vector_base<short, std::allocator<short> >::_Vector_impl::_Vector_impl() [197]
-[196]    0.0    0.00    0.00  337285         std::allocator<short>::allocator() [196]
-                0.00    0.00  337285/337285      __gnu_cxx::new_allocator<short>::new_allocator() [195]
------------------------------------------------
-                0.00    0.00  337285/337285      std::_Vector_base<short, std::allocator<short> >::_Vector_base() [198]
-[197]    0.0    0.00    0.00  337285         std::_Vector_base<short, std::allocator<short> >::_Vector_impl::_Vector_impl() [197]
-                0.00    0.00  337285/337285      std::allocator<short>::allocator() [196]
------------------------------------------------
-                0.00    0.00  337285/337285      std::vector<short, std::allocator<short> >::vector() [199]
-[198]    0.0    0.00    0.00  337285         std::_Vector_base<short, std::allocator<short> >::_Vector_base() [198]
-                0.00    0.00  337285/337285      std::_Vector_base<short, std::allocator<short> >::_Vector_impl::_Vector_impl() [197]
------------------------------------------------
-                0.00    0.00     170/337285      Board::GetPlayablePosition(int) [41]
-                0.00    0.00    1606/337285      MC::Simulate(Board&, int) [8]
-                0.00    0.00  335509/337285      Board::GetPlayablePositionMC(int) [9]
-[199]    0.0    0.00    0.00  337285         std::vector<short, std::allocator<short> >::vector() [199]
-                0.00    0.00  337285/337285      std::_Vector_base<short, std::allocator<short> >::_Vector_base() [198]
------------------------------------------------
-                0.00    0.00  335679/335679      std::vector<short, std::allocator<short> >::reserve(unsigned long long) [23]
-[200]    0.0    0.00    0.00  335679         std::vector<short, std::allocator<short> >::capacity() const [200]
------------------------------------------------
-                0.00    0.00  335679/335679      std::vector<short, std::allocator<short> >::reserve(unsigned long long) [23]
-[201]    0.0    0.00    0.00  335679         std::vector<short, std::allocator<short> >::max_size() const [201]
-                0.00    0.00  335679/671188      std::_Vector_base<short, std::allocator<short> >::_M_get_Tp_allocator() const [183]
-                0.00    0.00  335679/335679      std::allocator_traits<std::allocator<short> >::max_size(std::allocator<short> const&) [203]
------------------------------------------------
-                0.00    0.00  335679/335679      std::allocator_traits<std::allocator<short> >::max_size(std::allocator<short> const&) [203]
-[202]    0.0    0.00    0.00  335679         unsigned long long std::allocator_traits<std::allocator<short> >::_S_max_size<std::allocator<short> const, void>(std::allocator<short> const&, int) [202]
-                0.00    0.00  335679/669752      __gnu_cxx::new_allocator<short>::max_size() const [186]
------------------------------------------------
-                0.00    0.00  335679/335679      std::vector<short, std::allocator<short> >::max_size() const [201]
-[203]    0.0    0.00    0.00  335679         std::allocator_traits<std::allocator<short> >::max_size(std::allocator<short> const&) [203]
-                0.00    0.00  335679/335679      unsigned long long std::allocator_traits<std::allocator<short> >::_S_max_size<std::allocator<short> const, void>(std::allocator<short> const&, int) [202]
------------------------------------------------
-                0.00    0.00  335509/335509      std::vector<short, std::allocator<short> >::_M_move_assign(std::vector<short, std::allocator<short> >&&, std::integral_constant<bool, true>) [25]
-[204]    0.0    0.00    0.00  335509         std::_Vector_base<short, std::allocator<short> >::get_allocator() const [204]
-                0.00    0.00  335509/671188      std::_Vector_base<short, std::allocator<short> >::_M_get_Tp_allocator() const [183]
-                0.00    0.00  335509/335509      std::allocator<short>::allocator(std::allocator<short> const&) [205]
------------------------------------------------
-                0.00    0.00  335509/335509      std::_Vector_base<short, std::allocator<short> >::get_allocator() const [204]
-[205]    0.0    0.00    0.00  335509         std::allocator<short>::allocator(std::allocator<short> const&) [205]
-                0.00    0.00  335509/671018      __gnu_cxx::new_allocator<short>::new_allocator(__gnu_cxx::new_allocator<short> const&) [184]
------------------------------------------------
-                0.00    0.00  335509/335509      std::_Vector_base<short, std::allocator<short> >::_Vector_impl::_Vector_impl(std::allocator<short> const&) [207]
-[206]    0.0    0.00    0.00  335509         std::allocator<short>::allocator(std::allocator<short> const&) [206]
-                0.00    0.00  335509/671018      __gnu_cxx::new_allocator<short>::new_allocator(__gnu_cxx::new_allocator<short> const&) [184]
------------------------------------------------
-                0.00    0.00  335509/335509      std::_Vector_base<short, std::allocator<short> >::_Vector_base(std::allocator<short> const&) [208]
-[207]    0.0    0.00    0.00  335509         std::_Vector_base<short, std::allocator<short> >::_Vector_impl::_Vector_impl(std::allocator<short> const&) [207]
-                0.00    0.00  335509/335509      std::allocator<short>::allocator(std::allocator<short> const&) [206]
------------------------------------------------
-                0.00    0.00  335509/335509      std::vector<short, std::allocator<short> >::vector(std::allocator<short> const&) [209]
-[208]    0.0    0.00    0.00  335509         std::_Vector_base<short, std::allocator<short> >::_Vector_base(std::allocator<short> const&) [208]
-                0.00    0.00  335509/335509      std::_Vector_base<short, std::allocator<short> >::_Vector_impl::_Vector_impl(std::allocator<short> const&) [207]
------------------------------------------------
-                0.00    0.00  335509/335509      std::vector<short, std::allocator<short> >::_M_move_assign(std::vector<short, std::allocator<short> >&&, std::integral_constant<bool, true>) [25]
-[209]    0.0    0.00    0.00  335509         std::vector<short, std::allocator<short> >::vector(std::allocator<short> const&) [209]
-                0.00    0.00  335509/335509      std::_Vector_base<short, std::allocator<short> >::_Vector_base(std::allocator<short> const&) [208]
------------------------------------------------
-                0.00    0.00  335509/335509      std::vector<short, std::allocator<short> >::_M_move_assign(std::vector<short, std::allocator<short> >&&, std::integral_constant<bool, true>) [25]
-[210]    0.0    0.00    0.00  335509         void std::__alloc_on_move<std::allocator<short> >(std::allocator<short>&, std::allocator<short>&) [210]
-                0.00    0.00  335509/335509      void std::__do_alloc_on_move<std::allocator<short> >(std::allocator<short>&, std::allocator<short>&, std::integral_constant<bool, true>) [211]
------------------------------------------------
-                0.00    0.00  335509/335509      void std::__alloc_on_move<std::allocator<short> >(std::allocator<short>&, std::allocator<short>&) [210]
-[211]    0.0    0.00    0.00  335509         void std::__do_alloc_on_move<std::allocator<short> >(std::allocator<short>&, std::allocator<short>&, std::integral_constant<bool, true>) [211]
-                0.00    0.00  335509/335509      std::remove_reference<std::allocator<short>&>::type&& std::move<std::allocator<short>&>(std::allocator<short>&) [212]
------------------------------------------------
-                0.00    0.00  335509/335509      void std::__do_alloc_on_move<std::allocator<short> >(std::allocator<short>&, std::allocator<short>&, std::integral_constant<bool, true>) [211]
-[212]    0.0    0.00    0.00  335509         std::remove_reference<std::allocator<short>&>::type&& std::move<std::allocator<short>&>(std::allocator<short>&) [212]
------------------------------------------------
-                0.00    0.00  335509/335509      std::vector<short, std::allocator<short> >::operator=(std::vector<short, std::allocator<short> >&&) [26]
-[213]    0.0    0.00    0.00  335509         std::remove_reference<std::vector<short, std::allocator<short> >&>::type&& std::move<std::vector<short, std::allocator<short> >&>(std::vector<short, std::allocator<short> >&) [213]
------------------------------------------------
-                0.00    0.00  334073/334073      std::allocator_traits<std::allocator<short> >::deallocate(std::allocator<short>&, short*, unsigned long long) [218]
-[214]    0.0    0.00    0.00  334073         __gnu_cxx::new_allocator<short>::deallocate(short*, unsigned long long) [214]
------------------------------------------------
-                0.00    0.00  334073/334073      std::allocator_traits<std::allocator<short> >::allocate(std::allocator<short>&, unsigned long long) [219]
-[215]    0.0    0.00    0.00  334073         __gnu_cxx::new_allocator<short>::allocate(unsigned long long, void const*) [215]
-                0.00    0.00  334073/669752      __gnu_cxx::new_allocator<short>::max_size() const [186]
------------------------------------------------
-                0.00    0.00  334073/334073      short* std::__copy_move_a<true, short*, short*>(short*, short*, short*) [220]
-[216]    0.0    0.00    0.00  334073         short* std::__copy_move<true, true, std::random_access_iterator_tag>::__copy_m<short>(short const*, short const*, short*) [216]
------------------------------------------------
-                0.00    0.00  334073/334073      short* std::vector<short, std::allocator<short> >::_M_allocate_and_copy<std::move_iterator<short*> >(unsigned long long, std::move_iterator<short*>, std::move_iterator<short*>) [28]
-[217]    0.0    0.00    0.00  334073         std::_Vector_base<short, std::allocator<short> >::_M_allocate(unsigned long long) [217]
-                0.00    0.00  334073/334073      std::allocator_traits<std::allocator<short> >::allocate(std::allocator<short>&, unsigned long long) [219]
------------------------------------------------
-                0.00    0.00  334073/334073      std::_Vector_base<short, std::allocator<short> >::_M_deallocate(short*, unsigned long long) [173]
-[218]    0.0    0.00    0.00  334073         std::allocator_traits<std::allocator<short> >::deallocate(std::allocator<short>&, short*, unsigned long long) [218]
-                0.00    0.00  334073/334073      __gnu_cxx::new_allocator<short>::deallocate(short*, unsigned long long) [214]
------------------------------------------------
-                0.00    0.00  334073/334073      std::_Vector_base<short, std::allocator<short> >::_M_allocate(unsigned long long) [217]
-[219]    0.0    0.00    0.00  334073         std::allocator_traits<std::allocator<short> >::allocate(std::allocator<short>&, unsigned long long) [219]
-                0.00    0.00  334073/334073      __gnu_cxx::new_allocator<short>::allocate(unsigned long long, void const*) [215]
------------------------------------------------
-                0.00    0.00  334073/334073      short* std::__copy_move_a2<true, short*, short*>(short*, short*, short*) [221]
-[220]    0.0    0.00    0.00  334073         short* std::__copy_move_a<true, short*, short*>(short*, short*, short*) [220]
-                0.00    0.00  334073/334073      short* std::__copy_move<true, true, std::random_access_iterator_tag>::__copy_m<short>(short const*, short const*, short*) [216]
------------------------------------------------
-                0.00    0.00  334073/334073      short* std::copy<std::move_iterator<short*>, short*>(std::move_iterator<short*>, std::move_iterator<short*>, short*) [31]
-[221]    0.0    0.00    0.00  334073         short* std::__copy_move_a2<true, short*, short*>(short*, short*, short*) [221]
-                0.00    0.00 1002219/1002219     std::_Niter_base<short*>::iterator_type std::__niter_base<short*>(short*) [178]
-                0.00    0.00  334073/334073      short* std::__copy_move_a<true, short*, short*>(short*, short*, short*) [220]
------------------------------------------------
-                0.00    0.00  272780/272780      Board::Merge(short, short) [18]
-[222]    0.0    0.00    0.00  272780         BitSet::merge(BitSet const&) [222]
------------------------------------------------
-                0.00    0.00   19476/113747      Board::RemoveChain(short) [35]
-                0.00    0.00   94271/113747      Board::PlayMove(Move const&) [16]
-[223]    0.0    0.00    0.00  113747         BitSet::GetAirPos() [223]
------------------------------------------------
-                0.00    0.00     173/108810      BitSet::BitSet() [233]
-                0.00    0.00     342/108810      Board::ClearBoard() [239]
-                0.00    0.00  108295/108810      Board::ToEmpty(short) [37]
-[224]    0.0    0.00    0.00  108810         BitSet::reset() [224]
------------------------------------------------
-                0.00    0.00   47664/47664       Board::Merge(short, short) [18]
-[225]    0.0    0.00    0.00   47664         void unipolar::Swap<short>(short&, short&) [225]
------------------------------------------------
-                0.00    0.00       1/28732       UCT::UCT() [244]
-                0.00    0.00   28731/28732       UCT::GenChild(UCT::Node*, Board&, int) [40]
-[226]    0.0    0.00    0.00   28732         UCT::Node::Node(short, UCT::Node*, UCT::Node*) [226]
------------------------------------------------
-                0.00    0.00       1/4654        UCT::GenMove(Board&, int) [6]
-                0.00    0.00    1606/4654        MC::Simulate(Board&, int) [8]
-                0.00    0.00    3047/4654        UCT::MCSimulation(Board&, UCT::Node*, int) [7]
-[227]    0.0    0.00    0.00    4654         Move::Move(int, short) [227]
------------------------------------------------
-                0.00    0.00    3220/3220        MC::Evaluate(Board&, int) [230]
-[228]    0.0    0.00    0.00    3220         Board::GetPieceCount(int) [228]
------------------------------------------------
-                0.00    0.00    3047/3047        UCT::MCSimulation(Board&, UCT::Node*, int) [7]
-[229]    0.0    0.00    0.00    3047         UCT::FindBestChild(UCT::Node*) [229]
-                0.00    0.00  516553/516553      UCT::UCB(UCT::Node*, int) [193]
------------------------------------------------
-                0.00    0.00       4/1610        UCT::MCSimulation(Board&, UCT::Node*, int) [7]
-                0.00    0.00    1606/1610        MC::Simulate(Board&, int) [8]
-[230]    0.0    0.00    0.00    1610         MC::Evaluate(Board&, int) [230]
-                0.00    0.00    3220/3220        Board::GetPieceCount(int) [228]
------------------------------------------------
-                0.00    0.00    1606/1606        MC::Simulate(Board&, int) [8]
-[231]    0.0    0.00    0.00    1606         Board::StartMC() [231]
------------------------------------------------
-                0.00    0.00     339/679         Board::Init() [245]
-                0.00    0.00     340/679         Board::ClearBoard() [239]
-[232]    0.0    0.00    0.00     679         unipolar::BoardSizeSquare(int) [232]
------------------------------------------------
-                0.00    0.00       4/173         Board::Board() [246]
-                0.00    0.00     169/173         Board::List::List() [235]
-[233]    0.0    0.00    0.00     173         BitSet::BitSet() [233]
-                0.00    0.00     173/108810      BitSet::reset() [224]
------------------------------------------------
-                0.00    0.00     170/170         UCT::FindBestUCT(UCT::Node*) [243]
-[234]    0.0    0.00    0.00     170         UCT::Score(UCT::Node*) [234]
------------------------------------------------
-                0.00    0.00     169/169         Board::Board() [246]
-[235]    0.0    0.00    0.00     169         Board::List::List() [235]
-                0.00    0.00     169/173         BitSet::BitSet() [233]
------------------------------------------------
-                0.00    0.00      26/26          Controller::Run(Board&) [5]
-[236]    0.0    0.00    0.00      26         bool std::operator==<char, std::char_traits<char>, std::allocator<char> >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, char const*) [236]
------------------------------------------------
-                0.00    0.00       1/5           UCT::GenMove(Board&, int) [6]
-                0.00    0.00       1/5           Controller::GTPClearBoard(Board&) [240]
-                0.00    0.00       1/5           Controller::GTPQuit() [241]
-                0.00    0.00       2/5           Controller::GTPGenmove(Board&) [4]
-[237]    0.0    0.00    0.00       5         __gcc_deregister_frame [237]
------------------------------------------------
-                0.00    0.00       4/4           Board::ClearBoard() [239]
-[238]    0.0    0.00    0.00       4         BitSet::set() [238]
------------------------------------------------
-                0.00    0.00       1/2           Controller::GTPClearBoard(Board&) [240]
-                0.00    0.00       1/2           main [3]
-[239]    0.0    0.00    0.00       2         Board::ClearBoard() [239]
-                0.00    0.00    1248/1016862     BitSet::set(int) [170]
-                0.00    0.00     342/108810      BitSet::reset() [224]
-                0.00    0.00     340/679         unipolar::BoardSizeSquare(int) [232]
-                0.00    0.00     338/2234706     BitSet::count() [167]
-                0.00    0.00       4/4           BitSet::set() [238]
------------------------------------------------
-                0.00    0.00       1/1           Controller::Run(Board&) [5]
-[240]    0.0    0.00    0.00       1         Controller::GTPClearBoard(Board&) [240]
-                0.00    0.00       1/2           Board::ClearBoard() [239]
-                0.00    0.00       1/5           __gcc_deregister_frame [237]
------------------------------------------------
-                0.00    0.00       1/1           Controller::Run(Board&) [5]
-[241]    0.0    0.00    0.00       1         Controller::GTPQuit() [241]
-                0.00    0.00       1/5           __gcc_deregister_frame [237]
------------------------------------------------
-                0.00    0.00       1/1           main [3]
-[242]    0.0    0.00    0.00       1         Controller::Controller() [242]
------------------------------------------------
-                0.00    0.00       1/1           UCT::GenMove(Board&, int) [6]
-[243]    0.0    0.00    0.00       1         UCT::FindBestUCT(UCT::Node*) [243]
-                0.00    0.00     170/170         UCT::Score(UCT::Node*) [234]
------------------------------------------------
-                0.00    0.00       1/1           Controller::GTPGenmove(Board&) [4]
-[244]    0.0    0.00    0.00       1         UCT::UCT() [244]
-                0.00    0.00       1/28732       UCT::Node::Node(short, UCT::Node*, UCT::Node*) [226]
------------------------------------------------
-                0.00    0.00       1/1           main [3]
-[245]    0.0    0.00    0.00       1         Board::Init() [245]
-                0.00    0.00     339/679         unipolar::BoardSizeSquare(int) [232]
------------------------------------------------
-                0.00    0.00       1/1           main [3]
-[246]    0.0    0.00    0.00       1         Board::Board() [246]
-                0.00    0.00     169/169         Board::List::List() [235]
-                0.00    0.00       4/173         BitSet::BitSet() [233]
+[20]     1.7    0.05    0.00                 log [20]
+-----------------------------------------------
+                                                 <spontaneous>
+[21]     1.7    0.05    0.00                 sqrt [21]
+-----------------------------------------------
+                                                 <spontaneous>
+[22]     1.7    0.05    0.00                 __logl_internal [22]
+-----------------------------------------------
+                0.01    0.00 2655758/7570834     Board::ToEmpty(short) [30]
+                0.02    0.01 4915076/7570834     Board::CheckSuisidePoint(short) [11]
+[23]     1.4    0.03    0.01 7570834         Board::Able(short, int) [23]
+                0.01    0.00 7051371/12478082     BitSet::set(int) [27]
+                0.00    0.00 7570834/7570834     BitSet::operator[](int) [135]
+-----------------------------------------------
+                0.00    0.00     169/27427664     Board::ClearBoard() [34]
+                0.00    0.00     182/27427664     Board::GetPlayablePosition(int) [36]
+                0.00    0.00   39414/27427664     Board::GetAreaCount(int) [32]
+                0.00    0.00 3341106/27427664     Board::Merge(short, short) [14]
+                0.01    0.00 4113927/27427664     Board::GetPlayableCount(int) [25]
+                0.01    0.00 4750057/27427664     Board::RemoveChain(short) [12]
+                0.02    0.00 15182809/27427664     Board::PlayMove(Move const&) [7]
+[24]     1.4    0.04    0.00 27427664         BitSet::count() [24]
+-----------------------------------------------
+                0.02    0.01 4113927/4113927     MC::Simulate(Board&, int) [6]
+[25]     0.9    0.02    0.01 4113927         Board::GetPlayableCount(int) [25]
+                0.01    0.00 4113927/27427664     BitSet::count() [24]
+-----------------------------------------------
+                                                 <spontaneous>
+[26]     0.7    0.02    0.00                 logf [26]
+-----------------------------------------------
+                0.00    0.00     624/12478082     Board::ClearBoard() [34]
+                0.00    0.00  676030/12478082     Board::SetEye(short, int) [31]
+                0.01    0.00 4750057/12478082     Board::RemoveChain(short) [12]
+                0.01    0.00 7051371/12478082     Board::Able(short, int) [23]
+[27]     0.7    0.02    0.00 12478082         BitSet::set(int) [27]
+-----------------------------------------------
+                0.02    0.00 3341106/3341106     Board::Merge(short, short) [14]
+[28]     0.7    0.02    0.00 3341106         BitSet::merge(BitSet const&) [28]
+-----------------------------------------------
+                0.00    0.02 8266906/8266906     Board::FromEmpty(short, int) [17]
+[29]     0.6    0.00    0.02 8266906         Board::RemoveEye(short, int) [29]
+                0.02    0.00 8266906/33648401     BitSet::reset(int) [18]
+-----------------------------------------------
+                0.00    0.01 1327879/1327879     Board::RemoveChain(short) [12]
+[30]     0.5    0.00    0.01 1327879         Board::ToEmpty(short) [30]
+                0.01    0.00 2655758/7570834     Board::Able(short, int) [23]
+                0.00    0.00 1327879/1328223     BitSet::reset() [137]
+-----------------------------------------------
+                0.00    0.00  676030/676030      Board::CheckSuisidePoint(short) [11]
+[31]     0.2    0.00    0.00  676030         Board::SetEye(short, int) [31]
+                0.00    0.00  676030/10198686     Board::DisAble(short, int) [19]
+                0.00    0.00  676030/12478082     BitSet::set(int) [27]
+-----------------------------------------------
+                0.00    0.00   39414/39414       MC::Evaluate(Board&, int) [33]
+[32]     0.0    0.00    0.00   39414         Board::GetAreaCount(int) [32]
+                0.00    0.00   39414/27427664     BitSet::count() [24]
+-----------------------------------------------
+                0.00    0.00      23/19707       UCT::MCSimulation(Board&, UCT::Node*, int) [5]
+                0.00    0.00   19684/19707       MC::Simulate(Board&, int) [6]
+[33]     0.0    0.00    0.00   19707         MC::Evaluate(Board&, int) [33]
+                0.00    0.00   39414/39414       Board::GetAreaCount(int) [32]
+-----------------------------------------------
+                0.00    0.00       1/1           main [1]
+[34]     0.0    0.00    0.00       1         Board::ClearBoard() [34]
+                0.00    0.00     624/12478082     BitSet::set(int) [27]
+                0.00    0.00     169/27427664     BitSet::count() [24]
+                0.00    0.00     171/1328223     BitSet::reset() [137]
+                0.00    0.00     170/509         unipolar::BoardSizeSquare(int) [169]
+                0.00    0.00       2/2           BitSet::set() [199]
+-----------------------------------------------
+                0.00    0.00       1/182         UCT::GenMove(Board&, int) [4]
+                0.00    0.00     181/182         UCT::MCSimulation(Board&, UCT::Node*, int) [5]
+[35]     0.0    0.00    0.00     182         UCT::GenChild(UCT::Node*, Board&, int) [35]
+                0.00    0.00     182/182         Board::GetPlayablePosition(int) [36]
+                0.00    0.00   30747/30748       UCT::Node::Node(short, UCT::Node*, UCT::Node*) [142]
+                0.00    0.00   30565/30565       std::vector<short, std::allocator<short> >::operator[](unsigned long long) [148]
+                0.00    0.00     182/364         std::vector<short, std::allocator<short> >::size() const [172]
+                0.00    0.00     182/19866       std::vector<short, std::allocator<short> >::~vector() [165]
+-----------------------------------------------
+                0.00    0.00     182/182         UCT::GenChild(UCT::Node*, Board&, int) [35]
+[36]     0.0    0.00    0.00     182         Board::GetPlayablePosition(int) [36]
+                0.00    0.00     182/27427664     BitSet::count() [24]
+                0.00    0.00   30565/30565       std::vector<short, std::allocator<short> >::push_back(short&&) [147]
+                0.00    0.00     182/19866       std::vector<short, std::allocator<short> >::vector() [164]
+                0.00    0.00     182/182         std::vector<short, std::allocator<short> >::reserve(unsigned long long) [190]
+-----------------------------------------------
+                0.00    0.00 7570834/7570834     Board::Able(short, int) [23]
+[135]    0.0    0.00    0.00 7570834         BitSet::operator[](int) [135]
+-----------------------------------------------
+                0.00    0.00  244094/1410143     Board::RemoveChain(short) [12]
+                0.00    0.00 1166049/1410143     Board::PlayMove(Move const&) [7]
+[136]    0.0    0.00    0.00 1410143         BitSet::GetAirPos() [136]
+-----------------------------------------------
+                0.00    0.00     171/1328223     Board::ClearBoard() [34]
+                0.00    0.00     173/1328223     BitSet::BitSet() [196]
+                0.00    0.00 1327879/1328223     Board::ToEmpty(short) [30]
+[137]    0.0    0.00    0.00 1328223         BitSet::reset() [137]
+-----------------------------------------------
+                0.00    0.00  584123/584123      Board::Merge(short, short) [14]
+[138]    0.0    0.00    0.00  584123         void unipolar::Swap<short>(short&, short&) [138]
+-----------------------------------------------
+                0.00    0.00   30565/122260      void __gnu_cxx::new_allocator<short>::construct<short, short>(short*, short&&) [143]
+                0.00    0.00   30565/122260      std::enable_if<std::__and_<std::allocator_traits<std::allocator<short> >::__construct_helper<short, short>::type>::value, void>::type std::allocator_traits<std::allocator<short> >::_S_construct<short, short>(std::allocator<short>&, short*, short&&) [144]
+                0.00    0.00   30565/122260      decltype (_S_construct({parm#1}, {parm#2}, (forward<short>)({parm#3}))) std::allocator_traits<std::allocator<short> >::construct<short, short>(std::allocator<short>&, short*, short&&) [145]
+                0.00    0.00   30565/122260      void std::vector<short, std::allocator<short> >::emplace_back<short>(short&&) [146]
+[139]    0.0    0.00    0.00  122260         short&& std::forward<short>(std::remove_reference<short>::type&) [139]
+-----------------------------------------------
+                0.00    0.00       1/58919       UCT::GenMove(Board&, int) [4]
+                0.00    0.00   19684/58919       MC::Simulate(Board&, int) [6]
+                0.00    0.00   39234/58919       UCT::MCSimulation(Board&, UCT::Node*, int) [5]
+[140]    0.0    0.00    0.00   58919         Move::Move(int, short) [140]
+-----------------------------------------------
+                0.00    0.00   19684/39391       MC::Simulate(Board&, int) [6]
+                0.00    0.00   19707/39391       UCT::GenMove(Board&, int) [4]
+[141]    0.0    0.00    0.00   39391         Board::StartMC() [141]
+-----------------------------------------------
+                0.00    0.00       1/30748       UCT::UCT() [204]
+                0.00    0.00   30747/30748       UCT::GenChild(UCT::Node*, Board&, int) [35]
+[142]    0.0    0.00    0.00   30748         UCT::Node::Node(short, UCT::Node*, UCT::Node*) [142]
+-----------------------------------------------
+                0.00    0.00   30565/30565       std::enable_if<std::__and_<std::allocator_traits<std::allocator<short> >::__construct_helper<short, short>::type>::value, void>::type std::allocator_traits<std::allocator<short> >::_S_construct<short, short>(std::allocator<short>&, short*, short&&) [144]
+[143]    0.0    0.00    0.00   30565         void __gnu_cxx::new_allocator<short>::construct<short, short>(short*, short&&) [143]
+                0.00    0.00   30565/122260      short&& std::forward<short>(std::remove_reference<short>::type&) [139]
+                0.00    0.00   30565/30565       operator new(unsigned long long, void*) [150]
+-----------------------------------------------
+                0.00    0.00   30565/30565       decltype (_S_construct({parm#1}, {parm#2}, (forward<short>)({parm#3}))) std::allocator_traits<std::allocator<short> >::construct<short, short>(std::allocator<short>&, short*, short&&) [145]
+[144]    0.0    0.00    0.00   30565         std::enable_if<std::__and_<std::allocator_traits<std::allocator<short> >::__construct_helper<short, short>::type>::value, void>::type std::allocator_traits<std::allocator<short> >::_S_construct<short, short>(std::allocator<short>&, short*, short&&) [144]
+                0.00    0.00   30565/122260      short&& std::forward<short>(std::remove_reference<short>::type&) [139]
+                0.00    0.00   30565/30565       void __gnu_cxx::new_allocator<short>::construct<short, short>(short*, short&&) [143]
+-----------------------------------------------
+                0.00    0.00   30565/30565       void std::vector<short, std::allocator<short> >::emplace_back<short>(short&&) [146]
+[145]    0.0    0.00    0.00   30565         decltype (_S_construct({parm#1}, {parm#2}, (forward<short>)({parm#3}))) std::allocator_traits<std::allocator<short> >::construct<short, short>(std::allocator<short>&, short*, short&&) [145]
+                0.00    0.00   30565/122260      short&& std::forward<short>(std::remove_reference<short>::type&) [139]
+                0.00    0.00   30565/30565       std::enable_if<std::__and_<std::allocator_traits<std::allocator<short> >::__construct_helper<short, short>::type>::value, void>::type std::allocator_traits<std::allocator<short> >::_S_construct<short, short>(std::allocator<short>&, short*, short&&) [144]
+-----------------------------------------------
+                0.00    0.00   30565/30565       std::vector<short, std::allocator<short> >::push_back(short&&) [147]
+[146]    0.0    0.00    0.00   30565         void std::vector<short, std::allocator<short> >::emplace_back<short>(short&&) [146]
+                0.00    0.00   30565/122260      short&& std::forward<short>(std::remove_reference<short>::type&) [139]
+                0.00    0.00   30565/30565       decltype (_S_construct({parm#1}, {parm#2}, (forward<short>)({parm#3}))) std::allocator_traits<std::allocator<short> >::construct<short, short>(std::allocator<short>&, short*, short&&) [145]
+-----------------------------------------------
+                0.00    0.00   30565/30565       Board::GetPlayablePosition(int) [36]
+[147]    0.0    0.00    0.00   30565         std::vector<short, std::allocator<short> >::push_back(short&&) [147]
+                0.00    0.00   30565/30565       std::remove_reference<short&>::type&& std::move<short&>(short&) [149]
+                0.00    0.00   30565/30565       void std::vector<short, std::allocator<short> >::emplace_back<short>(short&&) [146]
+-----------------------------------------------
+                0.00    0.00   30565/30565       UCT::GenChild(UCT::Node*, Board&, int) [35]
+[148]    0.0    0.00    0.00   30565         std::vector<short, std::allocator<short> >::operator[](unsigned long long) [148]
+-----------------------------------------------
+                0.00    0.00   30565/30565       std::vector<short, std::allocator<short> >::push_back(short&&) [147]
+[149]    0.0    0.00    0.00   30565         std::remove_reference<short&>::type&& std::move<short&>(short&) [149]
+-----------------------------------------------
+                0.00    0.00   30565/30565       void __gnu_cxx::new_allocator<short>::construct<short, short>(short*, short&&) [143]
+[150]    0.0    0.00    0.00   30565         operator new(unsigned long long, void*) [150]
+-----------------------------------------------
+                0.00    0.00     182/20230       short* std::vector<short, std::allocator<short> >::_M_allocate_and_copy<std::move_iterator<short*> >(unsigned long long, std::move_iterator<short*>, std::move_iterator<short*>) [189]
+                0.00    0.00     182/20230       std::vector<short, std::allocator<short> >::reserve(unsigned long long) [190]
+                0.00    0.00   19866/20230       std::vector<short, std::allocator<short> >::~vector() [165]
+[151]    0.0    0.00    0.00   20230         std::_Vector_base<short, std::allocator<short> >::_M_get_Tp_allocator() [151]
+-----------------------------------------------
+                0.00    0.00   20048/20048       void std::_Destroy<short*>(short*, short*) [154]
+[152]    0.0    0.00    0.00   20048         void std::_Destroy_aux<true>::__destroy<short*>(short*, short*) [152]
+-----------------------------------------------
+                0.00    0.00     182/20048       std::vector<short, std::allocator<short> >::reserve(unsigned long long) [190]
+                0.00    0.00   19866/20048       std::_Vector_base<short, std::allocator<short> >::~_Vector_base() [163]
+[153]    0.0    0.00    0.00   20048         std::_Vector_base<short, std::allocator<short> >::_M_deallocate(short*, unsigned long long) [153]
+                0.00    0.00     182/182         std::allocator_traits<std::allocator<short> >::deallocate(std::allocator<short>&, short*, unsigned long long) [184]
+-----------------------------------------------
+                0.00    0.00   20048/20048       void std::_Destroy<short*, short>(short*, short*, std::allocator<short>&) [155]
+[154]    0.0    0.00    0.00   20048         void std::_Destroy<short*>(short*, short*) [154]
+                0.00    0.00   20048/20048       void std::_Destroy_aux<true>::__destroy<short*>(short*, short*) [152]
+-----------------------------------------------
+                0.00    0.00     182/20048       std::vector<short, std::allocator<short> >::reserve(unsigned long long) [190]
+                0.00    0.00   19866/20048       std::vector<short, std::allocator<short> >::~vector() [165]
+[155]    0.0    0.00    0.00   20048         void std::_Destroy<short*, short>(short*, short*, std::allocator<short>&) [155]
+                0.00    0.00   20048/20048       void std::_Destroy<short*>(short*, short*) [154]
+-----------------------------------------------
+                0.00    0.00   19866/19866       std::allocator<short>::allocator() [158]
+[156]    0.0    0.00    0.00   19866         __gnu_cxx::new_allocator<short>::new_allocator() [156]
+-----------------------------------------------
+                0.00    0.00   19866/19866       std::allocator<short>::~allocator() [159]
+[157]    0.0    0.00    0.00   19866         __gnu_cxx::new_allocator<short>::~new_allocator() [157]
+-----------------------------------------------
+                0.00    0.00   19866/19866       std::_Vector_base<short, std::allocator<short> >::_Vector_impl::_Vector_impl() [160]
+[158]    0.0    0.00    0.00   19866         std::allocator<short>::allocator() [158]
+                0.00    0.00   19866/19866       __gnu_cxx::new_allocator<short>::new_allocator() [156]
+-----------------------------------------------
+                0.00    0.00   19866/19866       std::_Vector_base<short, std::allocator<short> >::_Vector_impl::~_Vector_impl() [161]
+[159]    0.0    0.00    0.00   19866         std::allocator<short>::~allocator() [159]
+                0.00    0.00   19866/19866       __gnu_cxx::new_allocator<short>::~new_allocator() [157]
+-----------------------------------------------
+                0.00    0.00   19866/19866       std::_Vector_base<short, std::allocator<short> >::_Vector_base() [162]
+[160]    0.0    0.00    0.00   19866         std::_Vector_base<short, std::allocator<short> >::_Vector_impl::_Vector_impl() [160]
+                0.00    0.00   19866/19866       std::allocator<short>::allocator() [158]
+-----------------------------------------------
+                0.00    0.00   19866/19866       std::_Vector_base<short, std::allocator<short> >::~_Vector_base() [163]
+[161]    0.0    0.00    0.00   19866         std::_Vector_base<short, std::allocator<short> >::_Vector_impl::~_Vector_impl() [161]
+                0.00    0.00   19866/19866       std::allocator<short>::~allocator() [159]
+-----------------------------------------------
+                0.00    0.00   19866/19866       std::vector<short, std::allocator<short> >::vector() [164]
+[162]    0.0    0.00    0.00   19866         std::_Vector_base<short, std::allocator<short> >::_Vector_base() [162]
+                0.00    0.00   19866/19866       std::_Vector_base<short, std::allocator<short> >::_Vector_impl::_Vector_impl() [160]
+-----------------------------------------------
+                0.00    0.00   19866/19866       std::vector<short, std::allocator<short> >::~vector() [165]
+[163]    0.0    0.00    0.00   19866         std::_Vector_base<short, std::allocator<short> >::~_Vector_base() [163]
+                0.00    0.00   19866/20048       std::_Vector_base<short, std::allocator<short> >::_M_deallocate(short*, unsigned long long) [153]
+                0.00    0.00   19866/19866       std::_Vector_base<short, std::allocator<short> >::_Vector_impl::~_Vector_impl() [161]
+-----------------------------------------------
+                0.00    0.00     182/19866       Board::GetPlayablePosition(int) [36]
+                0.00    0.00   19684/19866       MC::Simulate(Board&, int) [6]
+[164]    0.0    0.00    0.00   19866         std::vector<short, std::allocator<short> >::vector() [164]
+                0.00    0.00   19866/19866       std::_Vector_base<short, std::allocator<short> >::_Vector_base() [162]
+-----------------------------------------------
+                0.00    0.00     182/19866       UCT::GenChild(UCT::Node*, Board&, int) [35]
+                0.00    0.00   19684/19866       MC::Simulate(Board&, int) [6]
+[165]    0.0    0.00    0.00   19866         std::vector<short, std::allocator<short> >::~vector() [165]
+                0.00    0.00   19866/20230       std::_Vector_base<short, std::allocator<short> >::_M_get_Tp_allocator() [151]
+                0.00    0.00   19866/20048       void std::_Destroy<short*, short>(short*, short*, std::allocator<short>&) [155]
+                0.00    0.00   19866/19866       std::_Vector_base<short, std::allocator<short> >::~_Vector_base() [163]
+-----------------------------------------------
+                0.00    0.00    4802/4802        Controller::Run(Board&) [3]
+[166]    0.0    0.00    0.00    4802         bool std::operator==<char, std::char_traits<char>, std::allocator<char> >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, char const*) [166]
+-----------------------------------------------
+                0.00    0.00     546/546         std::_Niter_base<short*>::iterator_type std::__niter_base<short*>(short*) [168]
+[167]    0.0    0.00    0.00     546         std::_Iter_base<short*, false>::_S_base(short*) [167]
+-----------------------------------------------
+                0.00    0.00     546/546         short* std::__copy_move_a2<true, short*, short*>(short*, short*, short*) [192]
+[168]    0.0    0.00    0.00     546         std::_Niter_base<short*>::iterator_type std::__niter_base<short*>(short*) [168]
+                0.00    0.00     546/546         std::_Iter_base<short*, false>::_S_base(short*) [167]
+-----------------------------------------------
+                0.00    0.00     170/509         Board::ClearBoard() [34]
+                0.00    0.00     339/509         Board::Init() [206]
+[169]    0.0    0.00    0.00     509         unipolar::BoardSizeSquare(int) [169]
+-----------------------------------------------
+                0.00    0.00     182/364         __gnu_cxx::new_allocator<short>::allocate(unsigned long long, void const*) [178]
+                0.00    0.00     182/364         unsigned long long std::allocator_traits<std::allocator<short> >::_S_max_size<std::allocator<short> const, void>(std::allocator<short> const&, int) [185]
+[170]    0.0    0.00    0.00     364         __gnu_cxx::new_allocator<short>::max_size() const [170]
+-----------------------------------------------
+                0.00    0.00     364/364         std::_Iter_base<std::move_iterator<short*>, true>::_S_base(std::move_iterator<short*>) [173]
+[171]    0.0    0.00    0.00     364         std::move_iterator<short*>::base() const [171]
+-----------------------------------------------
+                0.00    0.00     182/364         UCT::GenChild(UCT::Node*, Board&, int) [35]
+                0.00    0.00     182/364         std::vector<short, std::allocator<short> >::reserve(unsigned long long) [190]
+[172]    0.0    0.00    0.00     364         std::vector<short, std::allocator<short> >::size() const [172]
+-----------------------------------------------
+                0.00    0.00     364/364         std::_Miter_base<std::move_iterator<short*> >::iterator_type std::__miter_base<std::move_iterator<short*> >(std::move_iterator<short*>) [175]
+[173]    0.0    0.00    0.00     364         std::_Iter_base<std::move_iterator<short*>, true>::_S_base(std::move_iterator<short*>) [173]
+                0.00    0.00     364/364         std::move_iterator<short*>::base() const [171]
+-----------------------------------------------
+                0.00    0.00     364/364         std::move_iterator<short*> std::__make_move_if_noexcept_iterator<short*, std::move_iterator<short*> >(short*) [176]
+[174]    0.0    0.00    0.00     364         std::move_iterator<short*>::move_iterator(short*) [174]
+-----------------------------------------------
+                0.00    0.00     364/364         short* std::copy<std::move_iterator<short*>, short*>(std::move_iterator<short*>, std::move_iterator<short*>, short*) [195]
+[175]    0.0    0.00    0.00     364         std::_Miter_base<std::move_iterator<short*> >::iterator_type std::__miter_base<std::move_iterator<short*> >(std::move_iterator<short*>) [175]
+                0.00    0.00     364/364         std::_Iter_base<std::move_iterator<short*>, true>::_S_base(std::move_iterator<short*>) [173]
+-----------------------------------------------
+                0.00    0.00     364/364         std::vector<short, std::allocator<short> >::reserve(unsigned long long) [190]
+[176]    0.0    0.00    0.00     364         std::move_iterator<short*> std::__make_move_if_noexcept_iterator<short*, std::move_iterator<short*> >(short*) [176]
+                0.00    0.00     364/364         std::move_iterator<short*>::move_iterator(short*) [174]
+-----------------------------------------------
+                0.00    0.00     182/182         std::allocator_traits<std::allocator<short> >::deallocate(std::allocator<short>&, short*, unsigned long long) [184]
+[177]    0.0    0.00    0.00     182         __gnu_cxx::new_allocator<short>::deallocate(short*, unsigned long long) [177]
+-----------------------------------------------
+                0.00    0.00     182/182         std::allocator_traits<std::allocator<short> >::allocate(std::allocator<short>&, unsigned long long) [186]
+[178]    0.0    0.00    0.00     182         __gnu_cxx::new_allocator<short>::allocate(unsigned long long, void const*) [178]
+                0.00    0.00     182/364         __gnu_cxx::new_allocator<short>::max_size() const [170]
+-----------------------------------------------
+                0.00    0.00     182/182         std::vector<short, std::allocator<short> >::max_size() const [181]
+[179]    0.0    0.00    0.00     182         std::_Vector_base<short, std::allocator<short> >::_M_get_Tp_allocator() const [179]
+-----------------------------------------------
+                0.00    0.00     182/182         std::vector<short, std::allocator<short> >::reserve(unsigned long long) [190]
+[180]    0.0    0.00    0.00     182         std::vector<short, std::allocator<short> >::capacity() const [180]
+-----------------------------------------------
+                0.00    0.00     182/182         std::vector<short, std::allocator<short> >::reserve(unsigned long long) [190]
+[181]    0.0    0.00    0.00     182         std::vector<short, std::allocator<short> >::max_size() const [181]
+                0.00    0.00     182/182         std::_Vector_base<short, std::allocator<short> >::_M_get_Tp_allocator() const [179]
+                0.00    0.00     182/182         std::allocator_traits<std::allocator<short> >::max_size(std::allocator<short> const&) [187]
+-----------------------------------------------
+                0.00    0.00     182/182         short* std::__copy_move_a<true, short*, short*>(short*, short*, short*) [191]
+[182]    0.0    0.00    0.00     182         short* std::__copy_move<true, true, std::random_access_iterator_tag>::__copy_m<short>(short const*, short const*, short*) [182]
+-----------------------------------------------
+                0.00    0.00     182/182         short* std::vector<short, std::allocator<short> >::_M_allocate_and_copy<std::move_iterator<short*> >(unsigned long long, std::move_iterator<short*>, std::move_iterator<short*>) [189]
+[183]    0.0    0.00    0.00     182         std::_Vector_base<short, std::allocator<short> >::_M_allocate(unsigned long long) [183]
+                0.00    0.00     182/182         std::allocator_traits<std::allocator<short> >::allocate(std::allocator<short>&, unsigned long long) [186]
+-----------------------------------------------
+                0.00    0.00     182/182         std::_Vector_base<short, std::allocator<short> >::_M_deallocate(short*, unsigned long long) [153]
+[184]    0.0    0.00    0.00     182         std::allocator_traits<std::allocator<short> >::deallocate(std::allocator<short>&, short*, unsigned long long) [184]
+                0.00    0.00     182/182         __gnu_cxx::new_allocator<short>::deallocate(short*, unsigned long long) [177]
+-----------------------------------------------
+                0.00    0.00     182/182         std::allocator_traits<std::allocator<short> >::max_size(std::allocator<short> const&) [187]
+[185]    0.0    0.00    0.00     182         unsigned long long std::allocator_traits<std::allocator<short> >::_S_max_size<std::allocator<short> const, void>(std::allocator<short> const&, int) [185]
+                0.00    0.00     182/364         __gnu_cxx::new_allocator<short>::max_size() const [170]
+-----------------------------------------------
+                0.00    0.00     182/182         std::_Vector_base<short, std::allocator<short> >::_M_allocate(unsigned long long) [183]
+[186]    0.0    0.00    0.00     182         std::allocator_traits<std::allocator<short> >::allocate(std::allocator<short>&, unsigned long long) [186]
+                0.00    0.00     182/182         __gnu_cxx::new_allocator<short>::allocate(unsigned long long, void const*) [178]
+-----------------------------------------------
+                0.00    0.00     182/182         std::vector<short, std::allocator<short> >::max_size() const [181]
+[187]    0.0    0.00    0.00     182         std::allocator_traits<std::allocator<short> >::max_size(std::allocator<short> const&) [187]
+                0.00    0.00     182/182         unsigned long long std::allocator_traits<std::allocator<short> >::_S_max_size<std::allocator<short> const, void>(std::allocator<short> const&, int) [185]
+-----------------------------------------------
+                0.00    0.00     182/182         short* std::uninitialized_copy<std::move_iterator<short*>, short*>(std::move_iterator<short*>, std::move_iterator<short*>, short*) [193]
+[188]    0.0    0.00    0.00     182         short* std::__uninitialized_copy<true>::__uninit_copy<std::move_iterator<short*>, short*>(std::move_iterator<short*>, std::move_iterator<short*>, short*) [188]
+                0.00    0.00     182/182         short* std::copy<std::move_iterator<short*>, short*>(std::move_iterator<short*>, std::move_iterator<short*>, short*) [195]
+-----------------------------------------------
+                0.00    0.00     182/182         std::vector<short, std::allocator<short> >::reserve(unsigned long long) [190]
+[189]    0.0    0.00    0.00     182         short* std::vector<short, std::allocator<short> >::_M_allocate_and_copy<std::move_iterator<short*> >(unsigned long long, std::move_iterator<short*>, std::move_iterator<short*>) [189]
+                0.00    0.00     182/182         std::_Vector_base<short, std::allocator<short> >::_M_allocate(unsigned long long) [183]
+                0.00    0.00     182/20230       std::_Vector_base<short, std::allocator<short> >::_M_get_Tp_allocator() [151]
+                0.00    0.00     182/182         short* std::__uninitialized_copy_a<std::move_iterator<short*>, short*, short>(std::move_iterator<short*>, std::move_iterator<short*>, short*, std::allocator<short>&) [194]
+-----------------------------------------------
+                0.00    0.00     182/182         Board::GetPlayablePosition(int) [36]
+[190]    0.0    0.00    0.00     182         std::vector<short, std::allocator<short> >::reserve(unsigned long long) [190]
+                0.00    0.00     364/364         std::move_iterator<short*> std::__make_move_if_noexcept_iterator<short*, std::move_iterator<short*> >(short*) [176]
+                0.00    0.00     182/182         std::vector<short, std::allocator<short> >::max_size() const [181]
+                0.00    0.00     182/182         std::vector<short, std::allocator<short> >::capacity() const [180]
+                0.00    0.00     182/364         std::vector<short, std::allocator<short> >::size() const [172]
+                0.00    0.00     182/182         short* std::vector<short, std::allocator<short> >::_M_allocate_and_copy<std::move_iterator<short*> >(unsigned long long, std::move_iterator<short*>, std::move_iterator<short*>) [189]
+                0.00    0.00     182/20230       std::_Vector_base<short, std::allocator<short> >::_M_get_Tp_allocator() [151]
+                0.00    0.00     182/20048       void std::_Destroy<short*, short>(short*, short*, std::allocator<short>&) [155]
+                0.00    0.00     182/20048       std::_Vector_base<short, std::allocator<short> >::_M_deallocate(short*, unsigned long long) [153]
+-----------------------------------------------
+                0.00    0.00     182/182         short* std::__copy_move_a2<true, short*, short*>(short*, short*, short*) [192]
+[191]    0.0    0.00    0.00     182         short* std::__copy_move_a<true, short*, short*>(short*, short*, short*) [191]
+                0.00    0.00     182/182         short* std::__copy_move<true, true, std::random_access_iterator_tag>::__copy_m<short>(short const*, short const*, short*) [182]
+-----------------------------------------------
+                0.00    0.00     182/182         short* std::copy<std::move_iterator<short*>, short*>(std::move_iterator<short*>, std::move_iterator<short*>, short*) [195]
+[192]    0.0    0.00    0.00     182         short* std::__copy_move_a2<true, short*, short*>(short*, short*, short*) [192]
+                0.00    0.00     546/546         std::_Niter_base<short*>::iterator_type std::__niter_base<short*>(short*) [168]
+                0.00    0.00     182/182         short* std::__copy_move_a<true, short*, short*>(short*, short*, short*) [191]
+-----------------------------------------------
+                0.00    0.00     182/182         short* std::__uninitialized_copy_a<std::move_iterator<short*>, short*, short>(std::move_iterator<short*>, std::move_iterator<short*>, short*, std::allocator<short>&) [194]
+[193]    0.0    0.00    0.00     182         short* std::uninitialized_copy<std::move_iterator<short*>, short*>(std::move_iterator<short*>, std::move_iterator<short*>, short*) [193]
+                0.00    0.00     182/182         short* std::__uninitialized_copy<true>::__uninit_copy<std::move_iterator<short*>, short*>(std::move_iterator<short*>, std::move_iterator<short*>, short*) [188]
+-----------------------------------------------
+                0.00    0.00     182/182         short* std::vector<short, std::allocator<short> >::_M_allocate_and_copy<std::move_iterator<short*> >(unsigned long long, std::move_iterator<short*>, std::move_iterator<short*>) [189]
+[194]    0.0    0.00    0.00     182         short* std::__uninitialized_copy_a<std::move_iterator<short*>, short*, short>(std::move_iterator<short*>, std::move_iterator<short*>, short*, std::allocator<short>&) [194]
+                0.00    0.00     182/182         short* std::uninitialized_copy<std::move_iterator<short*>, short*>(std::move_iterator<short*>, std::move_iterator<short*>, short*) [193]
+-----------------------------------------------
+                0.00    0.00     182/182         short* std::__uninitialized_copy<true>::__uninit_copy<std::move_iterator<short*>, short*>(std::move_iterator<short*>, std::move_iterator<short*>, short*) [188]
+[195]    0.0    0.00    0.00     182         short* std::copy<std::move_iterator<short*>, short*>(std::move_iterator<short*>, std::move_iterator<short*>, short*) [195]
+                0.00    0.00     364/364         std::_Miter_base<std::move_iterator<short*> >::iterator_type std::__miter_base<std::move_iterator<short*> >(std::move_iterator<short*>) [175]
+                0.00    0.00     182/182         short* std::__copy_move_a2<true, short*, short*>(short*, short*, short*) [192]
+-----------------------------------------------
+                0.00    0.00       4/173         Board::Board() [207]
+                0.00    0.00     169/173         Board::List::List() [198]
+[196]    0.0    0.00    0.00     173         BitSet::BitSet() [196]
+                0.00    0.00     173/1328223     BitSet::reset() [137]
+-----------------------------------------------
+                0.00    0.00     170/170         UCT::FindBestUCT(UCT::Node*) [202]
+[197]    0.0    0.00    0.00     170         UCT::Score(UCT::Node*) [197]
+-----------------------------------------------
+                0.00    0.00     169/169         Board::Board() [207]
+[198]    0.0    0.00    0.00     169         Board::List::List() [198]
+                0.00    0.00     169/173         BitSet::BitSet() [196]
+-----------------------------------------------
+                0.00    0.00       2/2           Board::ClearBoard() [34]
+[199]    0.0    0.00    0.00       2         BitSet::set() [199]
+-----------------------------------------------
+                0.00    0.00       1/2           UCT::GenMove(Board&, int) [4]
+                0.00    0.00       1/2           Controller::GTPGenmove(Board&) [2]
+[200]    0.0    0.00    0.00       2         __gcc_deregister_frame [200]
+-----------------------------------------------
+                0.00    0.00       1/1           main [1]
+[201]    0.0    0.00    0.00       1         Controller::Controller() [201]
+-----------------------------------------------
+                0.00    0.00       1/1           UCT::GenMove(Board&, int) [4]
+[202]    0.0    0.00    0.00       1         UCT::FindBestUCT(UCT::Node*) [202]
+                0.00    0.00     170/170         UCT::Score(UCT::Node*) [197]
+-----------------------------------------------
+                               30747             UCT::Node::~Node() [203]
+                0.00    0.00       1/1           UCT::~UCT() [205]
+[203]    0.0    0.00    0.00       1+30747   UCT::Node::~Node() [203]
+                               30747             UCT::Node::~Node() [203]
+-----------------------------------------------
+                0.00    0.00       1/1           Controller::GTPGenmove(Board&) [2]
+[204]    0.0    0.00    0.00       1         UCT::UCT() [204]
+                0.00    0.00       1/30748       UCT::Node::Node(short, UCT::Node*, UCT::Node*) [142]
+-----------------------------------------------
+                0.00    0.00       1/1           Controller::GTPGenmove(Board&) [2]
+[205]    0.0    0.00    0.00       1         UCT::~UCT() [205]
+                0.00    0.00       1/1           UCT::Node::~Node() [203]
+-----------------------------------------------
+                0.00    0.00       1/1           main [1]
+[206]    0.0    0.00    0.00       1         Board::Init() [206]
+                0.00    0.00     339/509         unipolar::BoardSizeSquare(int) [169]
+-----------------------------------------------
+                0.00    0.00       1/1           main [1]
+[207]    0.0    0.00    0.00       1         Board::Board() [207]
+                0.00    0.00     169/169         Board::List::List() [198]
+                0.00    0.00       4/173         BitSet::BitSet() [196]
 -----------------------------------------------
 
 Index by function name
 
-   [4] Controller::GTPGenmove(Board&) [222] BitSet::merge(BitSet const&) [218] std::allocator_traits<std::allocator<short> >::deallocate(std::allocator<short>&, short*, unsigned long long)
- [240] Controller::GTPClearBoard(Board&) [21] BitSet::reset(int) [202] unsigned long long std::allocator_traits<std::allocator<short> >::_S_max_size<std::allocator<short> const, void>(std::allocator<short> const&, int)
-   [5] Controller::Run(Board&) [224] BitSet::reset()      [13] std::enable_if<std::__and_<std::allocator_traits<std::allocator<short> >::__construct_helper<short, short>::type>::value, void>::type std::allocator_traits<std::allocator<short> >::_S_construct<short, short>(std::allocator<short>&, short*, short&&)
- [241] Controller::GTPQuit() [223] BitSet::GetAirPos()   [219] std::allocator_traits<std::allocator<short> >::allocate(std::allocator<short>&, unsigned long long)
- [242] Controller::Controller() [233] BitSet::BitSet()   [203] std::allocator_traits<std::allocator<short> >::max_size(std::allocator<short> const&)
- [230] MC::Evaluate(Board&, int) [192] BitSet::operator[](int) [12] decltype (_S_construct({parm#1}, {parm#2}, (forward<short>)({parm#3}))) std::allocator_traits<std::allocator<short> >::construct<short, short>(std::allocator<short>&, short*, short&&)
-   [8] MC::Simulate(Board&, int) [232] unipolar::BoardSizeSquare(int) [27] short* std::__uninitialized_copy<true>::__uninit_copy<std::move_iterator<short*>, short*>(std::move_iterator<short*>, std::move_iterator<short*>, short*)
- [243] UCT::FindBestUCT(UCT::Node*) [225] void unipolar::Swap<short>(short&, short&) [11] void std::vector<short, std::allocator<short> >::emplace_back<short>(short&&)
-   [7] UCT::MCSimulation(Board&, UCT::Node*, int) [214] __gnu_cxx::new_allocator<short>::deallocate(short*, unsigned long long) [25] std::vector<short, std::allocator<short> >::_M_move_assign(std::vector<short, std::allocator<short> >&&, std::integral_constant<bool, true>)
- [229] UCT::FindBestChild(UCT::Node*) [215] __gnu_cxx::new_allocator<short>::allocate(unsigned long long, void const*) [28] short* std::vector<short, std::allocator<short> >::_M_allocate_and_copy<std::move_iterator<short*> >(unsigned long long, std::move_iterator<short*>, std::move_iterator<short*>)
- [193] UCT::UCB(UCT::Node*, int) [15] void __gnu_cxx::new_allocator<short>::construct<short, short>(short*, short&&) [23] std::vector<short, std::allocator<short> >::reserve(unsigned long long)
- [226] UCT::Node::Node(short, UCT::Node*, UCT::Node*) [184] __gnu_cxx::new_allocator<short>::new_allocator(__gnu_cxx::new_allocator<short> const&) [10] std::vector<short, std::allocator<short> >::push_back(short&&)
-  [32] UCT::Node::~Node()    [195] __gnu_cxx::new_allocator<short>::new_allocator() [209] std::vector<short, std::allocator<short> >::vector(std::allocator<short> const&)
- [234] UCT::Score(UCT::Node*) [171] __gnu_cxx::new_allocator<short>::~new_allocator() [199] std::vector<short, std::allocator<short> >::vector()
-   [6] UCT::GenMove(Board&, int) [186] __gnu_cxx::new_allocator<short>::max_size() const [182] std::vector<short, std::allocator<short> >::~vector()
-  [40] UCT::GenChild(UCT::Node*, Board&, int) [204] std::_Vector_base<short, std::allocator<short> >::get_allocator() const [26] std::vector<short, std::allocator<short> >::operator=(std::vector<short, std::allocator<short> >&&)
- [244] UCT::UCT()            [183] std::_Vector_base<short, std::allocator<short> >::_M_get_Tp_allocator() const [194] std::vector<short, std::allocator<short> >::operator[](unsigned long long)
-  [33] UCT::~UCT()           [187] std::move_iterator<short*>::base() const [190] std::_Miter_base<std::move_iterator<short*> >::iterator_type std::__miter_base<std::move_iterator<short*> >(std::move_iterator<short*>)
- [227] Move::Move(int, short) [176] std::vector<short, std::allocator<short> >::size() const [178] std::_Niter_base<short*>::iterator_type std::__niter_base<short*>(short*)
- [239] Board::ClearBoard()   [200] std::vector<short, std::allocator<short> >::capacity() const [220] short* std::__copy_move_a<true, short*, short*>(short*, short*, short*)
-  [35] Board::RemoveChain(short) [201] std::vector<short, std::allocator<short> >::max_size() const [221] short* std::__copy_move_a2<true, short*, short*>(short*, short*, short*)
- [228] Board::GetPieceCount(int) [205] std::allocator<short>::allocator(std::allocator<short> const&) [210] void std::__alloc_on_move<std::allocator<short> >(std::allocator<short>&, std::allocator<short>&)
-  [17] Board::CheckSuisidePoint(short) [206] std::allocator<short>::allocator(std::allocator<short> const&) [211] void std::__do_alloc_on_move<std::allocator<short> >(std::allocator<short>&, std::allocator<short>&, std::integral_constant<bool, true>)
-  [41] Board::GetPlayablePosition(int) [196] std::allocator<short>::allocator() [29] short* std::uninitialized_copy<std::move_iterator<short*>, short*>(std::move_iterator<short*>, std::move_iterator<short*>, short*)
-   [9] Board::GetPlayablePositionMC(int) [24] std::allocator<short>::~allocator() [30] short* std::__uninitialized_copy_a<std::move_iterator<short*>, short*, short>(std::move_iterator<short*>, std::move_iterator<short*>, short*, std::allocator<short>&)
-  [22] Board::Able(short, int) [179] std::allocator<short>::~allocator() [191] std::move_iterator<short*> std::__make_move_if_noexcept_iterator<short*, std::move_iterator<short*> >(short*)
- [245] Board::Init()         [177] std::_Iter_base<short*, false>::_S_base(short*) [31] short* std::copy<std::move_iterator<short*>, short*>(std::move_iterator<short*>, std::move_iterator<short*>, short*)
- [235] Board::List::List()   [188] std::_Iter_base<std::move_iterator<short*>, true>::_S_base(std::move_iterator<short*>) [166] std::remove_reference<short*&>::type&& std::move<short*&>(short*&)
-  [18] Board::Merge(short, short) [216] short* std::__copy_move<true, true, std::random_access_iterator_tag>::__copy_m<short>(short const*, short const*, short*) [212] std::remove_reference<std::allocator<short>&>::type&& std::move<std::allocator<short>&>(std::allocator<short>&)
-  [42] Board::SetEye(short, int) [172] void std::_Destroy_aux<true>::__destroy<short*>(short*, short*) [213] std::remove_reference<std::vector<short, std::allocator<short> >&>::type&& std::move<std::vector<short, std::allocator<short> >&>(std::vector<short, std::allocator<short> >&)
-  [38] Board::DisAble(short, int) [217] std::_Vector_base<short, std::allocator<short> >::_M_allocate(unsigned long long) [165] std::remove_reference<short&>::type&& std::move<short&>(short&)
- [231] Board::StartMC()      [185] std::_Vector_base<short, std::allocator<short> >::_Vector_impl::_M_swap_data(std::_Vector_base<short, std::allocator<short> >::_Vector_impl&) [168] void std::swap<short*>(short*&, short*&)
-  [37] Board::ToEmpty(short) [207] std::_Vector_base<short, std::allocator<short> >::_Vector_impl::_Vector_impl(std::allocator<short> const&) [14] short&& std::forward<short>(std::remove_reference<short>::type&)
-  [16] Board::PlayMove(Move const&) [197] std::_Vector_base<short, std::allocator<short> >::_Vector_impl::_Vector_impl() [174] void std::_Destroy<short*>(short*, short*)
-  [36] Board::FromEmpty(short, int) [180] std::_Vector_base<short, std::allocator<short> >::_Vector_impl::~_Vector_impl() [175] void std::_Destroy<short*, short>(short*, short*, std::allocator<short>&)
-  [20] Board::GetFather(short) [173] std::_Vector_base<short, std::allocator<short> >::_M_deallocate(short*, unsigned long long) [236] bool std::operator==<char, std::char_traits<char>, std::allocator<char> >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, char const*)
-  [39] Board::RemoveEye(short, int) [169] std::_Vector_base<short, std::allocator<short> >::_M_get_Tp_allocator() [19] operator new(unsigned long long, void*)
- [246] Board::Board()        [208] std::_Vector_base<short, std::allocator<short> >::_Vector_base(std::allocator<short> const&) [2] __fentry__
- [170] BitSet::set(int)      [198] std::_Vector_base<short, std::allocator<short> >::_Vector_base() [237] __gcc_deregister_frame
- [238] BitSet::set()         [181] std::_Vector_base<short, std::allocator<short> >::~_Vector_base() [34] __logl_internal
- [167] BitSet::count()       [189] std::move_iterator<short*>::move_iterator(short*) [1] _mcount_private
+   [2] Controller::GTPGenmove(Board&) [207] Board::Board() [174] std::move_iterator<short*>::move_iterator(short*)
+   [3] Controller::Run(Board&) [27] BitSet::set(int)     [184] std::allocator_traits<std::allocator<short> >::deallocate(std::allocator<short>&, short*, unsigned long long)
+ [201] Controller::Controller() [199] BitSet::set()      [185] unsigned long long std::allocator_traits<std::allocator<short> >::_S_max_size<std::allocator<short> const, void>(std::allocator<short> const&, int)
+  [33] MC::Evaluate(Board&, int) [24] BitSet::count()    [144] std::enable_if<std::__and_<std::allocator_traits<std::allocator<short> >::__construct_helper<short, short>::type>::value, void>::type std::allocator_traits<std::allocator<short> >::_S_construct<short, short>(std::allocator<short>&, short*, short&&)
+   [6] MC::Simulate(Board&, int) [28] BitSet::merge(BitSet const&) [186] std::allocator_traits<std::allocator<short> >::allocate(std::allocator<short>&, unsigned long long)
+ [202] UCT::FindBestUCT(UCT::Node*) [18] BitSet::reset(int) [187] std::allocator_traits<std::allocator<short> >::max_size(std::allocator<short> const&)
+   [5] UCT::MCSimulation(Board&, UCT::Node*, int) [137] BitSet::reset() [145] decltype (_S_construct({parm#1}, {parm#2}, (forward<short>)({parm#3}))) std::allocator_traits<std::allocator<short> >::construct<short, short>(std::allocator<short>&, short*, short&&)
+  [15] UCT::FindBestChild(UCT::Node*) [136] BitSet::GetAirPos() [188] short* std::__uninitialized_copy<true>::__uninit_copy<std::move_iterator<short*>, short*>(std::move_iterator<short*>, std::move_iterator<short*>, short*)
+  [16] UCT::UCB(UCT::Node*, int) [196] BitSet::BitSet()  [146] void std::vector<short, std::allocator<short> >::emplace_back<short>(short&&)
+ [142] UCT::Node::Node(short, UCT::Node*, UCT::Node*) [135] BitSet::operator[](int) [189] short* std::vector<short, std::allocator<short> >::_M_allocate_and_copy<std::move_iterator<short*> >(unsigned long long, std::move_iterator<short*>, std::move_iterator<short*>)
+ [203] UCT::Node::~Node()    [169] unipolar::BoardSizeSquare(int) [190] std::vector<short, std::allocator<short> >::reserve(unsigned long long)
+ [197] UCT::Score(UCT::Node*) [138] void unipolar::Swap<short>(short&, short&) [147] std::vector<short, std::allocator<short> >::push_back(short&&)
+   [4] UCT::GenMove(Board&, int) [177] __gnu_cxx::new_allocator<short>::deallocate(short*, unsigned long long) [164] std::vector<short, std::allocator<short> >::vector()
+  [35] UCT::GenChild(UCT::Node*, Board&, int) [178] __gnu_cxx::new_allocator<short>::allocate(unsigned long long, void const*) [165] std::vector<short, std::allocator<short> >::~vector()
+ [204] UCT::UCT()            [143] void __gnu_cxx::new_allocator<short>::construct<short, short>(short*, short&&) [148] std::vector<short, std::allocator<short> >::operator[](unsigned long long)
+ [205] UCT::~UCT()           [156] __gnu_cxx::new_allocator<short>::new_allocator() [175] std::_Miter_base<std::move_iterator<short*> >::iterator_type std::__miter_base<std::move_iterator<short*> >(std::move_iterator<short*>)
+ [140] Move::Move(int, short) [157] __gnu_cxx::new_allocator<short>::~new_allocator() [168] std::_Niter_base<short*>::iterator_type std::__niter_base<short*>(short*)
+  [34] Board::ClearBoard()   [170] __gnu_cxx::new_allocator<short>::max_size() const [191] short* std::__copy_move_a<true, short*, short*>(short*, short*, short*)
+  [13] Board::GetPlayable(int, int) [179] std::_Vector_base<short, std::allocator<short> >::_M_get_Tp_allocator() const [192] short* std::__copy_move_a2<true, short*, short*>(short*, short*, short*)
+  [12] Board::RemoveChain(short) [171] std::move_iterator<short*>::base() const [193] short* std::uninitialized_copy<std::move_iterator<short*>, short*>(std::move_iterator<short*>, std::move_iterator<short*>, short*)
+  [32] Board::GetAreaCount(int) [172] std::vector<short, std::allocator<short> >::size() const [194] short* std::__uninitialized_copy_a<std::move_iterator<short*>, short*, short>(std::move_iterator<short*>, std::move_iterator<short*>, short*, std::allocator<short>&)
+  [25] Board::GetPlayableCount(int) [180] std::vector<short, std::allocator<short> >::capacity() const [176] std::move_iterator<short*> std::__make_move_if_noexcept_iterator<short*, std::move_iterator<short*> >(short*)
+  [11] Board::CheckSuisidePoint(short) [181] std::vector<short, std::allocator<short> >::max_size() const [195] short* std::copy<std::move_iterator<short*>, short*>(std::move_iterator<short*>, std::move_iterator<short*>, short*)
+  [36] Board::GetPlayablePosition(int) [158] std::allocator<short>::allocator() [149] std::remove_reference<short&>::type&& std::move<short&>(short&)
+  [23] Board::Able(short, int) [159] std::allocator<short>::~allocator() [139] short&& std::forward<short>(std::remove_reference<short>::type&)
+ [206] Board::Init()         [167] std::_Iter_base<short*, false>::_S_base(short*) [154] void std::_Destroy<short*>(short*, short*)
+ [198] Board::List::List()   [173] std::_Iter_base<std::move_iterator<short*>, true>::_S_base(std::move_iterator<short*>) [155] void std::_Destroy<short*, short>(short*, short*, std::allocator<short>&)
+  [14] Board::Merge(short, short) [182] short* std::__copy_move<true, true, std::random_access_iterator_tag>::__copy_m<short>(short const*, short const*, short*) [166] bool std::operator==<char, std::char_traits<char>, std::allocator<char> >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, char const*)
+  [31] Board::SetEye(short, int) [152] void std::_Destroy_aux<true>::__destroy<short*>(short*, short*) [150] operator new(unsigned long long, void*)
+  [19] Board::DisAble(short, int) [183] std::_Vector_base<short, std::allocator<short> >::_M_allocate(unsigned long long) [9] __fentry__
+ [141] Board::StartMC()      [160] std::_Vector_base<short, std::allocator<short> >::_Vector_impl::_Vector_impl() [200] __gcc_deregister_frame
+  [30] Board::ToEmpty(short) [161] std::_Vector_base<short, std::allocator<short> >::_Vector_impl::~_Vector_impl() [22] __logl_internal
+   [7] Board::PlayMove(Move const&) [153] std::_Vector_base<short, std::allocator<short> >::_M_deallocate(short*, unsigned long long) [8] _mcount_private
+  [17] Board::FromEmpty(short, int) [151] std::_Vector_base<short, std::allocator<short> >::_M_get_Tp_allocator() [20] log
+  [10] Board::GetFather(short) [162] std::_Vector_base<short, std::allocator<short> >::_Vector_base() [26] logf
+  [29] Board::RemoveEye(short, int) [163] std::_Vector_base<short, std::allocator<short> >::~_Vector_base() [21] sqrt

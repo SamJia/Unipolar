@@ -32,8 +32,8 @@ private:
 	int GTPGenmove(Board &board);
 	int GTPShowboard(Board &board);
 	int GTPQuit();
-	int GTPFinalScore(){printf("= \n\n");}
-	int GTPFinalStatusList(){printf("= \n\n");}
+	int GTPFinalScore() { printf("= \n\n"); return 0; }
+	int GTPFinalStatusList() { printf("= \n\n"); return 0; }
 	float komi_;
 };
 
@@ -124,16 +124,15 @@ int Controller::GTPPlay(Board &board){
 	char color, x_char;
 	string y_str;
 	int x, y;
-	PointState state;
+	PointState state = EMPTY_POINT;
 	cin >> color >> x_char >> y_str;
-	if(y_str != "ASS" and y_str != "ass"){
+	if(y_str != "ASS" && y_str != "ass"){
 		x = (x_char > 'I' ? x_char - 1 : x_char) - 'A';
 		y = atoi(y_str.c_str()) - 1;
 		state = color == 'B' ? BLACK_POINT : WHITE_POINT;
 		board.PlayMove(Move(state, x*BOARD_SIZE+y));
 	}
 	else{
-
 		board.PlayMove(Move(state, POSITION_PASS));
 	}
 	printf("= \n\n");
@@ -145,7 +144,7 @@ int Controller::GTPGenmove(Board &board){
 	// board.PlayMove(Move(0, 0));
 	// printf("play move at 0,0 done\n");
 	char color;
-	scanf(" %c", &color);
+	cin >> color;
 	PointState state = color == 'b' ? BLACK_POINT : WHITE_POINT;
 	Move move = UCT().GenMove(board, state);
 	board.PlayMove(move);

@@ -1,5 +1,11 @@
 #ifndef UNIPOLAR_BOARD_H_
 #define UNIPOLAR_BOARD_H_
+#ifdef _MSC_VER
+#include <intrin.h>
+#include <immintrin.h>
+#define __builtin_popcountll __popcnt64
+#define __builtin_ctzll _tzcnt_u64
+#endif
 // #include <intrin.h>
 #include <cstring>
 #include <set>
@@ -430,6 +436,10 @@ void Board::PlayMove(const Move &move) {
 	PositionIndex adj_chain;
 	// printf("for 1 start\n");
 	// printf("self state : %d\n", board_[pos].state);
+	// std::vector<PositionIndex> v;
+	// v.reserve(4);
+	static PositionIndex v[4];
+	int count = 0;
 	for (int i = 1; i <= ADJ_POS_[pos][0]; ++i) {
 		adj_chain = GetFather(ADJ_POS_[pos][i]);
 		board_[adj_chain].air_set.reset(pos);
@@ -438,23 +448,35 @@ void Board::PlayMove(const Move &move) {
 		if (board_[adj_chain].state == board_[pos].state) {
 			// printf("merge: %d %d\n", adj_chain, pos);
 			// printf("merge %d %d\n", adj_chain, pos);
-			Merge(adj_chain, pos);
+			Merge(adj_chain, GetFather(pos));
 		}
+		else
+			v[count++] = adj_chain;
 	}
 	// printf("for 2 start\n");
-	for (int i = 1; i <= ADJ_POS_[pos][0]; ++i) {
-		// printf("one loop in for 2\n");
-		adj_chain = GetFather(ADJ_POS_[pos][i]);
-		if (board_[adj_chain].state != move.state) {
-			if (board_[adj_chain].air_count == 0) {
-				if (board_[adj_chain].state == EMPTY_POINT)
-					CheckSuisidePoint(adj_chain);
-				else
-					RemoveChain(adj_chain);
-			}
-			else if (board_[adj_chain].air_count == 1 && board_[adj_chain].state != EMPTY_POINT)
-				CheckSuisidePoint(board_[adj_chain].air_set.GetAirPos());
+	// for (int i = 1; i <= ADJ_POS_[pos][0]; ++i) {
+	// 	// printf("one loop in for 2\n");
+	// 	adj_chain = GetFather(ADJ_POS_[pos][i]);
+	// 	if (board_[adj_chain].state != move.state) {
+	// 		if (board_[adj_chain].air_count == 0) {
+	// 			if (board_[adj_chain].state == EMPTY_POINT)
+	// 				CheckSuisidePoint(adj_chain);
+	// 			else
+	// 				RemoveChain(adj_chain);
+	// 		}
+	// 		else if (board_[adj_chain].air_count == 1 && board_[adj_chain].state != EMPTY_POINT)
+	// 			CheckSuisidePoint(board_[adj_chain].air_set.GetAirPos());
+	// 	}
+	// }
+	for (int i = 0; i < count; ++i) {
+		if (board_[v[i]].air_count == 0) {
+			if (board_[v[i]].state == EMPTY_POINT)
+				CheckSuisidePoint(v[i]);
+			else
+				RemoveChain(v[i]);
 		}
+		else if (board_[v[i]].air_count == 1 && board_[v[i]].state != EMPTY_POINT)
+			CheckSuisidePoint(board_[v[i]].air_set.GetAirPos());
 	}
 	// printf("for done\n");
 	pos = GetFather(pos);
@@ -496,7 +518,8 @@ PositionIndex Board::GetFather(PositionIndex pos) {
 
 void Board::Merge(PositionIndex pos1, PositionIndex pos2) {
 	// printf("merge %d %d\n", pos1, pos2);
-	PositionIndex father1 = GetFather(pos1), father2 = GetFather(pos2);
+	PositionIndex father1 = pos1, father2 = pos2;
+	// PositionIndex father1 = GetFather(pos1), father2 = GetFather(pos2);
 	// printf("merge father %d %d\n", father1, father2);
 	if (father1 == father2) {
 		// printf("father %d and %d are equal\n", father1, father2);
@@ -545,14 +568,20 @@ void Board::RemoveChain(PositionIndex pos) {
 	}
 	// printf("for 1 of remove\n");
 	//turn to_remove pieces to empty piece and set air_count to 0.
-	for (PositionIndex i = father, last_i = -1; i != last_i; last_i = i, i = board_[i].next)
+	static int remove_pos[BoardSizeSquare(BOARD_SIZE)][6];
+	int count = 0;
+	for (PositionIndex i = father, last_i = -1; i != last_i; last_i = i, i = board_[i].next) {
+		remove_pos[count][0] = i;
+		remove_pos[count++][1] = 1;
 		ToEmpty(i);
+	}
 	PositionIndex adj_chain;
 	//check not only on air chain
 	// printf("for 2 of remove\n");
-	for (PositionIndex i = father, last_i = -1; i != last_i; last_i = i, i = board_[i].next) {
-		for (int j = 1; j <= ADJ_POS_[i][0]; ++j) {
-			adj_chain = GetFather(ADJ_POS_[i][j]);
+	for (int i = 0; i < count; ++i) {
+		for (int j = 1; j <= ADJ_POS_[remove_pos[i][0]][0]; ++j) {
+			adj_chain = GetFather(ADJ_POS_[remove_pos[i][0]][j]);
+			remove_pos[i][++remove_pos[i][1]] = adj_chain;
 			if (board_[adj_chain].air_count == 1) {
 				++board_[adj_chain].air_count;
 				CheckSuisidePoint(board_[adj_chain].air_set.GetAirPos());
@@ -561,10 +590,12 @@ void Board::RemoveChain(PositionIndex pos) {
 	}
 	//add air for adjacent chain.
 	// printf("for 3 of remove\n");
-	for (PositionIndex i = father, last_i = -1; i != last_i; last_i = i, i = board_[i].next) {
-		for (int j = 1; j <= ADJ_POS_[i][0]; ++j) {
-			adj_chain = GetFather(ADJ_POS_[i][j]);
-			board_[adj_chain].air_set.set(i);
+	for (int i = 0; i < count; ++i) {
+		// for (int j = 1; j <= ADJ_POS_[remove_pos[i][0]][0]; ++j) {
+		for (int j = 2; j <= remove_pos[i][1]; ++j) {
+			// adj_chain = GetFather(ADJ_POS_[remove_pos[i][0]][j-1]);
+			adj_chain = remove_pos[i][j];
+			board_[adj_chain].air_set.set(remove_pos[i][0]);
 			board_[adj_chain].air_count = board_[adj_chain].air_set.count();
 		}
 	}
