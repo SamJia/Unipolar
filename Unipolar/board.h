@@ -133,10 +133,28 @@ public:
 			if (__builtin_popcountll(tmp) <= number)
 				number -= __builtin_popcountll(tmp);
 			else {
+				// number++;
+				// int lower = 0, upper = 64, mid = 32, num;
+				// while (true) {
+				// 	mid = (lower + upper) / 2;
+				// 	num = __builtin_popcountll(tmp & (((uint64_t)2 << (mid)) - 1));
+				// 	// printf("tmp:%llx, mid:%d, num:%d, yanma:%llx, and:%llx\n", tmp, mid, num, (((uint64_t)2 << (mid)) - 1), tmp & (((uint64_t)1 << (mid)) - 1));
+				// 	if(number == num)
+				// 		return base + 63 - __builtin_clzll(tmp & (((uint64_t)2 << (mid)) - 1));
+				// 	else if (number < num)
+				// 		upper = mid;
+				// 	else
+				// 		lower = mid + 1;
+				// }
 				for (; number; --number) {
 					tmp &= tmp - 1;
 				}
 				return __builtin_ctzll(tmp) + base;
+				// if(__builtin_ctzll(tmp) != result){
+				// 	printf("%d %d %d\n", number, __builtin_ctzll(tmp), result);
+				// 	exit(0);
+				// }
+				// return result + base;
 			}
 			base += 64;
 		}
@@ -352,6 +370,9 @@ void Board::Init() {
 		if (i + BOARD_SIZE < BoardSizeSquare(BOARD_SIZE))
 			ADJ_POS_[i][++ADJ_POS_[i][0]] = i + BOARD_SIZE;
 	}
+	// for (int i = 0; i < BoardSizeSquare(BOARD_SIZE); ++i) {
+	// 	printf("{%d,%d,%d,%d,%d},\n", ADJ_POS_[i][0], ADJ_POS_[i][1], ADJ_POS_[i][2], ADJ_POS_[i][3], ADJ_POS_[i][4]);
+	// }
 }
 
 void Board::ClearBoard() {
