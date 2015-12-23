@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
+#include <thread>
 #include <set>
 #include <float.h>
 using namespace unipolar;
@@ -32,6 +33,8 @@ public:
 	~UCT(){
 		delete root;
 	};
+	//DVOID WINAPI InitChild(LPVOID Parameter);
+	void InitChild(Board &board, PointState state, Node *node);
 	void GenChild(Node *node, Board &board, PointState state);
 	float UCB(Node *node, Count totalnum);
 	float Score(Node *node);
@@ -42,16 +45,43 @@ public:
 	void CopyUCT(Node *node, float **valueboard, int **numboard);
 	void PrintUCT();
 
+/*public:
+    struct BoardParam {
+        Board &b;
+        PointState s;
+        Node *no;
+    };*/
+
 private:
 	Node *root;
 };
 
+void UCT::InitChild(Board &board, PointState state, Node *node) {
+    Board actboard(board);
+    Node *act = node;
+    actboard.PlayMove(Move(state, act->pos));
+    act->val = MC().Simulate(actboard, 1 - state);
+}
+
 void UCT::GenChild(Node *node, Board &board, PointState state) {
 	node->son = new Node(POSITION_PASS, nullptr, nullptr);
+	Board actboard(board);
+	node->son->val = MC().Simulate(actboard, 1 - state);
 	std::vector<PositionIndex> playable = board.GetPlayablePosition(state);
+	thread threads[playable.size()];
+	//HANDLE *Thread = (HANDLE*) malloc(playable.size() * sizeof(HANDLE));
 	for(int i = 0, size = playable.size(); i < size; ++i)
+    {
 		node->son = new Node(playable[i], nullptr, node->son);
-
+		//BoardParam *param = (BoardParam *) malloc(sizeof(BoardParam));
+		//param->b = board;
+		//param->s = state;
+		//param->no = node->son;
+		//Thread[i] = CreateThread(NULL, 0, InitChild, LPVOID(param), 0, NULL);
+		threads[i] = std::thread(UCT::InitChild, std::ref(board), state, node->son);
+		threads[i].join();
+    }
+    //WaitForMultipleObjects(playable.size(), Thread, true, INFINITE);
 	// for (std::vector<PositionIndex>::iterator it = playable.begin(); it != playable.end(); it++)
 		// node->son = new Node(*it, nullptr, node->son);
 }
