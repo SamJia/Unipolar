@@ -134,9 +134,13 @@ float UCT::MCSimulation(Board &board, Node *node, PointState state) {
 	// printf("playmovedone\n");
 	act->num += 1;
 	Value value_once;
+<<<<<<< HEAD
+	if (act->son == nullptr) {
+=======
 	if(node->pos == POSITION_PASS && act->pos == POSITION_PASS)
 		value_once = MC().Evaluate(board, state);
 	else if (act->son == nullptr) {
+>>>>>>> refs/remotes/origin/master
 		if (act->num > 1) {
 			GenChild(act, board, 1 - state);
 			value_once = 1 - MCSimulation(board, act, 1 - state);
@@ -162,7 +166,11 @@ Move UCT::GenMove(Board &board, PointState state) {
 	// printf("GenChild\n");
 	GenChild(root, board, state);
 	int count = 0;
+<<<<<<< HEAD
+	int end_time = t + CLOCKS_PER_SEC * 20;
+=======
 	int end_time = t + CLOCKS_PER_SEC * 3;
+>>>>>>> refs/remotes/origin/master
 	while (clock() < end_time) {
 		++count;
 		// std::cout<<end_time<<clock()<<std::endl;
