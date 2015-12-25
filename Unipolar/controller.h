@@ -35,8 +35,8 @@ private:
 	int GTPGenmove(Board &board,TireTree &joseki, string &seq);
 	int GTPShowboard(Board &board);
 	int GTPQuit();
-	int GTPFinalScore(){printf("= \n\n");}
-	int GTPFinalStatusList(){printf("= \n\n");}
+	int GTPFinalScore() { printf("= \n\n"); return 0; }
+	int GTPFinalStatusList() { printf("= \n\n"); return 0; }
 	float komi_;
 };
 
@@ -135,12 +135,18 @@ int Controller::GTPPlay(Board &board){
 	char color, x_char;
 	string y_str;
 	int x, y;
+<<<<<<< HEAD
 	PointState state;
 	char *tmp_str = new char[50000];
 	cin >> color >> x_char >> y_str;
 	sprintf(tmp_str,"%s %c %c %s",seq.c_str(),color, x_char,y_str.c_str());
 	seq = string(tmp_str);
 	if(y_str != "ASS" and y_str != "ass"){
+=======
+	PointState state = EMPTY_POINT;
+	cin >> color >> x_char >> y_str;
+	if(y_str != "ASS" && y_str != "ass"){
+>>>>>>> refs/remotes/origin/master
 		x = (x_char > 'I' ? x_char - 1 : x_char) - 'A';
 		y = atoi(y_str.c_str()) - 1;
 		state = color == 'B' ? BLACK_POINT : WHITE_POINT;
@@ -158,7 +164,7 @@ int Controller::GTPGenmove(Board &board, TireTree &joseki, string &seq){
 	// board.PlayMove(Move(0, 0));
 	// printf("play move at 0,0 done\n");
 	char color;
-	scanf(" %c", &color);
+	cin >> color;
 	PointState state = color == 'b' ? BLACK_POINT : WHITE_POINT;
 	int posi = joseki.findBest(seq);
 	Move move;

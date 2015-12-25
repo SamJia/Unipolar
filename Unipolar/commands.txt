@@ -1,0 +1,3 @@
+clear_board
+genmove b
+quit
