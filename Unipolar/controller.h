@@ -15,7 +15,7 @@
 using namespace std;
 
 // ofstream fout("D:\\Sam\\Lesson\\AI\\Project\\Unipolar\\unipolar.log", ios::app);
-string seq;
+string seq, seqold;
 
 class Controller {
 public:
@@ -35,8 +35,8 @@ private:
 	int GTPGenmove(Board &board,TireTree &joseki, string &seq);
 	int GTPShowboard(Board &board);
 	int GTPQuit();
-	int GTPFinalScore() { printf("= \n\n"); return 0; }
-	int GTPFinalStatusList() { printf("= \n\n"); return 0; }
+	int GTPFinalScore(){printf("= \n\n");}
+	int GTPFinalStatusList(){printf("= \n\n");}
 	float komi_;
 };
 
@@ -135,18 +135,12 @@ int Controller::GTPPlay(Board &board){
 	char color, x_char;
 	string y_str;
 	int x, y;
-<<<<<<< HEAD
 	PointState state;
 	char *tmp_str = new char[50000];
 	cin >> color >> x_char >> y_str;
 	sprintf(tmp_str,"%s %c %c %s",seq.c_str(),color, x_char,y_str.c_str());
 	seq = string(tmp_str);
 	if(y_str != "ASS" and y_str != "ass"){
-=======
-	PointState state = EMPTY_POINT;
-	cin >> color >> x_char >> y_str;
-	if(y_str != "ASS" && y_str != "ass"){
->>>>>>> refs/remotes/origin/master
 		x = (x_char > 'I' ? x_char - 1 : x_char) - 'A';
 		y = atoi(y_str.c_str()) - 1;
 		state = color == 'B' ? BLACK_POINT : WHITE_POINT;
@@ -163,29 +157,37 @@ int Controller::GTPGenmove(Board &board, TireTree &joseki, string &seq){
 	// printf("get in GTPGenmove\n");
 	// board.PlayMove(Move(0, 0));
 	// printf("play move at 0,0 done\n");
-	char color;
-	cin >> color;
-	PointState state = color == 'b' ? BLACK_POINT : WHITE_POINT;
-	int posi = joseki.findBest(seq);
-	Move move;
+	if(seq != "") {
+        char color;
+        scanf(" %c", &color);
+        PointState state = color == 'b' ? BLACK_POINT : WHITE_POINT;
+        int posi = joseki.findBest(seq);
+        if(posi == -1) {
+            int posi = joseki.findBest(seqold);
+        }
+        Move move;
 
-	if (posi >= 0){
-		move = Move(state, posi);
-	}else{
-		move = UCT().GenMove(board, state);	
-	}
-	board.PlayMove(move);
-	if(move.position == POSITION_PASS){
-		printf("= PASS\n\n");
-		return 0;
-	}
-	int x = move.position / BOARD_SIZE, y = move.position % BOARD_SIZE + 1;
-	char x_char = (x > 7 ? x + 1 : x) + 'A';
-	printf("= %c%d\n\n", x_char, y);
+        if (posi >= 0){
+            move = Move(state, posi);
+        }else{
+            move = UCT().GenMove(board, state);
+        }
+        board.PlayMove(move);
+        if(move.position == POSITION_PASS){
+            printf("= PASS\n\n");
+            return 0;
+        }
+        int x = move.position / BOARD_SIZE, y = move.position % BOARD_SIZE + 1;
+        char x_char = (x > 7 ? x + 1 : x) + 'A';
+        printf("= %c%d\n\n", x_char, y);
+    }else{
+        int a[] = {29, 35, 41, 42, 48, 49, 120, 121, 127, 128, 134, 140};
+        int posi = a[rand()%12];
+    }
 
 	char *tmp_str = new char[50000];
 	sprintf(tmp_str,"%s %c %c %d",seq.c_str(),color-'a'+'A', x_char,y);
-	seq = string(tmp_str);
+	seqold = seq = string(tmp_str);
 
 	return 0;
 }
@@ -202,4 +204,3 @@ int Controller::GTPQuit(){
 }
 
 #endif
-
