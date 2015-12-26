@@ -3,10 +3,14 @@
 #include <stdlib.h>
 #include <time.h>
 #include <iterator>
+#include <thread>
+#include <iostream>
+#include <mutex>
 #include "board.h"
 #include "def.h"
 using namespace unipolar;
 
+std::mutex mtx;
 class Board;
 
 class MC {
@@ -15,6 +19,19 @@ public:
 	~MC() = default;
 	float Simulate(Board &board, PointState state);
 	float Evaluate(Board &Board, PointState state);
+	float Test(std::thread::id a){
+		static int b = 1;
+		if(b)
+			a_ = a;
+		b = 0;
+		// std::cout << a_ << std::endl;
+		if(mtx.try_lock()){
+			std::cout << std::this_thread::get_id() << ' ' << a_ << std::endl;
+			mtx.unlock();
+		}
+
+	}
+	std::thread::id a_;
 // private:
 };
 
@@ -28,7 +45,7 @@ float MC::Simulate(Board &board, PointState state) {
 
 	Here it goes.
 	*/
-	board.StartMC();
+	// board.StartMC();
 	PointState next_state = state;
 	Move mv;
 	int count = 0;

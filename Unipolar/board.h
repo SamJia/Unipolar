@@ -454,7 +454,7 @@ float Board::PlayMove(const Move &move) {
 	FromEmpty(move.position, move.state);
 	PositionIndex pos = move.position;
 	PositionIndex adj_chain;
-	static PositionIndex v[4];
+	PositionIndex v[4];
 	int count = 0;
 	for (int i = 1; i <= ADJ_POS_[pos][0]; ++i) {
 		adj_chain = GetFather(ADJ_POS_[pos][i]);
@@ -576,7 +576,7 @@ void Board::RemoveChain(PositionIndex pos) {
 	}
 	// printf("for 1 of remove\n");
 	//turn to_remove pieces to empty piece and set air_count to 0.
-	static int remove_pos[BoardSizeSquare(BOARD_SIZE)][6];
+	int remove_pos[BoardSizeSquare(BOARD_SIZE)][6];
 	int count = 0;
 	for (PositionIndex i = father, last_i = -1; i != last_i; last_i = i, i = board_[i].next) {
 		remove_pos[count][0] = i;
