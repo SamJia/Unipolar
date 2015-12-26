@@ -9,9 +9,13 @@
 #include <math.h>
 #include <time.h>
 #include <thread>
+#include <mutex>
 #include <set>
+#include <iostream>
 #include <float.h>
 using namespace unipolar;
+
+std::mutex mtx;
 
 class UCT {
 private:
@@ -33,54 +37,41 @@ public:
 	~UCT(){
 		delete root;
 	};
-	//DVOID WINAPI InitChild(LPVOID Parameter);
-	void InitChild(Board &board, PointState state, Node *node);
+	void Task(Board &board, PointState state, Node *node, int &num);
 	void GenChild(Node *node, Board &board, PointState state);
 	float UCB(Node *node, Count totalnum);
 	float Score(Node *node);
 	Node *FindBestChild(Node *node);
 	Node *FindBestUCT(Node *node);
-	float MCSimulation(Board &board, Node *node, PointState state);
+	void MCSimulation(Board &board, Node *node, PointState state);
 	Move GenMove(Board &board, PointState state);
 	void CopyUCT(Node *node, float **valueboard, int **numboard);
 	void PrintUCT();
-
-/*public:
-    struct BoardParam {
-        Board &b;
-        PointState s;
-        Node *no;
-    };*/
 
 private:
 	Node *root;
 };
 
-void UCT::InitChild(Board &board, PointState state, Node *node) {
-    Board actboard(board);
-    Node *act = node;
-    actboard.PlayMove(Move(state, act->pos));
-    act->val = MC().Simulate(actboard, 1 - state);
+void UCT::Task(Board &board, PointState state, Node *node, int &num) {
+    if (mtx.try_lock()) {
+        ++num;
+        // std::cout<<end_time<<clock()<<std::endl;
+        node->num += 1;
+        Board board_copy(board);
+        board.StartMC();
+        MCSimulation(board_copy, root, state);
+        //std::cout << std::this_thread::get_id() << std::endl;
+        // printf("one MCSimulation done\n");
+		// exit(0);
+        mtx.unlock();
+    }
 }
 
 void UCT::GenChild(Node *node, Board &board, PointState state) {
 	node->son = new Node(POSITION_PASS, nullptr, nullptr);
-	Board actboard(board);
-	node->son->val = MC().Simulate(actboard, 1 - state);
 	std::vector<PositionIndex> playable = board.GetPlayablePosition(state);
-	thread threads[playable.size()];
-	//HANDLE *Thread = (HANDLE*) malloc(playable.size() * sizeof(HANDLE));
 	for(int i = 0, size = playable.size(); i < size; ++i)
-    {
 		node->son = new Node(playable[i], nullptr, node->son);
-		//BoardParam *param = (BoardParam *) malloc(sizeof(BoardParam));
-		//param->b = board;
-		//param->s = state;
-		//param->no = node->son;
-		//Thread[i] = CreateThread(NULL, 0, InitChild, LPVOID(param), 0, NULL);
-		threads[i] = std::thread(UCT::InitChild, std::ref(board), state, node->son);
-		threads[i].join();
-    }
     //WaitForMultipleObjects(playable.size(), Thread, true, INFINITE);
 	// for (std::vector<PositionIndex>::iterator it = playable.begin(); it != playable.end(); it++)
 		// node->son = new Node(*it, nullptr, node->son);
@@ -126,31 +117,35 @@ UCT::Node *UCT::FindBestUCT(Node *node) {
 	return maxNode;
 }
 
-float UCT::MCSimulation(Board &board, Node *node, PointState state) {
-	// board.Print();
-	Node *act = FindBestChild(node);
-	// printf("PlayMove %d %d\n", state, act->pos);
-	board.PlayMove(Move(state, act->pos));
-	// printf("playmovedone\n");
-	act->num += 1;
-	Value value_once;
-	if(node->pos == POSITION_PASS && act->pos == POSITION_PASS)
-		value_once = MC().Evaluate(board, state);
-	else if (act->son == nullptr) {
-		if (act->num > 1) {
-			GenChild(act, board, 1 - state);
-			value_once = 1 - MCSimulation(board, act, 1 - state);
-		}
-		else {
-			// printf("Mc simulate\n");
-			value_once = MC().Simulate(board, 1 - state);
-		}
-	}
-	else {
-		value_once = 1 - MCSimulation(board, act, 1 - state);
-	}
-	act->val += value_once;
-	return value_once;
+void UCT::MCSimulation(Board &board, Node *node, PointState state) {
+    Node *record[170];
+    Node *act = record[0] = node;
+    int idx = 0;
+    while(act->son != nullptr) {
+        idx += 1;
+        act = record[idx] = FindBestChild(act);
+        board.PlayMove(Move(state, act->pos));
+        state = 1 - state;
+        act->num += 1;
+    }
+    if(act->num > 1) {
+        idx += 1;
+        GenChild(act, board, state);
+        act = record[idx] = FindBestChild(act);
+        state = 1 - state;
+        act->num += 1;
+    }
+    if(act->pos == POSITION_PASS && record[idx - 1]->pos == POSITION_PASS)
+        record[idx]->val = MC().Evaluate(board, state);
+    else
+        record[idx]->val = MC().Simulate(board, state);
+    for(int i = 1; i < idx; ++i)
+    {
+        if(i % 2 == idx % 2)
+            record[i]->val += record[idx]->val;
+        else
+            record[i]->val += (1 - record[idx]->val);
+    }
 }
 
 Move UCT::GenMove(Board &board, PointState state) {
@@ -163,17 +158,14 @@ Move UCT::GenMove(Board &board, PointState state) {
 	GenChild(root, board, state);
 	int count = 0;
 	int end_time = t + CLOCKS_PER_SEC * 3;
+	std::thread threads[10];
 	while (clock() < end_time) {
-		++count;
-		// std::cout<<end_time<<clock()<<std::endl;
-		root->num += 1;
-		Board board_copy(board);
-		board.StartMC();
-		MCSimulation(board_copy, root, state);
-		// printf("one MCSimulation done\n");
-		// exit(0);
+        for(int i = 0; i < 10; ++i)
+            threads[i] = std::thread([&]{Task(board, state, root, count);});
+        for(auto& th : threads)
+            th.join();
 	}
-	printf("totally %d times of MC\n", count);
+	//printf("totally %d times of MC\n", count);
 	// PrintUCT();
 	nextstep.state = state;
 	nextstep.position = FindBestUCT(root)->pos;
@@ -182,10 +174,7 @@ Move UCT::GenMove(Board &board, PointState state) {
 
 void UCT::CopyUCT(Node *node, float **valueboard, int **numboard) {
     Node *act = node->son;
-    //if(act->son != nullptr)
-    //    CopyUCT(act, valueboard, numboard);
     while(act != nullptr) {
-        // valueboard[act->pos / BOARD_SIZE][act->pos % BOARD_SIZE] = Score(act);
         valueboard[act->pos / BOARD_SIZE][act->pos % BOARD_SIZE] = Score(act);
         numboard[act->pos / BOARD_SIZE][act->pos % BOARD_SIZE] = act->num;
         act = act->bro;
@@ -226,7 +215,7 @@ void UCT::PrintUCT() {
         	if(uctnum[x][y] > 1000)
         		printf("00  ");
         	else
-	            printf("%02d   ", uctnum[x][y]);
+	            printf("%02d  ", uctnum[x][y]);
         }
         printf("\n");
     }
