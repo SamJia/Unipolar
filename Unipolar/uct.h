@@ -21,9 +21,9 @@ private:
 	struct Node {
 		PositionIndex pos;
 		Count num;
-		Value val;
+		Value val, bon;
 		Node *son, *bro;
-		Node(PositionIndex po = -1, Node *so = nullptr, Node *br = nullptr) : pos(po), num(0), val(0), son(so), bro(br) {}
+		Node(PositionIndex po = -1, Node *so = nullptr, Node *br = nullptr) : pos(po), num(0), val(0), bon(0), son(so), bro(br) {}
 		~Node() {
 			if (son)
 				delete son;
@@ -85,13 +85,13 @@ void UCT::GenChild(Node *node, Board &board, PointState state) {
 float UCT::UCB(Node *node, Count totalnum) {
 	if (node->num == 0)
 		return DBL_MAX;
-	return node->val / node->num + uctconst * sqrt(logf(totalnum) / node->num);
+	return (node->bon * 0.3 + node->val) / node->num + uctconst * sqrt(logf(totalnum) / node->num);
 }
 
 float UCT::Score(Node *node) {
 	if (node->num == 0)
 		return 0;
-	return node->val / node->num;
+	return (node->bon * 0.3 + node->val) / node->num;
 }
 
 UCT::Node *UCT::FindBestChild(Node *node) {
@@ -136,10 +136,11 @@ void UCT::MCSimulation(Board &board, Node *node, PointState state) {
 	int idx = 0;
 	bool flag = true;
 	float once_val = 0;
+	float once_bon = 0;
 	while (act->son != nullptr) {
 		idx += 1;
 		act = record[idx] = FindBestChild(act);
-		board.PlayMove(Move(state, act->pos));
+		once_bon = board.PlayMove(Move(state, act->pos));
 		if (act->pos == POSITION_PASS && record[idx - 1]->pos == POSITION_PASS) {
 			once_val = MC().Evaluate(board, state);
 			flag = false;
@@ -155,7 +156,7 @@ void UCT::MCSimulation(Board &board, Node *node, PointState state) {
 			if (act->son == nullptr)
 				printf("gen failed\n");
 			act = record[idx] = FindBestChild(act);
-			board.PlayMove(Move(state, act->pos));
+			once_bon = board.PlayMove(Move(state, act->pos));
 			state = 1 - state;
 		}
 		once_val = MC().Simulate(board, state);
@@ -164,6 +165,8 @@ void UCT::MCSimulation(Board &board, Node *node, PointState state) {
 	// printf("once\n");
 	for (int i = idx; i >= 0; --i)
 	{
+	    if(i == idx)
+            record[i]->bon = once_bon;
 		record[i]->val += once_val;
 		record[i]->num += 1;
 		once_val = 1 - once_val;
