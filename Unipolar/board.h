@@ -466,11 +466,12 @@ float Board::PlayMove(const Move &move) {
 			// printf("merge %d %d\n", adj_chain, pos);
 			Merge(adj_chain, GetFather(pos));
 		}
-		else
+		else{
 			for (int j = 0; j < count; ++j)
 				if (v[j] == adj_chain)
 					continue;
-		v[count++] = adj_chain;
+			v[count++] = adj_chain;
+		}
 	}
 	for (int i = 0; i < count; ++i) {
 		if (board_[v[i]].air_count == 0) {
