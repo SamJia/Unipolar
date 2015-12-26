@@ -58,7 +58,7 @@ void UCT::Task(Board &board, PointState state, Node *node, int &num) {
         // std::cout<<end_time<<clock()<<std::endl;
         node->num += 1;
         Board board_copy(board);
-        //board.StartMC();
+        board.StartMC();
         MCSimulation(board_copy, root, state);
         //std::cout << std::this_thread::get_id() << std::endl;
         // printf("one MCSimulation done\n");

@@ -28,7 +28,7 @@ float MC::Simulate(Board &board, PointState state) {
 
 	Here it goes.
 	*/
-	//board.StartMC();
+	board.StartMC();
 	PointState next_state = state;
 	Move mv;
 	int count = 0;
