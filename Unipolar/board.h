@@ -60,6 +60,20 @@ public:
 		result.data_[2] = data_[2] & (data_[2] ^ bitset2.data_[2]);
 		return result;
 	}
+	BitSet operator+(const BitSet &bitset2) const {
+		BitSet result;
+		result.data_[0] = data_[0] | bitset2.data_[0];
+		result.data_[1] = data_[1] | bitset2.data_[1];
+		result.data_[2] = data_[2] | bitset2.data_[2];
+		return result;
+	}
+	BitSet operator*(const BitSet &bitset2) const {
+		BitSet result;
+		result.data_[0] = data_[0] & bitset2.data_[0];
+		result.data_[1] = data_[1] & bitset2.data_[1];
+		result.data_[2] = data_[2] & bitset2.data_[2];
+		return result;
+	}
 	int count() {
 		return __builtin_popcountll(data_[0]) + __builtin_popcountll(data_[1]) + __builtin_popcountll(data_[2]);
 	}
@@ -106,7 +120,7 @@ public:
 	~Board() = default;
 	static void Init();
 	void ClearBoard();
-	void PlayMove(const Move &move);
+	float PlayMove(const Move &move);
 	std::vector<PositionIndex> GetPlayablePosition(PointState state) {
 		int base = 0;
 		BitSet tmp = empty_[state] - suiside_[state] - safe_eye_[state];
@@ -293,7 +307,7 @@ public:
 	void FromEmpty(PositionIndex pos, PointState state);
 	void RemoveChain(PositionIndex pos);
 	PositionIndex AdjacentPosition(PositionIndex position, int adj_direction);
-	void CheckSpecialPoint(PositionIndex pos);
+	void CheckSpecialPoint(PositionIndex pos, bool add_score = false);
 
 	// void Able(PositionIndex pos, PointState state) {
 	// 	if (mc_ && eye_[state][pos])
@@ -359,6 +373,7 @@ public:
 	PositionIndex ko_;
 	bool mc_;
 	static PositionIndex ADJ_POS_[BoardSizeSquare(BOARD_SIZE)][5];
+	float score;
 };
 
 PositionIndex Board::ADJ_POS_[BoardSizeSquare(BOARD_SIZE)][5];
@@ -408,7 +423,7 @@ void Board::ClearBoard() {
 	mc_ = false;
 }
 
-void Board::PlayMove(const Move &move) {
+float Board::PlayMove(const Move &move) {
 	// printf("play move %d\n", move.position);
 	if (ko_ >= 0) {
 		SetEmpty(ko_, move.state);
@@ -423,7 +438,8 @@ void Board::PlayMove(const Move &move) {
 	// 	exit(0);
 	// }
 	if (move.position == POSITION_PASS)
-		return;
+		return 0;
+	score = 0;
 	if (board_[move.position].state != EMPTY_POINT) {
 		Print();
 		printf("pos %d has piece\n", move.position);
@@ -438,10 +454,6 @@ void Board::PlayMove(const Move &move) {
 	FromEmpty(move.position, move.state);
 	PositionIndex pos = move.position;
 	PositionIndex adj_chain;
-	// printf("for 1 start\n");
-	// printf("self state : %d\n", board_[pos].state);
-	// std::vector<PositionIndex> v;
-	// v.reserve(4);
 	static PositionIndex v[4];
 	int count = 0;
 	for (int i = 1; i <= ADJ_POS_[pos][0]; ++i) {
@@ -455,17 +467,24 @@ void Board::PlayMove(const Move &move) {
 			Merge(adj_chain, GetFather(pos));
 		}
 		else
-			v[count++] = adj_chain;
+			for (int j = 0; j < count; ++j)
+				if (v[j] == adj_chain)
+					continue;
+		v[count++] = adj_chain;
 	}
 	for (int i = 0; i < count; ++i) {
 		if (board_[v[i]].air_count == 0) {
 			if (board_[v[i]].state == EMPTY_POINT)
-				CheckSpecialPoint(v[i]);
-			else
+				CheckSpecialPoint(v[i], true);
+			else {
+				score += -board_[v[i]].father;
 				RemoveChain(v[i]);
+			}
 		}
-		else if (board_[v[i]].air_count == 1 && board_[v[i]].state != EMPTY_POINT)
+		else if (board_[v[i]].air_count == 1 && board_[v[i]].state != EMPTY_POINT) {
+			score += -(board_[v[i]].father / 3);
 			CheckSpecialPoint(board_[v[i]].air_set.GetAirPos());
+		}
 	}
 	// printf("for done\n");
 	pos = GetFather(pos);
@@ -475,12 +494,15 @@ void Board::PlayMove(const Move &move) {
 		exit(0);
 		RemoveChain(pos);
 	}
-	else if (board_[pos].air_count == 1)
+	else if (board_[pos].air_count == 1) {
+		score -= -(board_[pos].father / 2);
 		CheckSpecialPoint(board_[pos].air_set.GetAirPos());
+	}
 	if (board_[pos].father != -1)
 		ko_ = -1;
 	if (ko_ >= 0)
 		RemoveEmpty(ko_, move.state ^ 1);
+	return score;
 }
 
 PositionIndex Board::GetFather(PositionIndex pos) {
@@ -489,14 +511,7 @@ PositionIndex Board::GetFather(PositionIndex pos) {
 		return pos;
 	else if (board_[board_[pos].father].father < 0)
 		return board_[pos].father;
-	for (result = board_[board_[pos].father].father; board_[result].father >= 0; result = board_[result].father) {
-		// printf("get father\n");
-		// if (board_[result].father == result) {
-		// 	Print();
-		// 	printf("get father loop %d\n", result);
-		// 	exit(0);
-		// }
-	}
+	for (result = board_[board_[pos].father].father; board_[result].father >= 0; result = board_[result].father);
 	for (int i = pos, tmp; board_[i].father >= 0;) {
 		tmp = i;
 		i = board_[i].father;
@@ -576,6 +591,7 @@ void Board::RemoveChain(PositionIndex pos) {
 			remove_pos[i][++remove_pos[i][1]] = adj_chain;
 			if (board_[adj_chain].air_count == 1) {
 				++board_[adj_chain].air_count;
+				score += -(board_[adj_chain].father / 2);
 				CheckSpecialPoint(board_[adj_chain].air_set.GetAirPos());
 			}
 		}
@@ -593,13 +609,13 @@ void Board::RemoveChain(PositionIndex pos) {
 	}
 	if (board_[father].air_count == 0) {
 		ko_ = father;
-		CheckSpecialPoint(father);
+		CheckSpecialPoint(father, true);
 	}
 	// Print();
 }
 
 
-void Board::CheckSpecialPoint(PositionIndex pos) {
+void Board::CheckSpecialPoint(PositionIndex pos, bool add_score) {
 	// printf("check suiside of %d\n", pos);
 	if (board_[pos].state != EMPTY_POINT) {
 		Print();
@@ -622,36 +638,48 @@ void Board::CheckSpecialPoint(PositionIndex pos) {
 		RemoveSuiside(pos, WHITE_POINT);
 	}
 	else {
-		if ((air[WHITE_POINT][0] | air[WHITE_POINT][1]) == 0)
+		if ((air[WHITE_POINT][0] | air[WHITE_POINT][1]) == 0) {
+			if (add_score)
+				score += 2;
 			SetSafeEye(pos, BLACK_POINT);
+		}
 		SetSuiside(pos, WHITE_POINT);
 	}
 	//black eat white or black connect to air
-	if (air[WHITE_POINT][0] | air[BLACK_POINT][1]){
+	if (air[WHITE_POINT][0] | air[BLACK_POINT][1]) {
 		RemoveSuiside(pos, BLACK_POINT);
 	}
 	else {
-		if ((air[BLACK_POINT][0] | air[BLACK_POINT][1]) == 0)
+		if ((air[BLACK_POINT][0] | air[BLACK_POINT][1]) == 0) {
+			if (add_score)
+				score += 2;
 			SetSafeEye(pos, WHITE_POINT);
+		}
 		SetSuiside(pos, BLACK_POINT);
 	}
 
-	if ((air[WHITE_POINT][0] | air[WHITE_POINT][1]) == 0)
+	if ((air[WHITE_POINT][0] | air[WHITE_POINT][1]) == 0) {
+		if (add_score)
+			score += 1;
 		SetEye(pos, BLACK_POINT);
-	if ((air[BLACK_POINT][0] | air[BLACK_POINT][1]) == 0)
+	}
+	if ((air[BLACK_POINT][0] | air[BLACK_POINT][1]) == 0) {
+		if (add_score)
+			score += 1;
 		SetEye(pos, WHITE_POINT);
-	if(air[WHITE_POINT][0]){
+	}
+	if (air[WHITE_POINT][0]) {
 		SetDangerous(pos, WHITE_POINT);
 		RemoveSafeEye(pos, WHITE_POINT);
 	}
-	else{
+	else {
 		RemoveDangerous(pos, WHITE_POINT);
 	}
-	if(air[BLACK_POINT][0]){
+	if (air[BLACK_POINT][0]) {
 		SetDangerous(pos, BLACK_POINT);
 		RemoveSafeEye(pos, BLACK_POINT);
 	}
-	else{
+	else {
 		RemoveDangerous(pos, BLACK_POINT);
 	}
 }
