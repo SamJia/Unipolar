@@ -47,6 +47,19 @@ public:
 	bool operator[](int pos) {
 		return data_[pos >> 6] & ((uint64_t)1 << (pos & 63));
 	}
+	BitSet &operator=(const BitSet &bitset2) {
+		data_[0] = bitset2.data_[0];
+		data_[1] = bitset2.data_[1];
+		data_[2] = bitset2.data_[2];
+		return (*this);
+	}
+	BitSet operator-(const BitSet &bitset2) const {
+		BitSet result;
+		result.data_[0] = data_[0] & (data_[0] ^ bitset2.data_[0]);
+		result.data_[1] = data_[1] & (data_[1] ^ bitset2.data_[1]);
+		result.data_[2] = data_[2] & (data_[2] ^ bitset2.data_[2]);
+		return result;
+	}
 	int count() {
 		return __builtin_popcountll(data_[0]) + __builtin_popcountll(data_[1]) + __builtin_popcountll(data_[2]);
 	}
@@ -96,68 +109,48 @@ public:
 	void PlayMove(const Move &move);
 	std::vector<PositionIndex> GetPlayablePosition(PointState state) {
 		int base = 0;
-		uint64_t tmp;
+		BitSet tmp = empty_[state] - suiside_[state] - safe_eye_[state];
 		std::vector<PositionIndex> playable_pos;
-		playable_pos.reserve(playable_bit_[state].count());
+		playable_pos.reserve(tmp.count());
 		for (int j = 0; j < 3; ++j) {
-			tmp = playable_bit_[state].data_[j];
-			while (tmp) {
-				playable_pos.push_back(base + __builtin_ctzll(tmp));
-				tmp &= tmp - 1;
-			}
-			base += 64;
-		}
-		// for (int i = 0; i < BoardSizeSquare(BOARD_SIZE); ++i)
-		// 	if (playable_bit_[state][i])
-		// 		playable_pos.push_back(i);
-		return playable_pos;
-	}
-	std::vector<PositionIndex> GetPlayablePositionMC(PointState state) {
-		int base = 0;
-		uint64_t tmp;
-		std::vector<PositionIndex> playable_pos;
-		playable_pos.reserve(playable_bit_[state].count());
-		for (int j = 0; j < 3; ++j) {
-			tmp = playable_bit_[state].data_[j];
-			while (tmp) {
-				playable_pos.push_back(base + __builtin_ctzll(tmp));
-				tmp &= tmp - 1;
+			while (tmp.data_[j]) {
+				playable_pos.push_back(base + __builtin_ctzll(tmp.data_[j]));
+				tmp.data_[j] &= tmp.data_[j] - 1;
 			}
 			base += 64;
 		}
 		return playable_pos;
 	}
 	int GetPlayableCount(PointState state) {
-		return playable_bit_[state].count();
+		return (empty_[state] - suiside_[state] - safe_eye_[state]).count();
 	}
 	PositionIndex GetPlayable(PointState state, int number) {
 		// printf("number:%d\n", number);
 		int base = 0;
-		uint64_t tmp;
+		BitSet tmp = empty_[state] - suiside_[state] - safe_eye_[state];
 		for (int j = 0; j < 3; ++j) {
-			tmp = playable_bit_[state].data_[j];
-			if (__builtin_popcountll(tmp) <= number)
-				number -= __builtin_popcountll(tmp);
+			if (__builtin_popcountll(tmp.data_[j]) <= number)
+				number -= __builtin_popcountll(tmp.data_[j]);
 			else {
 				// number++;
 				// int lower = 0, upper = 64, mid = 32, num;
 				// while (true) {
 				// 	mid = (lower + upper) / 2;
-				// 	num = __builtin_popcountll(tmp & (((uint64_t)2 << (mid)) - 1));
-				// 	// printf("tmp:%llx, mid:%d, num:%d, yanma:%llx, and:%llx\n", tmp, mid, num, (((uint64_t)2 << (mid)) - 1), tmp & (((uint64_t)1 << (mid)) - 1));
+				// 	num = __builtin_popcountll(tmp.data_[j] & (((uint64_t)2 << (mid)) - 1));
+				// 	// printf("tmp.data_[j]:%llx, mid:%d, num:%d, yanma:%llx, and:%llx\n", tmp.data_[j], mid, num, (((uint64_t)2 << (mid)) - 1), tmp.data_[j] & (((uint64_t)1 << (mid)) - 1));
 				// 	if(number == num)
-				// 		return base + 63 - __builtin_clzll(tmp & (((uint64_t)2 << (mid)) - 1));
+				// 		return base + 63 - __builtin_clzll(tmp.data_[j] & (((uint64_t)2 << (mid)) - 1));
 				// 	else if (number < num)
 				// 		upper = mid;
 				// 	else
 				// 		lower = mid + 1;
 				// }
 				for (; number; --number) {
-					tmp &= tmp - 1;
+					tmp.data_[j] &= tmp.data_[j] - 1;
 				}
-				return __builtin_ctzll(tmp) + base;
-				// if(__builtin_ctzll(tmp) != result){
-				// 	printf("%d %d %d\n", number, __builtin_ctzll(tmp), result);
+				return __builtin_ctzll(tmp.data_[j]) + base;
+				// if(__builtin_ctzll(tmp.data_[j]) != result){
+				// 	printf("%d %d %d\n", number, __builtin_ctzll(tmp.data_[j]), result);
 				// 	exit(0);
 				// }
 				// return result + base;
@@ -175,6 +168,9 @@ public:
 	}
 	PositionIndex GetAreaCount(PointState state) {
 		return piece_count_[state] + eye_[state].count();
+	}
+	bool Playable(PositionIndex pos, PointState state) {
+		return (empty_[state] - suiside_[state])[pos];
 	}
 	friend class MC;
 	// DISALLOW_COPY_AND_ASSIGN_AND_MOVE(Board)
@@ -271,20 +267,20 @@ public:
 				}
 				//white eat black or white connect to air
 				// printf("%d %d %d %d\n", air[0][0], air[0][1], air[1][0], air[1][1]);
-				if (air[BLACK_POINT][0] | air[WHITE_POINT][1]) {
-					if (!playable_bit_[WHITE_POINT][pos])
-						return pos;
-				}
-				else if (playable_bit_[WHITE_POINT][pos])
-					return pos;
+				// if (air[BLACK_POINT][0] | air[WHITE_POINT][1]) {
+				// 	if (!playable_bit_[WHITE_POINT][pos])
+				// 		return pos;
+				// }
+				// else if (playable_bit_[WHITE_POINT][pos])
+				// 	return pos;
 
-				//black eat white or black connect to air
-				if (air[WHITE_POINT][0] | air[BLACK_POINT][1]) {
-					if (!playable_bit_[BLACK_POINT][pos])
-						return pos;
-				}
-				else if (playable_bit_[BLACK_POINT][pos])
-					return pos;
+				// //black eat white or black connect to air
+				// if (air[WHITE_POINT][0] | air[BLACK_POINT][1]) {
+				// 	if (!playable_bit_[BLACK_POINT][pos])
+				// 		return pos;
+				// }
+				// else if (playable_bit_[BLACK_POINT][pos])
+				// 	return pos;
 			}
 		}
 		return -1;
@@ -297,65 +293,68 @@ public:
 	void FromEmpty(PositionIndex pos, PointState state);
 	void RemoveChain(PositionIndex pos);
 	PositionIndex AdjacentPosition(PositionIndex position, int adj_direction);
-	void CheckSuisidePoint(PositionIndex pos);
+	void CheckSpecialPoint(PositionIndex pos);
 
-	void Able(PositionIndex pos, PointState state) {
-		if (mc_ && eye_[state][pos])
-			return;
-		// printf("able %d %d\n", pos, state);
-		// if (!playable_bit_[state][pos]) {
-		// playable_pos_[state].insert(pos);
-		playable_bit_[state].set(pos);
-		// }
-		// if(pos == 3)
-		// 	Print();
-	}
-	void DisAble(PositionIndex pos, PointState state) {
-		// printf("disable %d %d\n", pos, state);
-		// if (playable_bit_[state][pos]) {
-		// playable_pos_[state].erase(pos);
-		playable_bit_[state].reset(pos);
-		// }
-	}
+	// void Able(PositionIndex pos, PointState state) {
+	// 	if (mc_ && eye_[state][pos])
+	// 		return;
+	// 	playable_bit_[state].set(pos);
+	// }
+
+	// void DisAble(PositionIndex pos, PointState state) {
+	// 	playable_bit_[state].reset(pos);
+	// }
 
 	void SetEye(PositionIndex pos, PointState state) {
-		// if (playable_bit_no_eye_[state][pos]) {
-		// playable_pos_no_eye_[state].erase(pos);
 		eye_[state].set(pos);
-		// }
-		if (mc_)
-			DisAble(pos, state);
 	}
-
 	void RemoveEye(PositionIndex pos, PointState state) {
-		// if (playable_bit_no_eye_[state][pos]) {
-		// playable_pos_no_eye_[state].erase(pos);
 		eye_[state].reset(pos);
-		// }
-		// if(mc_)
-		// 	DisAble(pos, state);
+	}
+	void SetSafeEye(PositionIndex pos, PointState state) {
+		safe_eye_[state].set(pos);
+	}
+	void RemoveSafeEye(PositionIndex pos, PointState state) {
+		safe_eye_[state].reset(pos);
+	}
+	void SetDangerous(PositionIndex pos, PointState state) {
+		dangerous_[state].set(pos);
+	}
+	void RemoveDangerous(PositionIndex pos, PointState state) {
+		dangerous_[state].reset(pos);
+	}
+	void SetSuiside(PositionIndex pos, PointState state) {
+		suiside_[state].set(pos);
+	}
+	void RemoveSuiside(PositionIndex pos, PointState state) {
+		suiside_[state].reset(pos);
+	}
+	void SetEmpty(PositionIndex pos, PointState state) {
+		empty_[state].set(pos);
+	}
+	void RemoveEmpty(PositionIndex pos, PointState state) {
+		empty_[state].reset(pos);
 	}
 
-	void StartMC() {
-		mc_ = true;
-		int base;
-		uint64_t tmp;
-		for (int i = 0; i < 2; ++i) {
-			base = 0;
-			for (int j = 0; j < 3; ++j) {
-				tmp = eye_[i].data_[j];
-				while (tmp) {
-					DisAble(base + __builtin_ctzll(tmp), i);
-					tmp &= tmp - 1;
-				}
-				base += 64;
-			}
-		}
-	}
+	// void StartMC() {
+	// 	mc_ = true;
+	// 	int base;
+	// 	uint64_t tmp;
+	// 	for (int i = 0; i < 2; ++i) {
+	// 		base = 0;
+	// 		for (int j = 0; j < 3; ++j) {
+	// 			tmp = eye_[i].data_[j];
+	// 			while (tmp) {
+	// 				DisAble(base + __builtin_ctzll(tmp), i);
+	// 				tmp &= tmp - 1;
+	// 			}
+	// 			base += 64;
+	// 		}
+	// 	}
+	// }
 
 	List board_[BoardSizeSquare(BOARD_SIZE)];
-	// std::set<PositionIndex> playable_pos_[2]/*, playable_pos_no_eye_[2]*//*, suiside_pos[2]*/;
-	BitSet playable_bit_[2], eye_[2]/*, playable_bit_no_eye_[2]*/;
+	BitSet empty_[2], eye_[2], safe_eye_[2], dangerous_[2], suiside_[2];
 	PositionIndex piece_count_[2];
 	PositionIndex ko_;
 	bool mc_;
@@ -382,12 +381,16 @@ void Board::Init() {
 }
 
 void Board::ClearBoard() {
-	playable_bit_[0].set();
-	playable_bit_[1].set();
-	// playable_bit_no_eye_[0].set();
-	// playable_bit_no_eye_[1].set();
+	empty_[0].set();
+	empty_[1].set();
 	eye_[0].reset();
 	eye_[1].reset();
+	safe_eye_[0].reset();
+	safe_eye_[1].reset();
+	dangerous_[0].reset();
+	dangerous_[1].reset();
+	suiside_[0].reset();
+	suiside_[1].reset();
 	for (PositionIndex i = 0; i < BoardSizeSquare(BOARD_SIZE); ++i) {
 		// playable_pos_[0].insert(i);
 		// playable_pos_[1].insert(i);
@@ -408,7 +411,8 @@ void Board::ClearBoard() {
 void Board::PlayMove(const Move &move) {
 	// printf("play move %d\n", move.position);
 	if (ko_ >= 0) {
-		CheckSuisidePoint(ko_);
+		SetEmpty(ko_, move.state);
+		CheckSpecialPoint(ko_);
 		// CheckEyeShape(ko_);
 		ko_ = -1;
 	}
@@ -453,30 +457,15 @@ void Board::PlayMove(const Move &move) {
 		else
 			v[count++] = adj_chain;
 	}
-	// printf("for 2 start\n");
-	// for (int i = 1; i <= ADJ_POS_[pos][0]; ++i) {
-	// 	// printf("one loop in for 2\n");
-	// 	adj_chain = GetFather(ADJ_POS_[pos][i]);
-	// 	if (board_[adj_chain].state != move.state) {
-	// 		if (board_[adj_chain].air_count == 0) {
-	// 			if (board_[adj_chain].state == EMPTY_POINT)
-	// 				CheckSuisidePoint(adj_chain);
-	// 			else
-	// 				RemoveChain(adj_chain);
-	// 		}
-	// 		else if (board_[adj_chain].air_count == 1 && board_[adj_chain].state != EMPTY_POINT)
-	// 			CheckSuisidePoint(board_[adj_chain].air_set.GetAirPos());
-	// 	}
-	// }
 	for (int i = 0; i < count; ++i) {
 		if (board_[v[i]].air_count == 0) {
 			if (board_[v[i]].state == EMPTY_POINT)
-				CheckSuisidePoint(v[i]);
+				CheckSpecialPoint(v[i]);
 			else
 				RemoveChain(v[i]);
 		}
 		else if (board_[v[i]].air_count == 1 && board_[v[i]].state != EMPTY_POINT)
-			CheckSuisidePoint(board_[v[i]].air_set.GetAirPos());
+			CheckSpecialPoint(board_[v[i]].air_set.GetAirPos());
 	}
 	// printf("for done\n");
 	pos = GetFather(pos);
@@ -487,11 +476,11 @@ void Board::PlayMove(const Move &move) {
 		RemoveChain(pos);
 	}
 	else if (board_[pos].air_count == 1)
-		CheckSuisidePoint(board_[pos].air_set.GetAirPos());
+		CheckSpecialPoint(board_[pos].air_set.GetAirPos());
 	if (board_[pos].father != -1)
 		ko_ = -1;
 	if (ko_ >= 0)
-		DisAble(ko_, move.state ^ 1);
+		RemoveEmpty(ko_, move.state ^ 1);
 }
 
 PositionIndex Board::GetFather(PositionIndex pos) {
@@ -543,8 +532,8 @@ void Board::ToEmpty(PositionIndex pos) {
 	board_[pos].air_count = 0;
 	board_[pos].air_set.reset();
 	board_[pos].state = EMPTY_POINT;
-	Able(pos, 0);
-	Able(pos, 1);
+	SetEmpty(pos, 0);
+	SetEmpty(pos, 1);
 	// RemoveEye(pos, 0);
 	// RemoveEye(pos, 1);
 }
@@ -552,10 +541,13 @@ void Board::ToEmpty(PositionIndex pos) {
 void Board::FromEmpty(PositionIndex pos, PointState state) {
 	board_[pos].next = board_[pos].tail = pos;
 	board_[pos].state = state;
-	DisAble(pos, 0);
-	DisAble(pos, 1);
+	RemoveEmpty(pos, 0);
+	RemoveEmpty(pos, 1);
 	RemoveEye(pos, 0);
 	RemoveEye(pos, 1);
+	RemoveSafeEye(pos, state);
+	RemoveDangerous(pos, 0);
+	RemoveDangerous(pos, 1);
 }
 
 void Board::RemoveChain(PositionIndex pos) {
@@ -584,7 +576,7 @@ void Board::RemoveChain(PositionIndex pos) {
 			remove_pos[i][++remove_pos[i][1]] = adj_chain;
 			if (board_[adj_chain].air_count == 1) {
 				++board_[adj_chain].air_count;
-				CheckSuisidePoint(board_[adj_chain].air_set.GetAirPos());
+				CheckSpecialPoint(board_[adj_chain].air_set.GetAirPos());
 			}
 		}
 	}
@@ -601,51 +593,66 @@ void Board::RemoveChain(PositionIndex pos) {
 	}
 	if (board_[father].air_count == 0) {
 		ko_ = father;
-		CheckSuisidePoint(father);
+		CheckSpecialPoint(father);
 	}
 	// Print();
 }
 
 
-void Board::CheckSuisidePoint(PositionIndex pos) {
+void Board::CheckSpecialPoint(PositionIndex pos) {
 	// printf("check suiside of %d\n", pos);
 	if (board_[pos].state != EMPTY_POINT) {
 		Print();
 		printf("check suiside point %d for exist piece\n", pos);
 		exit(0);
 	}
-	if (board_[pos].air_count > 0) {
-		// printf("air_count at pos %d is %d, greater than zero\n", pos, board_[pos].air_count);
-		Able(pos, BLACK_POINT);
-		Able(pos, WHITE_POINT);
-		return;
-	}
-	bool air[2][2] = {}; //[state][>1?]
-
+	bool air[3][2] = {}; //[state][>1?]
 	PositionIndex adj_chain;
 	for (int i = 1; i <= ADJ_POS_[pos][0]; ++i) {
 		adj_chain = GetFather(ADJ_POS_[pos][i]);
 		air[board_[adj_chain].state][board_[adj_chain].air_count > 1] = true;
 	}
+	if (board_[pos].air_count > 0) {
+		// printf("air_count at pos %d is %d, greater than zero\n", pos, board_[pos].air_count);
+		air[0][1] = air[1][1] = true;
+	}
 	// printf("%d %d %d %d\n", air[0][0], air[0][1], air[1][0], air[1][1]);
 	//white eat black or white connect to air
 	if (air[BLACK_POINT][0] | air[WHITE_POINT][1]) {
-		// printf("able %d at pos %d\n", WHITE_POINT, pos);
-		Able(pos, WHITE_POINT);
+		RemoveSuiside(pos, WHITE_POINT);
 	}
 	else {
 		if ((air[WHITE_POINT][0] | air[WHITE_POINT][1]) == 0)
-			SetEye(pos, BLACK_POINT);
-		DisAble(pos, WHITE_POINT);
+			SetSafeEye(pos, BLACK_POINT);
+		SetSuiside(pos, WHITE_POINT);
 	}
-
 	//black eat white or black connect to air
-	if (air[WHITE_POINT][0] | air[BLACK_POINT][1])
-		Able(pos, BLACK_POINT);
+	if (air[WHITE_POINT][0] | air[BLACK_POINT][1]){
+		RemoveSuiside(pos, BLACK_POINT);
+	}
 	else {
 		if ((air[BLACK_POINT][0] | air[BLACK_POINT][1]) == 0)
-			SetEye(pos, WHITE_POINT);
-		DisAble(pos, BLACK_POINT);
+			SetSafeEye(pos, WHITE_POINT);
+		SetSuiside(pos, BLACK_POINT);
+	}
+
+	if ((air[WHITE_POINT][0] | air[WHITE_POINT][1]) == 0)
+		SetEye(pos, BLACK_POINT);
+	if ((air[BLACK_POINT][0] | air[BLACK_POINT][1]) == 0)
+		SetEye(pos, WHITE_POINT);
+	if(air[WHITE_POINT][0]){
+		SetDangerous(pos, WHITE_POINT);
+		RemoveSafeEye(pos, WHITE_POINT);
+	}
+	else{
+		RemoveDangerous(pos, WHITE_POINT);
+	}
+	if(air[BLACK_POINT][0]){
+		SetDangerous(pos, BLACK_POINT);
+		RemoveSafeEye(pos, BLACK_POINT);
+	}
+	else{
+		RemoveDangerous(pos, BLACK_POINT);
 	}
 }
 
