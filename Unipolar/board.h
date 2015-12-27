@@ -60,6 +60,12 @@ public:
 		result.data_[2] = data_[2] & (data_[2] ^ bitset2.data_[2]);
 		return result;
 	}
+	BitSet &operator-=(const BitSet &bitset2) {
+		data_[0] &= data_[0] ^ bitset2.data_[0];
+		data_[1] &= data_[1] ^ bitset2.data_[1];
+		data_[2] &= data_[2] ^ bitset2.data_[2];
+		return (*this);
+	}
 	BitSet operator+(const BitSet &bitset2) const {
 		BitSet result;
 		result.data_[0] = data_[0] | bitset2.data_[0];
@@ -67,12 +73,24 @@ public:
 		result.data_[2] = data_[2] | bitset2.data_[2];
 		return result;
 	}
+	BitSet &operator+=(const BitSet &bitset2) {
+		data_[0] |= bitset2.data_[0];
+		data_[1] |= bitset2.data_[1];
+		data_[2] |= bitset2.data_[2];
+		return (*this);
+	}
 	BitSet operator*(const BitSet &bitset2) const {
 		BitSet result;
 		result.data_[0] = data_[0] & bitset2.data_[0];
 		result.data_[1] = data_[1] & bitset2.data_[1];
 		result.data_[2] = data_[2] & bitset2.data_[2];
 		return result;
+	}
+	BitSet &operator*=(const BitSet &bitset2) {
+		data_[0] &= bitset2.data_[0];
+		data_[1] &= bitset2.data_[1];
+		data_[2] &= bitset2.data_[2];
+		return (*this);
 	}
 	int count() {
 		return __builtin_popcountll(data_[0]) + __builtin_popcountll(data_[1]) + __builtin_popcountll(data_[2]);
@@ -136,17 +154,17 @@ public:
 		return playable_pos;
 	}
 	int GetPlayableCount(PointState state) {
-		return (empty_[state] - suiside_[state] - safe_eye_[state]).count();
+		return (empty_[state] - suiside_[state] - safe_eye_[state] - dangerous_empty_[state] - dangerous_empty_[state^1]).count();
 	}
 	PositionIndex GetPlayable(PointState state, int number) {
 		// printf("number:%d\n", number);
 		int base = 0;
-		BitSet tmp = empty_[state] - suiside_[state] - safe_eye_[state];
+		BitSet tmp = empty_[state] - suiside_[state] - safe_eye_[state] - dangerous_empty_[state] - dangerous_empty_[state^1];
 		for (int j = 0; j < 3; ++j) {
 			if (__builtin_popcountll(tmp.data_[j]) <= number)
 				number -= __builtin_popcountll(tmp.data_[j]);
-			else {
-				// number++;
+			else
+			{	// number++;
 				// int lower = 0, upper = 64, mid = 32, num;
 				// while (true) {
 				// 	mid = (lower + upper) / 2;
@@ -172,6 +190,7 @@ public:
 			base += 64;
 		}
 	}
+	PositionIndex SpecialPointTest(PointState state);
 	void PrintVector(std::vector<PositionIndex> v) {
 		for (auto i : v)
 			printf("%d ", i);
@@ -181,7 +200,7 @@ public:
 		return piece_count_[state];
 	}
 	PositionIndex GetAreaCount(PointState state) {
-		return piece_count_[state] + eye_[state].count();
+		return piece_count_[state] + eye_[state].count() + dangerous_empty_[state].count();
 	}
 	bool Playable(PositionIndex pos, PointState state) {
 		return (empty_[state] - suiside_[state])[pos];
@@ -349,6 +368,12 @@ public:
 	void RemoveEmpty(PositionIndex pos, PointState state) {
 		empty_[state].reset(pos);
 	}
+	void SetDangerousEmpty(PositionIndex pos, PointState state) {
+		dangerous_empty_[state].set(pos);
+	}
+	void RemoveDangerousEmpty(PositionIndex pos, PointState state) {
+		dangerous_empty_[state].reset(pos);
+	}
 
 	// void StartMC() {
 	// 	mc_ = true;
@@ -368,7 +393,7 @@ public:
 	// }
 
 	List board_[BoardSizeSquare(BOARD_SIZE)];
-	BitSet empty_[2], eye_[2], safe_eye_[2], dangerous_[2], suiside_[2];
+	BitSet empty_[2], eye_[2], safe_eye_[2], dangerous_[2], suiside_[2], dangerous_empty_[2];
 	PositionIndex piece_count_[2];
 	PositionIndex ko_;
 	bool mc_;
@@ -423,6 +448,60 @@ void Board::ClearBoard() {
 	mc_ = false;
 }
 
+PositionIndex Board::SpecialPointTest(PointState state) {
+	float max_score = 1, score;
+	PositionIndex best_pos = POSITION_PASS, pos, adj_chain;
+	BitSet tmp = (dangerous_[state] - suiside_[state]) * empty_[state];
+	if (ko_ >= 0 && tmp[ko_]) {
+		printf("ko_ occur in my dangerous\n");
+		exit(0);
+	}
+	for (int i = 0, base = 0; i < 3; ++i) {
+		while (tmp.data_[i]) {
+			pos = base + __builtin_ctzll(tmp.data_[i]);
+			// printf("check dangerous pos %d\n", pos);
+			tmp.data_[i] &= tmp.data_[i] - 1;
+			BitSet merged_air_set = board_[pos].air_set;
+			for (int j = 1; j <= ADJ_POS_[pos][0]; ++j) {
+				if (board_[ADJ_POS_[pos][j]].state == state) {
+					adj_chain = GetFather(ADJ_POS_[pos][j]);
+					merged_air_set += board_[adj_chain].air_set;
+				}
+			}
+			score = merged_air_set.count() - 1;
+			if (score > max_score) {
+				max_score = score;
+				best_pos = pos;
+			}
+		}
+		base += 64;
+	}
+	tmp = dangerous_[state ^ 1] * empty_[state];
+	if (ko_ >= 0 && tmp[ko_]) {
+		printf("ko_ occur in oppose dangerous\n");
+		exit(0);
+	}
+	for (int i = 0, base = 0; i < 3; ++i) {
+		while (tmp.data_[i]) {
+			pos = base + __builtin_ctzll(tmp.data_[i]);
+			tmp.data_[i] &= tmp.data_[i] - 1;
+			score = 0;
+			for (int j = 1; j <= ADJ_POS_[pos][0]; ++j) {
+				if (board_[ADJ_POS_[pos][j]].state == (state ^ 1)) {
+					adj_chain = GetFather(ADJ_POS_[pos][j]);
+					score += -board_[adj_chain].father;
+				}
+			}
+			if ((score * 1.1) > max_score) {
+				max_score = score * 1.1;
+				best_pos = pos;
+			}
+		}
+		base += 64;
+	}
+	return best_pos;
+}
+
 float Board::PlayMove(const Move &move) {
 	// printf("play move %d\n", move.position);
 	if (ko_ >= 0) {
@@ -466,7 +545,7 @@ float Board::PlayMove(const Move &move) {
 			// printf("merge %d %d\n", adj_chain, pos);
 			Merge(adj_chain, GetFather(pos));
 		}
-		else{
+		else {
 			for (int j = 0; j < count; ++j)
 				if (v[j] == adj_chain)
 					continue;
@@ -475,16 +554,23 @@ float Board::PlayMove(const Move &move) {
 	}
 	for (int i = 0; i < count; ++i) {
 		if (board_[v[i]].air_count == 0) {
-			if (board_[v[i]].state == EMPTY_POINT)
+			if (board_[v[i]].state == EMPTY_POINT) {
+				RemoveDangerousEmpty(v[i], 0);
+				RemoveDangerousEmpty(v[i], 1);
 				CheckSpecialPoint(v[i], true);
+			}
 			else {
 				score += -board_[v[i]].father;
 				RemoveChain(v[i]);
 			}
 		}
-		else if (board_[v[i]].air_count == 1 && board_[v[i]].state != EMPTY_POINT) {
-			score += -(board_[v[i]].father / 3);
-			CheckSpecialPoint(board_[v[i]].air_set.GetAirPos());
+		else if (board_[v[i]].air_count == 1) {
+			if (board_[v[i]].state != EMPTY_POINT) {
+				score += -(board_[v[i]].father / 3);
+				CheckSpecialPoint(board_[v[i]].air_set.GetAirPos());
+			}
+			else
+				CheckSpecialPoint(v[i]);
 		}
 	}
 	// printf("for done\n");
@@ -564,6 +650,8 @@ void Board::FromEmpty(PositionIndex pos, PointState state) {
 	RemoveSafeEye(pos, state);
 	RemoveDangerous(pos, 0);
 	RemoveDangerous(pos, 1);
+	RemoveDangerousEmpty(pos, 0);
+	RemoveDangerousEmpty(pos, 1);
 }
 
 void Board::RemoveChain(PositionIndex pos) {
@@ -608,11 +696,15 @@ void Board::RemoveChain(PositionIndex pos) {
 			board_[adj_chain].air_count = board_[adj_chain].air_set.count();
 		}
 	}
+	for (int i = 0; i < count; ++i) {
+		if (board_[remove_pos[i][0]].air_count == 1)
+			CheckSpecialPoint(remove_pos[i][0]);
+	}
 	if (board_[father].air_count == 0) {
 		ko_ = father;
 		CheckSpecialPoint(father, true);
 	}
-	// Print();
+// Print();
 }
 
 
@@ -631,6 +723,12 @@ void Board::CheckSpecialPoint(PositionIndex pos, bool add_score) {
 	}
 	if (board_[pos].air_count > 0) {
 		// printf("air_count at pos %d is %d, greater than zero\n", pos, board_[pos].air_count);
+		if (board_[pos].air_count == 1) {
+			if ((air[BLACK_POINT][0] | air[BLACK_POINT][1] | air[WHITE_POINT][0]) == 0)
+				SetDangerousEmpty(pos, BLACK_POINT);
+			else if ((air[WHITE_POINT][0] | air[WHITE_POINT][1] | air[BLACK_POINT][0]) == 0)
+				SetDangerousEmpty(pos, WHITE_POINT);
+		}
 		air[0][1] = air[1][1] = true;
 	}
 	// printf("%d %d %d %d\n", air[0][0], air[0][1], air[1][0], air[1][1]);

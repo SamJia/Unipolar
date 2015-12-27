@@ -1,3 +1,4 @@
+#include "def.h"
 #include <intrin.h>
 #include <xmmintrin.h>
 #include <immintrin.h>
@@ -6,41 +7,113 @@
 #include <ctime>
 #include <cstdlib>
 #define TIMES 100000000
-
+using namespace unipolar;
+class BitSet
+{
+public:
+	BitSet() {
+		reset();
+	};
+	~BitSet() = default;
+	void set() {
+		data_[0] = data_[1] = 0xffffffffffffffff;
+		data_[2] = 0x1ffffffffff;
+	}
+	void set(int pos) {
+		data_[pos >> 6] |= (uint64_t)1 << (pos & 63);
+	}
+	void reset() {
+		data_[0] = data_[1] = data_[2] = 0;
+	}
+	void reset(int pos) {
+		data_[pos >> 6] &= ~((uint64_t)1 << (pos & 63));
+	}
+	bool operator[](int pos) {
+		return data_[pos >> 6] & ((uint64_t)1 << (pos & 63));
+	}
+	BitSet &operator=(const BitSet &bitset2) {
+		data_[0] = bitset2.data_[0];
+		data_[1] = bitset2.data_[1];
+		data_[2] = bitset2.data_[2];
+		return (*this);
+	}
+	BitSet operator-(const BitSet &bitset2) const {
+		BitSet result;
+		result.data_[0] = data_[0] & (data_[0] ^ bitset2.data_[0]);
+		result.data_[1] = data_[1] & (data_[1] ^ bitset2.data_[1]);
+		result.data_[2] = data_[2] & (data_[2] ^ bitset2.data_[2]);
+		return result;
+	}
+	BitSet &operator-=(const BitSet &bitset2) {
+		data_[0] &= data_[0] ^ bitset2.data_[0];
+		data_[1] &= data_[1] ^ bitset2.data_[1];
+		data_[2] &= data_[2] ^ bitset2.data_[2];
+		return (*this);
+	}
+	BitSet operator+(const BitSet &bitset2) const {
+		BitSet result;
+		result.data_[0] = data_[0] | bitset2.data_[0];
+		result.data_[1] = data_[1] | bitset2.data_[1];
+		result.data_[2] = data_[2] | bitset2.data_[2];
+		return result;
+	}
+	BitSet &operator+=(const BitSet &bitset2) {
+		data_[0] |= bitset2.data_[0];
+		data_[1] |= bitset2.data_[1];
+		data_[2] |= bitset2.data_[2];
+		return (*this);
+	}
+	BitSet operator*(const BitSet &bitset2) const {
+		BitSet result;
+		result.data_[0] = data_[0] & bitset2.data_[0];
+		result.data_[1] = data_[1] & bitset2.data_[1];
+		result.data_[2] = data_[2] & bitset2.data_[2];
+		return result;
+	}
+	BitSet &operator*=(const BitSet &bitset2) {
+		data_[0] &= bitset2.data_[0];
+		data_[1] &= bitset2.data_[1];
+		data_[2] &= bitset2.data_[2];
+		return (*this);
+	}
+	int count() {
+		return __builtin_popcountll(data_[0]) + __builtin_popcountll(data_[1]) + __builtin_popcountll(data_[2]);
+	}
+	//should only be called when a chain has only one air!!!
+	PositionIndex GetAirPos() {
+		uint64_t tmp1 = data_[0] | data_[1];
+		uint64_t tmp2 = tmp1 | data_[2];
+		return (__builtin_popcountll(~data_[0]) & 64) + (__builtin_popcountll(~tmp1) & 64) + __builtin_ctzll(tmp2);
+	}
+	void merge(const BitSet &bitset2) {
+		data_[0] |= bitset2.data_[0];
+		data_[1] |= bitset2.data_[1];
+		data_[2] |= bitset2.data_[2];
+	}
+	void Print() {
+		// printf("%x %x %x\n", data_[0], data_[1], data_[2]);
+		for (int i = 0; i < BoardSizeSquare(BOARD_SIZE); ++i)
+			if ((*this)[i])
+				printf("%d ", i);
+		printf("\n");
+	}
+	void PrintBinary() {
+		// printf("%x %x %x\n", data_[0], data_[1], data_[2]);
+		for (int i = 0; i < BoardSizeSquare(BOARD_SIZE); ++i)
+			printf("%d", (bool)(*this)[i]);
+		printf("\n");
+	}
+	friend class Board;
+private:
+	uint64_t data_[3];
+};
 int main() {
-	uint64_t a = 2;
-	int16_t ADJ_POS_[169][4] = {};
-	for (int i = 0; i < 169; ++i) {
-		// ADJ_POS_[i][0] = ADJ_POS_[i][1] = ADJ_POS_[i][2] = ADJ_POS_[i][3] = 0;
-		if (i >= 13)
-			ADJ_POS_[i][0] = i - 13;
-		if (i % 13 != 0)
-			ADJ_POS_[i][1] = i - 1;
-		if ((i + 1) % 13 != 0)
-			ADJ_POS_[i][2] = i + 1;
-		if (i + 13 < 169)
-			ADJ_POS_[i][3] = i + 13;
-	}
-	int begin = clock();
-	long long i;
-	for(i = 0; i < TIMES; ++i){
-		int pos = i % 169;
-		for(int j = 0; j < 4; ++j)
-			a += ADJ_POS_[pos][j];
-		// if (pos >= 13)
-		// 	a += pos - 13;
-		// if (pos % 13 != 0)
-		// 	a += pos - 1;
-		// if ((pos + 1) % 13 != 0)
-		// 	a += pos + 1;
-		// if (pos + 13 < 169)
-		// 	a += pos + 13;
-	}
-	// int b = 0;
-	// for (int i = 0; i < TIMES; ++i){
-	// 	// b += __builtin_popcountll(rand());
-	// 	b += _tzcnt_u64((uint64_t)rand());
-	// }
-	printf("%d\n", clock() - begin);
-	printf("%lld\n", i);
+	BitSet a, b;
+	a.set(0);
+	b.set(1);
+	uint64_t data[3];
+	data[0] = 3;
+	data[1] = 5;
+	data[0] &= data[0] ^ data[1];
+	printf("%lld\n", data[0]);
 }

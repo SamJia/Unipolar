@@ -6,6 +6,7 @@
 #include <thread>
 #include <iostream>
 #include <mutex>
+#include <fstream>
 #include "board.h"
 #include "def.h"
 using namespace unipolar;
@@ -19,13 +20,13 @@ public:
 	~MC() = default;
 	float Simulate(Board &board, PointState state);
 	float Evaluate(Board &Board, PointState state);
-	float Test(std::thread::id a){
+	float Test(std::thread::id a) {
 		static int b = 1;
-		if(b)
+		if (b)
 			a_ = a;
 		b = 0;
 		// std::cout << a_ << std::endl;
-		if(mtx.try_lock()){
+		if (mtx.try_lock()) {
 			std::cout << std::this_thread::get_id() << ' ' << a_ << std::endl;
 			mtx.unlock();
 		}
@@ -52,59 +53,49 @@ float MC::Simulate(Board &board, PointState state) {
 	bool last_pass = false;
 	int playable_count;
 	std::vector<PositionIndex> playable_pos;
-	while (true/*!playable_pos.empty()*/) {
+// 	std::ofstream fout2("num.txt", std::ios::app);
+// 	std::ofstream fout("test.sgf");
+// 	fout << "(;FF[4]CA[UTF-8]AP[GoGui:1.4.9]SZ[13]\
+// KM[6.5]PB[gogui-twogtp]PW[gogui-twogtp]DT[2015-12-16]";
+	while (count < 200/*!playable_pos.empty()*/) {
 		++count;
 		if (count > 1000) {
 			board.Print();
 			printf("too much MC\n");
 			exit(0);
 		}
-		playable_count = board.GetPlayableCount(next_state);
-		// playable_pos = board.GetPlayablePositionMC(next_state);
-		next_state ^= 1;
-		// printf("playable_pos_set size %d\n", playable_pos.size());
-		if (playable_count/*playable_pos.size()*/ == 0) {
-			// if (last_pass)
+		mv.state = next_state;
+		mv.position = board.SpecialPointTest(next_state);
+		if (mv.position == POSITION_PASS) {
+			playable_count = board.GetPlayableCount(next_state);
+			if (playable_count == 0) {
+				// board.empty_[state].Print();
+				// board.suiside_[state].Print();
+				// board.safe_eye_[state].Print();
+				// board.dangerous_empty_[state].Print();
+				// board.dangerous_empty_[state^1].Print();
+				// (board.empty_[state] - board.suiside_[state] - board.safe_eye_[state] - board.dangerous_empty_[state] - board.dangerous_empty_[state^1]).Print();
 				break;
-			last_pass = true;
-			continue;
+			}
+			mv.position = board.GetPlayable(mv.state, rand() * playable_count / (RAND_MAX + 1));
 		}
-		// std::vector<PositionIndex>::iterator it = playable_pos.begin();
-		// printf("start advance\n");
-		// std::advance(it, rand() * playable_pos.size() / (RAND_MAX + 1));
-		// printf("%d, %d\n", next_state^1, *it);
-		// printf("advance done\n");
-		mv.state = next_state ^ 1;
-		mv.position = board.GetPlayable(mv.state, rand() * playable_count / (RAND_MAX + 1));
 		// printf("PlayMove\n");
+		// fout << ';' << (mv.state == BLACK_POINT ? 'B' : 'W') << '[' << (char)('a' + mv.position / 13) << (char)(('a' + mv.position % 13)) << ']';
 		board.PlayMove(mv);
-		last_pass = false;
-		// if(count > 30)
-		// 	board.Print();
-		// printf("static_cast\n");
-		// printf("GetPlayablePosition\n");
-		// playable_pos = board.GetPlayablePosition(force);
-		// printf("one loop done\n");
+		next_state ^= 1;
 	}
-	// printf("Evaluate\n");
-	// board.Print();
-	// printf("totally %d times of play_move\n", count);
+	// fout << ')';
+	// fout.close();
+	// fout2 << count << ' ';
+	// fout2.close();
 	return Evaluate(board, state ^ 1);
 }
-
-/*
-Some ideas:
-	Only return binary val.
-	Return a ratio of black territory.
-Currently we choose the second method, but the number of real eyes is missing.
-Better if we can record the number of black force / black_real_eye within board.h.
-*/
 
 float MC::Evaluate(Board &board, PointState state) {
 	return board.GetAreaCount(state) > board.GetAreaCount(state ^ 1);
 	// int piece_count[] = {board.GetPieceCount(0), board.GetPieceCount(1)};
 	int piece_count[] = {board.GetAreaCount(0), board.GetAreaCount(1)};
-	return 2*piece_count[state] > (piece_count[0] + piece_count[1])? 1 : 0;
+	return 2 * piece_count[state] > (piece_count[0] + piece_count[1]) ? 1 : 0;
 	// return float(piece_count[state]) / (piece_count[0] + piece_count[1]);
 }
 

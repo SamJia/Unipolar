@@ -3,34 +3,16 @@
 #include <cstdlib>
 #include <ctime>
 
-int main(){
+int main() {
 	srand(time(0));
 	Board::Init();
 	double value = 0;
 	Board board;
-	board.ClearBoard();
-	// for(auto i : board.GetPlayablePosition(0))
-	// 	printf("%d ", i);
-	board.PlayMove(Move(0, 0));
-	board.StartMC();
-	// Board board_copy(board);
-	// printf("%f", MC().Simulate(board_copy, 1));
-	// board_copy.Print();
-	for(int i = 0; i < 10000; ++i){
-		Board board_copy(board);
-		value += MC().Simulate(board_copy, 1);
+	for (int i = 0; i < 1000; ++i) {
+		board.ClearBoard();
+		MC().Simulate(board, 0);
 	}
-	printf("value:%f\n", value);
-	board.ClearBoard();
-	board.PlayMove(Move(0, 56));
-	board.StartMC();
-	value = 0;
-	for(int i = 0; i < 10000; ++i){
-		Board board_copy(board);
-		value += MC().Simulate(board_copy, 1);
-	}
-	printf("value:%f\n", value);
-	
+
 	// Move move = UCT().GenMove(board, 0);
 	// printf("%d, %d\n", move.position, move.state);
 	// const Board board3(board);
