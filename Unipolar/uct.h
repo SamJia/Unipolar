@@ -44,7 +44,7 @@ public:
 	Node *FindBestUCT(Node *node);
 	void MCSimulation(Board &board, Node *node, PointState state);
 	Move GenMove(Board &board, PointState state);
-	void CopyUCT(Node *node, float **valueboard, int **numboard);
+	void CopyUCT(Node *node, float **valueboard, int **numboard, float **bonusboard);
 	void PrintUCT();
 
 private:
@@ -85,13 +85,13 @@ void UCT::GenChild(Node *node, Board &board, PointState state) {
 float UCT::UCB(Node *node, Count totalnum) {
 	if (node->num == 0)
 		return DBL_MAX;
-	return (node->bon * 0.3 + node->val) / node->num + uctconst * sqrt(logf(totalnum) / node->num);
+	return node->bon * 0.1 + node->val / node->num + uctconst * sqrt(logf(totalnum) / node->num);
 }
 
 float UCT::Score(Node *node) {
 	if (node->num == 0)
 		return 0;
-	return (node->bon * 0.3 + node->val) / node->num;
+	return node->bon * 0.1 + node->val / node->num;
 }
 
 UCT::Node *UCT::FindBestChild(Node *node) {
@@ -162,11 +162,9 @@ void UCT::MCSimulation(Board &board, Node *node, PointState state) {
 		once_val = MC().Simulate(board, state);
 	}
 	mtx.lock();
-	// printf("once\n");
+	record[idx]->bon = once_bon;
 	for (int i = idx; i >= 0; --i)
 	{
-	    if(i == idx)
-            record[i]->bon = once_bon;
 		record[i]->val += once_val;
 		record[i]->num += 1;
 		once_val = 1 - once_val;
@@ -198,10 +196,11 @@ Move UCT::GenMove(Board &board, PointState state) {
 	return nextstep;
 }
 
-void UCT::CopyUCT(Node *node, float **valueboard, int **numboard) {
+void UCT::CopyUCT(Node *node, float **valueboard, int **numboard, float **bonusboard) {
 	Node *act = node->son;
 	while (act != nullptr) {
 		valueboard[act->pos / BOARD_SIZE][act->pos % BOARD_SIZE] = Score(act);
+		bonusboard[act->pos / BOARD_SIZE][act->pos % BOARD_SIZE] = act->bon;
 		numboard[act->pos / BOARD_SIZE][act->pos % BOARD_SIZE] = act->num;
 		act = act->bro;
 	}
@@ -210,17 +209,21 @@ void UCT::CopyUCT(Node *node, float **valueboard, int **numboard) {
 void UCT::PrintUCT() {
 	float **uctval;
 	int **uctnum;
+	float **uctbon;
 	uctval = new float*[BOARD_SIZE];
 	uctnum = new int*[BOARD_SIZE];
+	uctbon = new float*[BOARD_SIZE];
 	for (int k = 0; k < BOARD_SIZE; ++k) {
 		uctval[k] = new float[BOARD_SIZE];
 		memset(uctval[k], 0, sizeof(uctval[k]));
 		uctnum[k] = new int[BOARD_SIZE];
 		memset(uctnum[k], 0, sizeof(uctnum[k]));
+		uctbon[k] = new float[BOARD_SIZE];
+		memset(uctbon[k], 0, sizeof(uctbon[k]));
 	}
 	int i, j;
 	printf("The total simulation time is %d\n", root->num);
-	CopyUCT(root, uctval, uctnum);
+	CopyUCT(root, uctval, uctnum, uctbon);
 	printf("---THE VALUE MATRIX---\n");
 	printf("   0    1    2    3    4    5    6    7    8    9    10   11   12\n");
 	for (int x = 0; x < BOARD_SIZE; ++x) {
@@ -242,6 +245,18 @@ void UCT::PrintUCT() {
 				printf("00  ");
 			else
 				printf("%02d  ", uctnum[x][y]);
+		}
+		printf("\n");
+	}
+	printf("---THE BONUS MATRIX---\n");
+	printf("   0    1    2    3    4    5    6    7    8    9    10   11   12\n");
+	for (int x = 0; x < BOARD_SIZE; ++x) {
+		printf("%02d ", x);
+		for (int y = 0; y < BOARD_SIZE; ++y) {
+			if (uctbon[x][y] > 100000)
+				printf("0.00 ");
+			else
+				printf("%.2f ", uctbon[x][y]);
 		}
 		printf("\n");
 	}
