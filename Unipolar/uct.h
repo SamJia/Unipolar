@@ -70,7 +70,7 @@ void UCT::Task(Board &board, PointState state, Node *node, int &num, int t) {
 void UCT::GenChild(Node *node, Board &board, PointState state) {
 	mtx.lock();
 	if (node->son == nullptr) {
-		node->son = new Node(POSITION_PASS, nullptr, nullptr);
+		// node->son = new Node(POSITION_PASS, nullptr, nullptr);
 		std::vector<PositionIndex> playable = board.GetPlayablePosition(state);
 		for (int i = 0, size = playable.size(); i < size; ++i)
 			node->son = new Node(playable[i], nullptr, node->son);
@@ -141,11 +141,11 @@ void UCT::MCSimulation(Board &board, Node *node, PointState state) {
 		idx += 1;
 		act = record[idx] = FindBestChild(act);
 		once_bon = board.PlayMove(Move(state, act->pos));
-		if (act->pos == POSITION_PASS && record[idx - 1]->pos == POSITION_PASS) {
-			once_val = MC().Evaluate(board, state);
-			flag = false;
-			break;
-		}
+		// if (act->pos == POSITION_PASS && record[idx - 1]->pos == POSITION_PASS) {
+		// 	once_val = MC().Evaluate(board, state);
+		// 	flag = false;
+		// 	break;
+		// }
 		state = 1 - state;
 	}
 	if (flag)
@@ -180,11 +180,13 @@ Move UCT::GenMove(Board &board, PointState state) {
 	root->num = 1;
 	// printf("GenChild\n");
 	GenChild(root, board, state);
+	if(root->son == nullptr)
+		return Move(EMPTY_POINT, POSITION_PASS);
 	int count = 0;
 	int end_time = t + CLOCKS_PER_SEC * 3;
 	std::vector<std::thread> threads;
 	threads.reserve(10);
-	for (int i = 0; i < 4; ++i)
+	for (int i = 0; i < 8; ++i)
 		threads.push_back(std::thread([&]() {this->Task(board, state, root, count, end_time);}));
 	for (auto& th : threads)
 		th.join();

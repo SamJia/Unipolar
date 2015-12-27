@@ -57,11 +57,18 @@ int Controller::Run(Board &board) {
 	// command.resize(100);
 	// fout << "start reading commands" << endl;
 	while (true) {
+		// ofstream fout("C:\\Users\\Sam\\Documents\\Visual Studio 2015\\Projects\\Unipolar\\x64\\Release\\log.txt", ios::app);
 		cin >> command;
+		// fout << '"' << command << ':' << command.length() << ':' << (command == "name") << '"';
+		// command.erase(0,command.find_first_not_of(" \n"));
+	    // command.erase(command.find_last_not_of(" \n") + 1);
 		// scanf("%s", &command[0]);
 		// fout << "read command : " << command << endl;
-		if (command == "name")
+		if (command == "name"){
+			// fout << "GTPName";
+			// fout.close();
 			GTPName();
+		}
 		else if (command == "protocol_version")
 			GTPProtocolVersion();
 		else if (command == "version")
@@ -95,39 +102,40 @@ int Controller::Run(Board &board) {
 }
 
 int Controller::GTPName() {
-	printf("= Unipolar_with_jsk\n\n");
+	cout << "= Unipolar_with_jsk\n" << endl;
+	// printf("= Unipolar_with_jsk\n\n");
 	return 0;
 }
 
 int Controller::GTPProtocolVersion() {
-	printf("= 2\n\n");
+	cout << "= 2\n" << endl;
 	return 0;
 }
 
 int Controller::GTPVersion() {
-	printf("= 1.0\n\n");
+	cout << "= 2.0\n" << endl;
 	return 0;
 }
 
 int Controller::GTPListCommands() {
-	printf("= name\nprotocol_version\nversion\nlist_commands\nboardsize\nclear_board\nkomi\nplay\ngenmove\nshowboard\nquit\nfinal_score\nfinal_status_list\n\n");
+	cout << "= name\nprotocol_version\nversion\nlist_commands\nboardsize\nclear_board\nkomi\nplay\ngenmove\nshowboard\nquit\nfinal_score\nfinal_status_list\n" << endl;
 	return 0;
 }
 
 int Controller::GTPBoardsize() {
-	printf("= \n\n");
+	cout << "= \n" << endl;
 	return 0;
 }
 
 int Controller::GTPClearBoard(Board &board) {
 	board.ClearBoard();
-	printf("= \n\n");
+	cout << "= \n" << endl;
 	return 0;
 }
 
 int Controller::GTPKomi() {
 	cin >> komi_;
-	printf("= \n\n");
+	cout << "= \n" << endl;
 	return 0;
 }
 
@@ -149,7 +157,7 @@ int Controller::GTPPlay(Board &board) {
 	else {
 		board.PlayMove(Move(state, POSITION_PASS));
 	}
-	printf("= \n\n");
+	cout << "= \n" << endl;
 	return 0;
 }
 
@@ -179,12 +187,13 @@ int Controller::GTPGenmove(Board &board, TireTree &joseki, string &seq) {
 	}
 	board.PlayMove(move);
 	if (move.position == POSITION_PASS) {
-		printf("= PASS\n\n");
+		cout << "= PASS\n" << endl;
 		return 0;
 	}
 	int x = move.position / BOARD_SIZE, y = move.position % BOARD_SIZE + 1;
 	char x_char = (x > 7 ? x + 1 : x) + 'A';
-	printf("= %c%d\n\n", x_char, y);
+	cout << "= " << x_char << y << '\n' << endl;
+	// printf("= %c%d\n\n", x_char, y);
 
 	char tmp_str[50000];
 	snprintf(tmp_str, sizeof(tmp_str), "%s %c %c %d", seq.c_str(), color - 'a' + 'A', x_char, y);
@@ -195,22 +204,22 @@ int Controller::GTPGenmove(Board &board, TireTree &joseki, string &seq) {
 
 int Controller::GTPShowboard(Board &board) {
 	board.Print();
-	printf("= \n\n");
+	cout << "= \n" << endl;
 	return 0;
 }
 
 int Controller::GTPQuit() {
-	printf("= \n\n");
+	cout << "= \n" << endl;
 	exit(0);
 }
 
 int Controller::GTPFinalScore() {
-	printf("= \n\n");
+	cout << "= \n" << endl;
 	return 0;
 }
 
 int Controller::GTPFinalStatusList() {
-	printf("= \n\n");
+	cout << "= \n" << endl;
 	return 0;
 }
 

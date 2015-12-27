@@ -6,6 +6,8 @@
 #include <cstdint>
 #include <ctime>
 #include <cstdlib>
+#include <string>
+#include <iostream>
 #define TIMES 100000000
 using namespace unipolar;
 class BitSet
@@ -116,4 +118,9 @@ int main() {
 	data[1] = 5;
 	data[0] &= data[0] ^ data[1];
 	printf("%lld\n", data[0]);
+	std::string s;
+	while(true){
+		std::cin >> s;
+		printf("%d\n", s == "name");
+	}
 }

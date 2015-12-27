@@ -141,7 +141,7 @@ public:
 	float PlayMove(const Move &move);
 	std::vector<PositionIndex> GetPlayablePosition(PointState state) {
 		int base = 0;
-		BitSet tmp = empty_[state] - suiside_[state] - safe_eye_[state];
+		BitSet tmp = empty_[state] - suiside_[state] - safe_eye_[state] - dangerous_empty_[state] - dangerous_empty_[state^1];
 		std::vector<PositionIndex> playable_pos;
 		playable_pos.reserve(tmp.count());
 		for (int j = 0; j < 3; ++j) {
@@ -189,6 +189,7 @@ public:
 			}
 			base += 64;
 		}
+		return POSITION_PASS;
 	}
 	PositionIndex SpecialPointTest(PointState state);
 	void PrintVector(std::vector<PositionIndex> v) {

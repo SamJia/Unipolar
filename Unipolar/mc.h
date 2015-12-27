@@ -20,19 +20,6 @@ public:
 	~MC() = default;
 	float Simulate(Board &board, PointState state);
 	float Evaluate(Board &Board, PointState state);
-	float Test(std::thread::id a) {
-		static int b = 1;
-		if (b)
-			a_ = a;
-		b = 0;
-		// std::cout << a_ << std::endl;
-		if (mtx.try_lock()) {
-			std::cout << std::this_thread::get_id() << ' ' << a_ << std::endl;
-			mtx.unlock();
-		}
-
-	}
-	std::thread::id a_;
 // private:
 };
 
@@ -49,7 +36,7 @@ float MC::Simulate(Board &board, PointState state) {
 	// board.StartMC();
 	PointState next_state = state;
 	Move mv;
-	int count = 0;
+	int count = board.GetPieceCount(0) + board.GetPieceCount(1);
 	bool last_pass = false;
 	int playable_count;
 	std::vector<PositionIndex> playable_pos;
@@ -92,11 +79,10 @@ float MC::Simulate(Board &board, PointState state) {
 }
 
 float MC::Evaluate(Board &board, PointState state) {
-	return board.GetAreaCount(state) > board.GetAreaCount(state ^ 1);
-	// int piece_count[] = {board.GetPieceCount(0), board.GetPieceCount(1)};
-	int piece_count[] = {board.GetAreaCount(0), board.GetAreaCount(1)};
-	return 2 * piece_count[state] > (piece_count[0] + piece_count[1]) ? 1 : 0;
-	// return float(piece_count[state]) / (piece_count[0] + piece_count[1]);
+	float piece_count[2];
+	piece_count[WHITE_POINT] = board.GetAreaCount(WHITE_POINT) + 6.5;
+	piece_count[BLACK_POINT] = board.GetAreaCount(BLACK_POINT);
+	return piece_count[state] > piece_count[state ^ 1];
 }
 
 #endif
