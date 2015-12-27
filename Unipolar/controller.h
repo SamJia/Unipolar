@@ -169,15 +169,15 @@ int Controller::GTPGenmove(Board &board, TireTree &joseki, string &seq) {
 	cin >> color;
 	PointState state = color == 'b' ? BLACK_POINT : WHITE_POINT;
 	int posi = -1;
-	// if(seq != "") {
-	//     posi = joseki.findBest(seq);
-	//     if(posi == -1) {
-	//         int posi = joseki.findBest(seqold);
-	//     }
-	// }else{
-	//     int a[] = {29, 35, 41, 42, 48, 49, 120, 121, 127, 128, 134, 140};
-	//     posi = a[rand()%12];
-	// }
+	if(seq != "") {
+	    posi = joseki.findBest(seq);
+	    if(posi == -1) {
+	        int posi = joseki.findBest(seqold);
+	    }
+	}else{
+	    int a[] = {29, 35, 41, 42, 48, 49, 120, 121, 127, 128, 134, 140};
+	    posi = a[rand()%12];
+	}
 	Move move;
 
 	if (posi >= 0) {

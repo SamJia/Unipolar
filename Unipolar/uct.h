@@ -70,8 +70,11 @@ void UCT::Task(Board &board, PointState state, Node *node, int &num, int t) {
 void UCT::GenChild(Node *node, Board &board, PointState state) {
 	mtx.lock();
 	if (node->son == nullptr) {
-		// node->son = new Node(POSITION_PASS, nullptr, nullptr);
 		std::vector<PositionIndex> playable = board.GetPlayablePosition(state);
+		if (playable.size() == 0) {
+			node->son = new Node(POSITION_PASS, nullptr, nullptr);
+			//printf("no playable\n");
+		}
 		for (int i = 0, size = playable.size(); i < size; ++i)
 			node->son = new Node(playable[i], nullptr, node->son);
 	}
