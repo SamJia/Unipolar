@@ -87,19 +87,19 @@ void UCT::GenChild(Node *node, Board &board, PointState state) {
 
 float UCT::UCB(Node *node, Count totalnum) {
 	if (node->num == 0)
-		return DBL_MAX;
-	return node->bon * 0.1 + node->val / node->num + uctconst * sqrt(logf(totalnum) / node->num);
+		return 1000000000;
+	return node->bon * 0.05 + node->val / node->num + uctconst * sqrt(logf(totalnum) / node->num);
 }
 
 float UCT::Score(Node *node) {
 	if (node->num == 0)
 		return 0;
-	return node->bon * 0.1 + node->val / node->num;
+	return node->bon * 0.05 + node->val / node->num;
 }
 
 UCT::Node *UCT::FindBestChild(Node *node) {
 	if (node->son == nullptr) {
-		printf("no child\n");
+		std::cout << "no child" << std::endl;
 		exit(0);
 	}
 	float maxUCB = UCB(node->son, node->num - 1);
@@ -117,7 +117,7 @@ UCT::Node *UCT::FindBestChild(Node *node) {
 
 UCT::Node *UCT::FindBestUCT(Node *node) {
 	if (node->son == nullptr) {
-		printf("no child\n");
+		std::cout << "no child" << std::endl;
 		exit(0);
 	}
 	float maxScore = Score(node->son);
@@ -144,11 +144,11 @@ void UCT::MCSimulation(Board &board, Node *node, PointState state) {
 		idx += 1;
 		act = record[idx] = FindBestChild(act);
 		once_bon = board.PlayMove(Move(state, act->pos));
-		// if (act->pos == POSITION_PASS && record[idx - 1]->pos == POSITION_PASS) {
-		// 	once_val = MC().Evaluate(board, state);
-		// 	flag = false;
-		// 	break;
-		// }
+		 if (act->pos == POSITION_PASS && record[idx - 1]->pos == POSITION_PASS) {
+		 	once_val = MC().Evaluate(board, state);
+		 	flag = false;
+		 	break;
+		 }
 		state = 1 - state;
 	}
 	if (flag)
@@ -157,7 +157,7 @@ void UCT::MCSimulation(Board &board, Node *node, PointState state) {
 			idx += 1;
 			GenChild(act, board, state);
 			if (act->son == nullptr)
-				printf("gen failed\n");
+				std::cout << "gen failed" << std::endl;
 			act = record[idx] = FindBestChild(act);
 			once_bon = board.PlayMove(Move(state, act->pos));
 			state = 1 - state;
@@ -183,6 +183,7 @@ Move UCT::GenMove(Board &board, PointState state) {
 	root->num = 1;
 	// printf("GenChild\n");
 	GenChild(root, board, state);
+	// std::cout << root->son << std::endl;
 	if(root->son == nullptr)
 		return Move(EMPTY_POINT, POSITION_PASS);
 	int count = 0;
@@ -193,7 +194,7 @@ Move UCT::GenMove(Board &board, PointState state) {
 		threads.push_back(std::thread([&]() {this->Task(board, state, root, count, end_time);}));
 	for (auto& th : threads)
 		th.join();
-	printf("totally %d times of MC\n", count);
+	std::cout << "totally " << count << " times of MC" << std::endl;
 	// PrintUCT();
 	nextstep.state = state;
 	nextstep.position = FindBestUCT(root)->pos;
