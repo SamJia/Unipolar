@@ -40,6 +40,8 @@ public:
     SMO(svm_option *opt);
     int train();
     int predict();
+    void readyPredict();
+    int predict(sparse_vector x);
 
 protected:
 
@@ -87,10 +89,10 @@ svm_option::svm_option(){
     eps = 0.001;
     sigma = 4.0;
     is_linear_kernel = false;
-    train_path = "data/go3x3.train";
-    test_path = "data/go3x3.test";
-    model_path = "data/go3x3.model";
-    output_path = "data/go3x3.output";
+    train_path = "data/heart_scale.train";
+    test_path = "data/heart_scale.test";
+    model_path = "data/heart_scale.model";
+    output_path = "data/heart_scale.output";
 }
 
 SMO::SMO(svm_option *opt){
@@ -148,9 +150,9 @@ int SMO::predict(){
      
     ifstream is_test(test_path);
     batch_read_sample(is_test, X, Y, n);
-
+    // cout<<n<<endl;
     n += n_sv;
-    
+    // cout<<n<<" "<<X.size()<<endl;
     if (!is_linear_kernel){
         D.resize(n);
         for (int i = 0; i < n; i++)
@@ -180,6 +182,43 @@ int SMO::predict(){
     cerr << setprecision(5) << "Accuracy: " <<  100.0 * n_correct / (n - n_sv) << "% (" << n_correct << "/" << (n - n_sv) << ")" << endl;
 
     return 0;
+}
+
+void SMO::readyPredict() {
+    X.clear();
+    Y.clear();
+    w.clear();
+    alpha.clear();
+
+    ifstream is_model(model_path);
+    load_model(is_model);
+}
+int SMO::predict(sparse_vector x) {
+    int n = n_sv+1;
+    X.push_back(x);
+
+    if (!is_linear_kernel){
+        D.resize(n);
+        for (int i = 0; i < n; i++)
+            D[i] = dot_product(X[i], X[i]);
+    }
+
+    float y_pred;
+
+    int i = n_sv;
+    float s = 0.0;
+
+    if(is_linear_kernel) {
+        s = dot_product(w, X[i]);
+    } else {
+        for(int j = 0; j < n_sv; j++)
+            s += alpha[j] * Y[j] * kernel(i, j);
+    }
+    s -= b;
+    y_pred = s >= 0.0? 1.0 : -1.0;
+    X.pop_back();
+    cout<<s<<endl;
+    return y_pred;
 }
 
 int SMO::train(){
