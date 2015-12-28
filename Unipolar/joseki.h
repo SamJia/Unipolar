@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <string>
 #include <time.h>
+#include <queue>
 
 using namespace std;
 
@@ -20,7 +21,7 @@ private:
 		node *child;
 		node(int c, string x, string y):color(c),x(x),y(y),posi(-1), brother(NULL),child(NULL),num(0){}
 		node(int c, int p):color(c),posi(p), brother(NULL),child(NULL),num(0){}
-	} ;
+	};
 	int convertPosi(string );
 	void remove(node *);
 	// bool isEqual();
@@ -30,6 +31,9 @@ public:
 	TireTree() {
 		root = new node(-1, -1);
 		state = -1;
+	}
+	int size() {
+		return root->num;
 	}
 	~TireTree() {
 		remove(root);
@@ -58,6 +62,7 @@ void TireTree::insert(string &seq) {
 	node *tmpC = NULL, *tmp = root, *tmpB = NULL;
 	stringstream mid_seq(seq);
 	mid_seq >> num;
+	root->num += num;
 	while ((tmpC = tmp->child) && mid_seq >> color >> x >> y) {
 		// cout << color << x << y << endl;
 		// cout<<1<<endl;
@@ -167,13 +172,14 @@ int TireTree::findBest(string &pattern) {
 	mid_seq >> color;
 	// cout<<"from findBest:1";
 	while(tmp && mid_seq >> x >> y) {
-		// cout<<"in"<<color<<x<<y<<endl;
+		cout<<"in"<<color<<x<<y<<endl;
 		// cout << tmp->color<<tmp->x<<tmp->y<<endl;
 		// cout<<"from findBest:2";
 	    if ((color == 'B' && tmp->color == 0 || 
 			color == 'W' && tmp->color == 1) &&
 			tmp->x == x && tmp->y == y) {
 	    	tmpp = tmp;
+		    mid_seq >> color;
 	    	tmp = tmp->child;
 	    	continue;
 	    } else {

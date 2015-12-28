@@ -8,21 +8,24 @@ int main() {
 	// string s3 = "10 B D 10 W K 10 B D 4 W K 4 B H 11";
 	// // cin >> s2;
 	// // cin >> s3;
-	string s4 = "B D 10";
+	string s4 = "B K 11 W K 4 B D 10 W D 4";
 	TireTree tt;
-	tt.insert(s1);
-	tt.insert(s2);
+	// tt.insert(s1);
+	// tt.insert(s2);
 	// cout<<"--------------------"<<endl;
 	// tt.insert(s3);
 	// cout << tt.find(s4);
-	ifstream in("static_40.dic");
+	ifstream in("static_20.dic");
 	string a;
 	while (getline(in,a)){
 		tt.insert(a);
 		// cout<<a<<endl;
 	}
+	string sa = "       B D 10 ";
+	cout << tt.size()<<endl;
 	cout << tt.find(s4)<<endl;
-	cout << tt.findBest(s4);
+	cout << tt.findBest(s4)<<endl;
+	// cout << tt.size()<<endl;
 	cout<<"Done\n";
 
 }

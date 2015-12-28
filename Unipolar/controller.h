@@ -47,12 +47,12 @@ int Controller::Run(Board &board) {
 	// freopen("commands.txt", "r", stdin);
 	//Load the joseki
 	TireTree joseki;
-	ifstream in("C:\\Users\\user\\Documents\\GitHub\\Unipolar\\Unipolar\\static_40.dic");
+	ifstream in("C:\\Users\\user\\Documents\\GitHub\\Unipolar\\Unipolar\\static_20.dic");
 	string a;
 	while (getline(in, a)) {
 		joseki.insert(a);
 	}
-
+	// cout<<joseki.size()+1<<endl;
 	string command;
 	// command.resize(100);
 	// fout << "start reading commands" << endl;
@@ -144,10 +144,13 @@ int Controller::GTPPlay(Board &board) {
 	string y_str;
 	int x, y;
 	PointState state = EMPTY_POINT;
-	char *tmp_str = new char[50000];
+	char tmp_str[50000];
 	cin >> color >> x_char >> y_str;
+	// cout<<"seq1:"<<seq<<endl;
+	// cout<<"seqchar*"<<seq.c_str()<<endl;
 	snprintf(tmp_str, sizeof(tmp_str), "%s %c %c %s", seq.c_str(), color, x_char, y_str.c_str());
 	seq = string(tmp_str);
+	// cout<<"seq2:"<<seq<<endl;
 	if (y_str != "ASS" && y_str != "ass") {
 		x = (x_char > 'I' ? x_char - 1 : x_char) - 'A';
 		y = atoi(y_str.c_str()) - 1;
@@ -170,16 +173,42 @@ int Controller::GTPGenmove(Board &board, TireTree &joseki, string &seq) {
 	PointState state = color == 'b' ? BLACK_POINT : WHITE_POINT;
 	int posi = -1;
 	if(seq != "") {
+		// cout<<"seq"<<seq<<endl;
 	    posi = joseki.findBest(seq);
 	    if(posi == -1) {
-	        int posi = joseki.findBest(seqold);
+			// cout<<"oldseq"<<seqold<<endl;
+			// cout<<joseki.size()<<endl;
+			// cout<<joseki.findBest(seqold)<<endl;
+	        posi = joseki.findBest(seqold);
+	        // cout<<posi<<endl;
+	        if (posi >= 0){
+	        	int x = posi / BOARD_SIZE;
+	        	int y = posi % BOARD_SIZE + 1;
+				char x_char = (x > 7 ? x + 1 : x) + 'A';
+				char tmp_str[50000];
+
+				if (color == 'b')
+					color = 'w';
+				else 
+					color = 'b';
+
+				snprintf(tmp_str, sizeof(tmp_str), "%s %c %c %d", seqold.c_str(), color - 'a' + 'A', x_char, y);
+				seq = (string)tmp_str;
+				// cout<<"sb:"<<seq<<endl;
+				posi = joseki.findBest(seq);
+				// cout<<posi<<endl;
+
+				if (color == 'b')
+					color = 'w';
+				else 
+					color = 'b';
+			}
 	    }
 	}else{
 	    int a[] = {29, 35, 41, 42, 48, 49, 120, 121, 127, 128, 134, 140};
 	    posi = a[rand()%12];
 	}
 	Move move;
-
 	if (posi >= 0) {
 		move = Move(state, posi);
 	} else {
@@ -215,7 +244,7 @@ int Controller::GTPQuit() {
 
 int Controller::GTPFinalScore() {
 	cout << "= \n" << endl;
-	return 0;
+	return 0;	
 }
 
 int Controller::GTPFinalStatusList() {
