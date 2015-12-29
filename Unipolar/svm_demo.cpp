@@ -35,26 +35,8 @@ int main(int argc, char *argv[]){
     }
 
     SMO *s = new SMO(opt);
-    // s->train();
-    s->readyPredict();
-    sparse_vector x;
-x.push_back(pair<int,float>(1,-0.5));
-x.push_back(pair<int,float>(2,-1));
-x.push_back(pair<int,float>(3,-0.333333));
-x.push_back(pair<int,float>(4,-0.396226));
-x.push_back(pair<int,float>(5,-0.178082));
-x.push_back(pair<int,float>(6,-1));
-x.push_back(pair<int,float>(7,-1));
-x.push_back(pair<int,float>(8,0.40458));
-x.push_back(pair<int,float>(9,-1));
-x.push_back(pair<int,float>(10,-1));
-x.push_back(pair<int,float>(11,-1));
-x.push_back(pair<int,float>(12,-1));
-x.push_back(pair<int,float>(13,-1));
-    cout<<s->predict(x)<<endl;
-    cout<<s->predict(x)<<endl;
-    cout<<s->predict(x)<<endl;
-    cout<<s->predict(x)<<endl;
-    cout<<s->predict(x)<<endl;
+    s->train();
+    s->predict();
+    // s->readyPredict();
 }
 

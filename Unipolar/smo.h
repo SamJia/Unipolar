@@ -87,12 +87,12 @@ svm_option::svm_option(){
     C = 1.0;
     tol = 0.0001;
     eps = 0.001;
-    sigma = 4.0;
-    is_linear_kernel = false;
-    train_path = "data/heart_scale.train";
-    test_path = "data/heart_scale.test";
-    model_path = "data/heart_scale.model";
-    output_path = "data/heart_scale.output";
+    sigma = 1.0;
+    is_linear_kernel = true;
+    train_path = "data/go3x3.train";
+    test_path = "data/go3x3.train";
+    model_path = "data/go3x3.model";
+    output_path = "data/go3x3.output";
 }
 
 SMO::SMO(svm_option *opt){
@@ -161,9 +161,10 @@ int SMO::predict(){
 
     int n_correct = 0;
     float y_pred;
-
+    int pass = 0;
     ofstream os_output(output_path);
     for (int i = n_sv; i < n; i++){
+        y_pred = 0;
         float s = 0.0;
         if(is_linear_kernel){
             s = dot_product(w, X[i]);
@@ -173,13 +174,21 @@ int SMO::predict(){
                 s += alpha[j] * Y[j] * kernel(i, j);
         }
         s -= b;
-        y_pred = s >= 0.0? 1.0 : -1.0;
-        os_output << y_pred << endl;
+        if (s>= 0)
+            y_pred = 1.0;
+        else if (s< 0)
+            y_pred = -1.0;
+        os_output << s << endl;
+        if (y_pred == 0){
+            pass++;
+            continue;
+        }
+
         if((y_pred > 0 and Y[i] > 0) or (y_pred < 0 and Y[i] < 0))
             n_correct++;
     }
 
-    cerr << setprecision(5) << "Accuracy: " <<  100.0 * n_correct / (n - n_sv) << "% (" << n_correct << "/" << (n - n_sv) << ")" << endl;
+    cerr << setprecision(5) << "Accuracy: " <<  100.0 * n_correct / (n - n_sv - pass) << "% (" << n_correct << "/" << (n - n_sv - pass) << ")" << endl;
 
     return 0;
 }
