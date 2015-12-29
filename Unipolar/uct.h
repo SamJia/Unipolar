@@ -32,7 +32,18 @@ private:
 		}
 	};
 public:
-	UCT() : root(new Node()) {};
+	float joseki_bonus[BoardSizeSquare(BOARD_SIZE)];
+	UCT(float* bonus = NULL) : root(new Node()) {
+		if(bonus) {
+		// 	memcpy(joseki_bonus, bonus, sizeof(bonus));
+			for(PositionIndex i = 0; i < BoardSizeSquare(BOARD_SIZE); ++i)
+				joseki_bonus[i] = bonus[i];
+		}
+		else {
+			for(PositionIndex i = 0; i < BoardSizeSquare(BOARD_SIZE); ++i)
+				joseki_bonus[i] = 0;
+		}
+	};
 	~UCT() {
 		delete root;
 	};
@@ -88,13 +99,13 @@ void UCT::GenChild(Node *node, Board &board, PointState state) {
 float UCT::UCB(Node *node, Count totalnum) {
 	if (node->num == 0)
 		return 1000000000;
-	return node->bon * 0.05 + node->val / node->num + uctconst * sqrt(logf(totalnum) / node->num);
+	return node->bon * 0.02 + node->val / node->num + uctconst * sqrt(logf(totalnum) / node->num);
 }
 
 float UCT::Score(Node *node) {
 	if (node->num == 0)
 		return 0;
-	return node->bon * 0.05 + node->val / node->num;
+	return node->bon * 0.02 + node->val / node->num;
 }
 
 UCT::Node *UCT::FindBestChild(Node *node) {
@@ -120,11 +131,12 @@ UCT::Node *UCT::FindBestUCT(Node *node) {
 		std::cout << "no child" << std::endl;
 		exit(0);
 	}
-	float maxScore = Score(node->son);
+	// add joseki bonus.
+	float maxScore = Score(node->son) + joseki_bonus[node->son->pos];
 	float actScore;
 	Node *maxNode = node->son;
 	for (Node *p = node->son->bro; p; p = p->bro) {
-		actScore = Score(p);
+		actScore = Score(p)  + joseki_bonus[p->pos];
 		if (actScore > maxScore) {
 			maxScore = actScore;
 			maxNode = p;

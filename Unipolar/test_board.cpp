@@ -12,6 +12,8 @@
 #include "def.h"
 #include "mc.h"
 #include "uct.h"
+#include "joseki.h"
+#include "controller.h"
 // #include "uct_vector.h"
 // #include "uct_vector_ptr.h"
 // #include "uct_test.h"
@@ -28,6 +30,16 @@ int Hakmen(unsigned int n)
 }
 
 int main() {
+	TireTree joseki;
+	ifstream in("static_20.dic");
+	string a;
+	while (getline(in, a)) {
+		joseki.insert(a);
+	}
+
+	float j[169];
+	for(int i = 0; i < 169; ++i)
+		j[i] = 0;
 	Board::Init();
 	Board board;
 	board.ClearBoard();

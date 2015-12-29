@@ -52,6 +52,9 @@ const float uctconst = 1.44;
 typedef float Value;
 typedef int Count;
 
+// for joseki theshold
+const int JOSEKI_STEP = 12;
+
 }
 
 #endif

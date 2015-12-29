@@ -31,13 +31,14 @@ private:
 	int GTPBoardsize();
 	int GTPClearBoard(Board &board);
 	int GTPKomi();
-	int GTPPlay(Board &board);
+	int GTPPlay(Board &board, string &seq);
 	int GTPGenmove(Board &board, TireTree &joseki, string &seq);
 	int GTPShowboard(Board &board);
 	int GTPQuit();
 	int GTPFinalScore();
 	int GTPFinalStatusList();
 	float komi_;
+	int step_count;
 };
 
 int Controller::Run(Board &board) {
@@ -47,12 +48,14 @@ int Controller::Run(Board &board) {
 	// freopen("commands.txt", "r", stdin);
 	//Load the joseki
 	TireTree joseki;
-	ifstream in("C:\\Users\\user\\Documents\\GitHub\\Unipolar\\Unipolar\\static_20.dic");
+	step_count = 0;
+	// has to be absolute path!!
+	ifstream in("D:\\Document\\AI\\Proj\\Unipolar\\Unipolar\\static_20.dic");
 	string a;
+	getline(in, a);
 	while (getline(in, a)) {
 		joseki.insert(a);
 	}
-	// cout<<joseki.size()+1<<endl;
 	string command;
 	// command.resize(100);
 	// fout << "start reading commands" << endl;
@@ -81,10 +84,14 @@ int Controller::Run(Board &board) {
 			GTPClearBoard(board);
 		else if (command == "komi")
 			GTPKomi();
-		else if (command == "play")
-			GTPPlay(board);
-		else if (command == "genmove")
+		else if (command == "play") {
+			GTPPlay(board, seq);
+			++step_count;
+		}
+		else if (command == "genmove") {
 			GTPGenmove(board, joseki, seq);
+			++step_count;
+		}
 		else if (command == "showboard")
 			GTPShowboard(board);
 		else if (command == "quit")
@@ -139,18 +146,15 @@ int Controller::GTPKomi() {
 	return 0;
 }
 
-int Controller::GTPPlay(Board &board) {
+int Controller::GTPPlay(Board &board, string &seq) {
 	char color, x_char;
 	string y_str;
 	int x, y;
 	PointState state = EMPTY_POINT;
 	char tmp_str[50000];
 	cin >> color >> x_char >> y_str;
-	// cout<<"seq1:"<<seq<<endl;
-	// cout<<"seqchar*"<<seq.c_str()<<endl;
 	snprintf(tmp_str, sizeof(tmp_str), "%s %c %c %s", seq.c_str(), color, x_char, y_str.c_str());
 	seq = string(tmp_str);
-	// cout<<"seq2:"<<seq<<endl;
 	if (y_str != "ASS" && y_str != "ass") {
 		x = (x_char > 'I' ? x_char - 1 : x_char) - 'A';
 		y = atoi(y_str.c_str()) - 1;
@@ -172,48 +176,37 @@ int Controller::GTPGenmove(Board &board, TireTree &joseki, string &seq) {
 	cin >> color;
 	PointState state = color == 'b' ? BLACK_POINT : WHITE_POINT;
 	int posi = -1;
-	if(seq != "") {
-		// cout<<"seq"<<seq<<endl;
-	    posi = joseki.findBest(seq);
+
+	float joseki_bonus[unipolar::BoardSizeSquare(unipolar::BOARD_SIZE)];
+	for(int i = 0; i < unipolar::BoardSizeSquare(unipolar::BOARD_SIZE); ++i)
+		joseki_bonus[i] = 0;
+
+	// a theshold for joseki analysis.
+	cout << "step is " << step_count << endl;
+	if(step_count < JOSEKI_STEP) {
+		cout << "using joseki!\n";
+		// even if seq is null.
+	    posi = joseki.findBest(seq, joseki_bonus);
+
 	    if(posi == -1) {
-			// cout<<"oldseq"<<seqold<<endl;
-			// cout<<joseki.size()<<endl;
-			// cout<<joseki.findBest(seqold)<<endl;
-	        posi = joseki.findBest(seqold);
-	        // cout<<posi<<endl;
+	        posi = joseki.findBest(seqold, joseki_bonus);
 	        if (posi >= 0){
 	        	int x = posi / BOARD_SIZE;
 	        	int y = posi % BOARD_SIZE + 1;
 				char x_char = (x > 7 ? x + 1 : x) + 'A';
 				char tmp_str[50000];
-
-				if (color == 'b')
-					color = 'w';
-				else 
-					color = 'b';
-
+				color = (color == 'b') ? 'w' : 'b';
 				snprintf(tmp_str, sizeof(tmp_str), "%s %c %c %d", seqold.c_str(), color - 'a' + 'A', x_char, y);
 				seq = (string)tmp_str;
 				// cout<<"sb:"<<seq<<endl;
-				posi = joseki.findBest(seq);
+				posi = joseki.findBest(seq, joseki_bonus);
 				// cout<<posi<<endl;
-
-				if (color == 'b')
-					color = 'w';
-				else 
-					color = 'b';
+				color = (color == 'b') ? 'w' : 'b';
 			}
-	    }
-	}else{
-	    int a[] = {29, 35, 41, 42, 48, 49, 120, 121, 127, 128, 134, 140};
-	    posi = a[rand()%12];
 	}
+    }
 	Move move;
-	if (posi >= 0) {
-		move = Move(state, posi);
-	} else {
-		move = UCT().GenMove(board, state);
-	}
+	move = UCT(joseki_bonus).GenMove(board, state);
 	board.PlayMove(move);
 	if (move.position == POSITION_PASS) {
 		cout << "= PASS\n" << endl;
@@ -227,7 +220,7 @@ int Controller::GTPGenmove(Board &board, TireTree &joseki, string &seq) {
 	char tmp_str[50000];
 	snprintf(tmp_str, sizeof(tmp_str), "%s %c %c %d", seq.c_str(), color - 'a' + 'A', x_char, y);
 	seqold = seq = string(tmp_str);
-
+	// cout << "next seq: " << seq << endl;
 	return 0;
 }
 
