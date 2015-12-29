@@ -11,20 +11,16 @@ int main() {
 	// string s2 = "14 B D 10 W C 4 B L 10 W K 4 B L 7";
 	// string s1 = "12 B D 10 W C 4 B L 10 W K 3";
 	// string s3 = "14 B D 10 W C 4 B L 10 W K 4";
-	string s4 = "B K 10";
+	string s4 = "B D 4";
 	TireTree tt;
 	// tt.insert(s1);
 	// tt.insert(s2);
 	// tt.insert(s3);
-	ifstream in("static_20.dic");
-	string a;
-	while (getline(in,a)){
-		tt.insert(a);
-	}
+	tt.load();
 	// cout << tt.size()<<endl;
 	// cout << tt.find(s4)<<endl;
-	tt.findBest(s4, bonus);
-	// cout << tt.size()<<endl;
+	// tt.findBest(s4, bonus);
+	cout << tt.size()<<endl;
 	cout<<"Done\n";
 
 }

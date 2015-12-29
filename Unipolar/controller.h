@@ -50,12 +50,8 @@ int Controller::Run(Board &board) {
 	TireTree joseki;
 	step_count = 0;
 	// has to be absolute path!!
-	ifstream in("D:\\Document\\AI\\Proj\\Unipolar\\Unipolar\\static_20.dic");
-	string a;
-	getline(in, a);
-	while (getline(in, a)) {
-		joseki.insert(a);
-	}
+	// ifstream in("D:\\Document\\AI\\Proj\\Unipolar\\Unipolar\\static_20.dic");
+	joseki.load();
 	string command;
 	// command.resize(100);
 	// fout << "start reading commands" << endl;
