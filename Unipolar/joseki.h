@@ -41,7 +41,7 @@ public:
 	}
 	void load();
 	void insert(string &seq);
-	int findBest(string &seq, float* bonus);
+	int findBest(string &seq, double* bonus);
 	// void normalize();
 };
 
@@ -110,7 +110,7 @@ void TireTree::insert(string &seq) {
 	}
 }
 
-int TireTree::findBest(string &pattern, float* bonus) {
+int TireTree::findBest(string &pattern, double* bonus) {
 	stringstream mid_seq(pattern);
 	char color;
 	string x, y;

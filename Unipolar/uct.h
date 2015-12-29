@@ -4,17 +4,30 @@
 #include "def.h"
 #include "mc.h"
 #include <cstring>
-#include <assert.h>
-#include <stdlib.h>
-#include <math.h>
-#include <time.h>
+#include <cassert>
+#include <cstdlib>
+#include <cmath>
+#include <ctime>
 #include <thread>
 #include <mutex>
 #include <set>
 #include <iostream>
-#include <float.h>
 using namespace unipolar;
 
+double test_bonus[] = {
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0,
+0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0,
+0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0,
+0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0,
+0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0,
+0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0,
+0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0,
+0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0,
+0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 class UCT {
 private:
@@ -32,8 +45,8 @@ private:
 		}
 	};
 public:
-	float joseki_bonus[BoardSizeSquare(BOARD_SIZE)];
-	UCT(float* bonus = NULL) : root(new Node()) {
+	double joseki_bonus[BoardSizeSquare(BOARD_SIZE)];
+	UCT(double* bonus = NULL) : root(new Node()) {
 		if(bonus) {
 		// 	memcpy(joseki_bonus, bonus, sizeof(bonus));
 			for(PositionIndex i = 0; i < BoardSizeSquare(BOARD_SIZE); ++i)
@@ -49,13 +62,13 @@ public:
 	};
 	void Task(Board &board, PointState state, Node *node, int &num, int t);
 	void GenChild(Node *node, Board &board, PointState state);
-	float UCB(Node *node, Count totalnum);
-	float Score(Node *node);
+	double UCB(Node *node, Count totalnum);
+	double Score(Node *node);
 	Node *FindBestChild(Node *node);
 	Node *FindBestUCT(Node *node);
 	void MCSimulation(Board &board, Node *node, PointState state);
 	Move GenMove(Board &board, PointState state);
-	void CopyUCT(Node *node, float **valueboard, int **numboard, float **bonusboard);
+	void CopyUCT(Node *node, double **valueboard, int **numboard, double **bonusboard);
 	void PrintUCT();
 
 private:
@@ -96,16 +109,16 @@ void UCT::GenChild(Node *node, Board &board, PointState state) {
 	// node->son = new Node(*it, nullptr, node->son);
 }
 
-float UCT::UCB(Node *node, Count totalnum) {
+double UCT::UCB(Node *node, Count totalnum) {
 	if (node->num == 0)
 		return 1000000000;
-	return node->bon * 0.02 + node->val / node->num + uctconst * sqrt(logf(totalnum) / node->num);
+	return node->bon * 0.005 + node->val / node->num + uctconst * sqrt(log(totalnum) / node->num);
 }
 
-float UCT::Score(Node *node) {
+double UCT::Score(Node *node) {
 	if (node->num == 0)
 		return 0;
-	return node->bon * 0.02 + node->val / node->num;
+	return node->bon * 0.005 + node->val / node->num;
 }
 
 UCT::Node *UCT::FindBestChild(Node *node) {
@@ -113,8 +126,8 @@ UCT::Node *UCT::FindBestChild(Node *node) {
 		std::cout << "no child" << std::endl;
 		exit(0);
 	}
-	float maxUCB = UCB(node->son, node->num - 1);
-	float actUCB;
+	double maxUCB = UCB(node->son, node->num - 1);
+	double actUCB;
 	Node *maxNode = node->son;
 	for (Node *p = node->son->bro; p; p = p->bro) {
 		actUCB = UCB(p, node->num);
@@ -132,11 +145,11 @@ UCT::Node *UCT::FindBestUCT(Node *node) {
 		exit(0);
 	}
 	// add joseki bonus.
-	float maxScore = Score(node->son) + joseki_bonus[node->son->pos];
-	float actScore;
+	double maxScore = Score(node->son) + joseki_bonus[node->son->pos] + test_bonus[node->son->pos] / 100;
+	double actScore;
 	Node *maxNode = node->son;
 	for (Node *p = node->son->bro; p; p = p->bro) {
-		actScore = Score(p)  + joseki_bonus[p->pos];
+		actScore = Score(p)  + joseki_bonus[p->pos] + test_bonus[p->pos] / 100;
 		if (actScore > maxScore) {
 			maxScore = actScore;
 			maxNode = p;
@@ -150,8 +163,8 @@ void UCT::MCSimulation(Board &board, Node *node, PointState state) {
 	Node *act = record[0] = node;
 	int idx = 0;
 	bool flag = true;
-	float once_val = 0;
-	float once_bon = 0;
+	double once_val = 0;
+	double once_bon = 0;
 	while (act->son != nullptr) {
 		idx += 1;
 		act = record[idx] = FindBestChild(act);
@@ -214,7 +227,7 @@ Move UCT::GenMove(Board &board, PointState state) {
 	return nextstep;
 }
 
-void UCT::CopyUCT(Node *node, float **valueboard, int **numboard, float **bonusboard) {
+void UCT::CopyUCT(Node *node, double **valueboard, int **numboard, double **bonusboard) {
 	Node *act = node->son;
 	while (act != nullptr) {
 		valueboard[act->pos / BOARD_SIZE][act->pos % BOARD_SIZE] = Score(act);
@@ -225,18 +238,18 @@ void UCT::CopyUCT(Node *node, float **valueboard, int **numboard, float **bonusb
 }
 
 void UCT::PrintUCT() {
-	float **uctval;
+	double **uctval;
 	int **uctnum;
-	float **uctbon;
-	uctval = new float*[BOARD_SIZE];
+	double **uctbon;
+	uctval = new double*[BOARD_SIZE];
 	uctnum = new int*[BOARD_SIZE];
-	uctbon = new float*[BOARD_SIZE];
+	uctbon = new double*[BOARD_SIZE];
 	for (int k = 0; k < BOARD_SIZE; ++k) {
-		uctval[k] = new float[BOARD_SIZE];
+		uctval[k] = new double[BOARD_SIZE];
 		memset(uctval[k], 0, sizeof(uctval[k]));
 		uctnum[k] = new int[BOARD_SIZE];
 		memset(uctnum[k], 0, sizeof(uctnum[k]));
-		uctbon[k] = new float[BOARD_SIZE];
+		uctbon[k] = new double[BOARD_SIZE];
 		memset(uctbon[k], 0, sizeof(uctbon[k]));
 	}
 	int i, j;

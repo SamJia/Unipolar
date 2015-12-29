@@ -138,7 +138,7 @@ public:
 	~Board() = default;
 	static void Init();
 	void ClearBoard();
-	float PlayMove(const Move &move);
+	double PlayMove(const Move &move);
 	std::vector<PositionIndex> GetPlayablePosition(PointState state) {
 		int base = 0;
 		BitSet tmp = empty_[state] - suiside_[state] - safe_eye_[state] - dangerous_empty_[state];
@@ -399,7 +399,7 @@ public:
 	PositionIndex ko_;
 	bool mc_;
 	static PositionIndex ADJ_POS_[BoardSizeSquare(BOARD_SIZE)][5];
-	float score;
+	double score;
 };
 
 PositionIndex Board::ADJ_POS_[BoardSizeSquare(BOARD_SIZE)][5];
@@ -450,7 +450,7 @@ void Board::ClearBoard() {
 }
 
 PositionIndex Board::SpecialPointTest(PointState state) {
-	float max_score = 1, score;
+	double max_score = 1, score;
 	PositionIndex best_pos = POSITION_PASS, pos, adj_chain;
 	BitSet tmp = (dangerous_[state] - suiside_[state]) * empty_[state];
 	if (ko_ >= 0 && tmp[ko_]) {
@@ -503,7 +503,7 @@ PositionIndex Board::SpecialPointTest(PointState state) {
 	return best_pos;
 }
 
-float Board::PlayMove(const Move &move) {
+double Board::PlayMove(const Move &move) {
 	// printf("play move %d\n", move.position);
 	if (ko_ >= 0) {
 		SetEmpty(ko_, move.state);
@@ -536,7 +536,9 @@ float Board::PlayMove(const Move &move) {
 	PositionIndex adj_chain;
 	PositionIndex v[4];
 	int count = 0;
-	float save_score = 0;
+	double save_score = 0;
+	if ((eye_[move.state] - safe_eye_[move.state])[move.position])
+		score += 2;
 	for (int i = 1; i <= ADJ_POS_[pos][0]; ++i) {
 		adj_chain = GetFather(ADJ_POS_[pos][i]);
 		board_[adj_chain].air_set.reset(pos);
@@ -548,7 +550,7 @@ float Board::PlayMove(const Move &move) {
 			PositionIndex father = GetFather(pos);
 			if(adj_chain != father){
 				if(board_[adj_chain].air_count == 1)
-					score += -(board_[adj_chain].father / 1.5);
+					score += -(board_[adj_chain].father * 5);
 				Merge(adj_chain, father);
 			}
 		}
@@ -567,13 +569,13 @@ float Board::PlayMove(const Move &move) {
 				CheckSpecialPoint(v[i], true);
 			}
 			else {
-				score += -(board_[v[i]].father / 1.5);
+				score += -(board_[v[i]].father * 4);
 				RemoveChain(v[i]);
 			}
 		}
 		else if (board_[v[i]].air_count == 1) {
 			if (board_[v[i]].state != EMPTY_POINT) {
-				score += -(board_[v[i]].father / 3);
+				score += -(board_[v[i]].father * 2);
 				CheckSpecialPoint(board_[v[i]].air_set.GetAirPos());
 			}
 			else
@@ -589,7 +591,7 @@ float Board::PlayMove(const Move &move) {
 		RemoveChain(pos);
 	}
 	else if (board_[pos].air_count == 1) {
-		score -= -(board_[pos].father / 1.5);
+		score -= -(board_[pos].father * 5);
 		CheckSpecialPoint(board_[pos].air_set.GetAirPos());
 	}
 	if (board_[pos].father != -1)
@@ -687,7 +689,7 @@ void Board::RemoveChain(PositionIndex pos) {
 			remove_pos[i][++remove_pos[i][1]] = adj_chain;
 			if (board_[adj_chain].air_count == 1) {
 				++board_[adj_chain].air_count;
-				score += -(board_[adj_chain].father / 2);
+				score += -(board_[adj_chain].father * 3);
 				CheckSpecialPoint(board_[adj_chain].air_set.GetAirPos());
 			}
 		}
@@ -746,7 +748,7 @@ void Board::CheckSpecialPoint(PositionIndex pos, bool add_score) {
 	else {
 		if ((air[WHITE_POINT][0] | air[WHITE_POINT][1]) == 0) {
 			if (add_score)
-				score += 0.6;
+				score += 3.5;
 			SetSafeEye(pos, BLACK_POINT);
 		}
 		SetSuiside(pos, WHITE_POINT);
@@ -758,7 +760,7 @@ void Board::CheckSpecialPoint(PositionIndex pos, bool add_score) {
 	else {
 		if ((air[BLACK_POINT][0] | air[BLACK_POINT][1]) == 0) {
 			if (add_score)
-				score += 0.6;
+				score += 3.5;
 			SetSafeEye(pos, WHITE_POINT);
 		}
 		SetSuiside(pos, BLACK_POINT);
@@ -766,12 +768,12 @@ void Board::CheckSpecialPoint(PositionIndex pos, bool add_score) {
 
 	if ((air[WHITE_POINT][0] | air[WHITE_POINT][1]) == 0) {
 		if (add_score)
-			score += 0.3;
+			score += 1.8;
 		SetEye(pos, BLACK_POINT);
 	}
 	if ((air[BLACK_POINT][0] | air[BLACK_POINT][1]) == 0) {
 		if (add_score)
-			score += 0.3;
+			score += 1.8;
 		SetEye(pos, WHITE_POINT);
 	}
 	if (air[WHITE_POINT][0]) {

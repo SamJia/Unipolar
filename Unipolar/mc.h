@@ -18,12 +18,12 @@ class MC {
 public:
 	MC() = default;
 	~MC() = default;
-	float Simulate(Board &board, PointState state);
-	float Evaluate(Board &Board, PointState state);
+	double Simulate(Board &board, PointState state);
+	double Evaluate(Board &Board, PointState state);
 // private:
 };
 
-float MC::Simulate(Board &board, PointState state) {
+double MC::Simulate(Board &board, PointState state) {
 	/*
 	Basic idea:
 		Copy the board.
@@ -78,8 +78,8 @@ float MC::Simulate(Board &board, PointState state) {
 	return Evaluate(board, state ^ 1);
 }
 
-float MC::Evaluate(Board &board, PointState state) {
-	float piece_count[2];
+double MC::Evaluate(Board &board, PointState state) {
+	double piece_count[2];
 	piece_count[WHITE_POINT] = board.GetAreaCount(WHITE_POINT) + 6.5;
 	piece_count[BLACK_POINT] = board.GetAreaCount(BLACK_POINT);
 	return piece_count[state] > piece_count[state ^ 1];
