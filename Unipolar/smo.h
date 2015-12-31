@@ -84,15 +84,15 @@ protected:
 
 
 svm_option::svm_option(){
-    C = 1.0;
-    tol = 0.0001;
-    eps = 0.001;
+    C = 1000.0;
+    tol = 0.5;
+    eps = 0.5;
     sigma = 1.0;
-    is_linear_kernel = true;
-    train_path = "data/go3x3.train";
-    test_path = "data/go3x3.train";
-    model_path = "data/go3x3.model";
-    output_path = "data/go3x3.output";
+    is_linear_kernel = false;
+    train_path = "data/5x5.train";
+    test_path = "data/5x5.train";
+    model_path = "data/5x5.model";
+    output_path = "data/5x5.output";
 }
 
 SMO::SMO(svm_option *opt){
@@ -174,9 +174,9 @@ int SMO::predict(){
                 s += alpha[j] * Y[j] * kernel(i, j);
         }
         s -= b;
-        if (s>= 0)
+        if (s>= 1)
             y_pred = 1.0;
-        else if (s< 0)
+        else if (s< 1)
             y_pred = -1.0;
         os_output << s << endl;
         if (y_pred == 0){

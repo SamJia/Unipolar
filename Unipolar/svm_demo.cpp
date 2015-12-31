@@ -35,7 +35,7 @@ int main(int argc, char *argv[]){
     }
 
     SMO *s = new SMO(opt);
-    s->train();
+    // s->train();
     s->predict();
     // s->readyPredict();
 }
