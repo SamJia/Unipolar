@@ -27,6 +27,7 @@ def rotate_1(move):
 	mv[0] = move[0]
 	mv[1] = output_map_1[move[1]]
 	mv[2] = output_map_2[move[2]]
+	mv = mv[1:]
 	return ' '.join(mv)
 def rotate_2(move):
 	mv = ["","",""]
@@ -34,6 +35,7 @@ def rotate_2(move):
 	mv[1] = rotate_map[move[1]]
 	mv[1] = output_map_1[mv[1]]
 	mv[2] = output_map_2[move[2]]
+	mv = mv[1:]
 	return ' '.join(mv)
 
 def rotate_3(move):
@@ -42,7 +44,7 @@ def rotate_3(move):
 	mv[2] = rotate_map[move[2]]
 	mv[1] = output_map_1[move[1]]
 	mv[2] = output_map_2[mv[2]]
-	return ' '.join(mv)
+	return ' '.join(mv[1:])
 
 def rotate_4(move):
 	mv = ["","",""]
@@ -51,7 +53,7 @@ def rotate_4(move):
 	mv[2] = rotate_map[move[2]]
 	mv[1] = output_map_1[mv[1]]
 	mv[2] = output_map_2[mv[2]]
-	return ' '.join(mv)
+	return ' '.join(mv[1:])
 
 def static(games):
 	moves_dic = {}
@@ -95,7 +97,7 @@ def output(moves_dic,output_file):
 	print len(moves_dic)
 	for item in moves_dic:
 		times = moves_dic[item]
-		if times < 8 or item[1] == 'W':
+		if times < 8:
 			continue
 		line = str(times)+str(item)+'\n'
 		# print line,

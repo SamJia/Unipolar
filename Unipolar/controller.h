@@ -83,10 +83,18 @@ int Controller::Run(Board &board) {
 		else if (command == "play") {
 			GTPPlay(board, seq);
 			++step_count;
+			if (bonus_ratio <= 0.005)
+				bonus_ratio += 0.0001;
+			if (komi <= 6.5)
+				komi += 0.25;
 		}
 		else if (command == "genmove") {
 			GTPGenmove(board, joseki, seq);
 			++step_count;
+			if (bonus_ratio <= 0.005)
+				bonus_ratio += 0.0001;
+			if (komi <= 6.5)
+				komi += 0.25;
 		}
 		else if (command == "showboard")
 			GTPShowboard(board);
@@ -149,7 +157,7 @@ int Controller::GTPPlay(Board &board, string &seq) {
 	PointState state = EMPTY_POINT;
 	char tmp_str[50000];
 	cin >> color >> x_char >> y_str;
-	snprintf(tmp_str, sizeof(tmp_str), "%s %c %c %s", seq.c_str(), color, x_char, y_str.c_str());
+	snprintf(tmp_str, sizeof(tmp_str), "%s %c %s", seq.c_str(), x_char, y_str.c_str());
 	seq = string(tmp_str);
 	if (y_str != "ASS" && y_str != "ass") {
 		x = (x_char > 'I' ? x_char - 1 : x_char) - 'A';
@@ -192,7 +200,7 @@ int Controller::GTPGenmove(Board &board, TireTree &joseki, string &seq) {
 				char x_char = (x > 7 ? x + 1 : x) + 'A';
 				char tmp_str[50000];
 				color = (color == 'b') ? 'w' : 'b';
-				snprintf(tmp_str, sizeof(tmp_str), "%s %c %c %d", seqold.c_str(), color - 'a' + 'A', x_char, y);
+				snprintf(tmp_str, sizeof(tmp_str), "%s %c %d", seqold.c_str(), x_char, y);
 				seq = (string)tmp_str;
 				// cout<<"sb:"<<seq<<endl;
 				posi = joseki.findBest(seq, joseki_bonus);
@@ -219,7 +227,7 @@ int Controller::GTPGenmove(Board &board, TireTree &joseki, string &seq) {
 	// printf("= %c%d\n\n", x_char, y);
 
 	char tmp_str[50000];
-	snprintf(tmp_str, sizeof(tmp_str), "%s %c %c %d", seq.c_str(), color - 'a' + 'A', x_char, y);
+	snprintf(tmp_str, sizeof(tmp_str), "%s %c %d", seq.c_str(), x_char, y);
 	seqold = seq = string(tmp_str);
 	// cout << "next seq: " << seq << endl;
 	return 0;
