@@ -538,7 +538,7 @@ double Board::PlayMove(const Move &move) {
 	int count = 0;
 	double save_score = 0;
 	if ((eye_[move.state] - safe_eye_[move.state])[move.position])
-		score += 2;
+		score += save_dangerous_eye;
 	for (int i = 1; i <= ADJ_POS_[pos][0]; ++i) {
 		adj_chain = GetFather(ADJ_POS_[pos][i]);
 		board_[adj_chain].air_set.reset(pos);
@@ -550,7 +550,7 @@ double Board::PlayMove(const Move &move) {
 			PositionIndex father = GetFather(pos);
 			if(adj_chain != father){
 				if(board_[adj_chain].air_count == 1)
-					score += -(board_[adj_chain].father * 5);
+					score += -(board_[adj_chain].father * save_dangerous_chain);
 				Merge(adj_chain, father);
 			}
 		}
@@ -569,13 +569,13 @@ double Board::PlayMove(const Move &move) {
 				CheckSpecialPoint(v[i], true);
 			}
 			else {
-				score += -(board_[v[i]].father * 4);
+				score += -(board_[v[i]].father * eat_chain);
 				RemoveChain(v[i]);
 			}
 		}
 		else if (board_[v[i]].air_count == 1) {
 			if (board_[v[i]].state != EMPTY_POINT) {
-				score += -(board_[v[i]].father * 2);
+				score += -(board_[v[i]].father * threaten_oppose);
 				CheckSpecialPoint(board_[v[i]].air_set.GetAirPos());
 			}
 			else
@@ -591,7 +591,7 @@ double Board::PlayMove(const Move &move) {
 		RemoveChain(pos);
 	}
 	else if (board_[pos].air_count == 1) {
-		score -= -(board_[pos].father * 5);
+		score -= -(board_[pos].father * threaten_self);
 		CheckSpecialPoint(board_[pos].air_set.GetAirPos());
 	}
 	if (board_[pos].father != -1)
@@ -689,7 +689,7 @@ void Board::RemoveChain(PositionIndex pos) {
 			remove_pos[i][++remove_pos[i][1]] = adj_chain;
 			if (board_[adj_chain].air_count == 1) {
 				++board_[adj_chain].air_count;
-				score += -(board_[adj_chain].father * 3);
+				score += -(board_[adj_chain].father * save_dangerous_chain);
 				CheckSpecialPoint(board_[adj_chain].air_set.GetAirPos());
 			}
 		}
@@ -748,7 +748,7 @@ void Board::CheckSpecialPoint(PositionIndex pos, bool add_score) {
 	else {
 		if ((air[WHITE_POINT][0] | air[WHITE_POINT][1]) == 0) {
 			if (add_score)
-				score += 3.5;
+				score += make_safe_eye;
 			SetSafeEye(pos, BLACK_POINT);
 		}
 		SetSuiside(pos, WHITE_POINT);
@@ -760,7 +760,7 @@ void Board::CheckSpecialPoint(PositionIndex pos, bool add_score) {
 	else {
 		if ((air[BLACK_POINT][0] | air[BLACK_POINT][1]) == 0) {
 			if (add_score)
-				score += 3.5;
+				score += make_safe_eye;
 			SetSafeEye(pos, WHITE_POINT);
 		}
 		SetSuiside(pos, BLACK_POINT);
@@ -768,12 +768,12 @@ void Board::CheckSpecialPoint(PositionIndex pos, bool add_score) {
 
 	if ((air[WHITE_POINT][0] | air[WHITE_POINT][1]) == 0) {
 		if (add_score)
-			score += 1.8;
+			score += make_eye;
 		SetEye(pos, BLACK_POINT);
 	}
 	if ((air[BLACK_POINT][0] | air[BLACK_POINT][1]) == 0) {
 		if (add_score)
-			score += 1.8;
+			score += make_eye;
 		SetEye(pos, WHITE_POINT);
 	}
 	if (air[WHITE_POINT][0]) {

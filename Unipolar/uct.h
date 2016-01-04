@@ -112,13 +112,13 @@ void UCT::GenChild(Node *node, Board &board, PointState state) {
 double UCT::UCB(Node *node, Count totalnum) {
 	if (node->num == 0)
 		return 1000000000;
-	return node->bon * 0.005 + node->val / node->num + uctconst * sqrt(log(totalnum) / node->num);
+	return node->bon * bonus_ratio + node->val / node->num + uctconst * sqrt(log(totalnum) / node->num);
 }
 
 double UCT::Score(Node *node) {
 	if (node->num == 0)
 		return 0;
-	return node->bon * 0.005 + node->val / node->num;
+	return node->bon * bonus_ratio + node->val / node->num;
 }
 
 UCT::Node *UCT::FindBestChild(Node *node) {

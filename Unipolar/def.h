@@ -48,12 +48,22 @@ inline void Swap(T &a, T &b){
     b = tmp;
 }
 
-const float uctconst = 1.44;
-typedef float Value;
+const double uctconst = 1.44;
+typedef double Value;
 typedef int Count;
 
 // for joseki theshold
 const int JOSEKI_STEP = 12;
+
+const double save_dangerous_eye = 2;
+const double save_dangerous_chain = 5;
+const double eat_chain = 4;
+const double threaten_oppose = 2;
+const double threaten_self = 2;
+const double make_eye = 1.8;
+const double make_safe_eye = 3.5;
+
+const double bonus_ratio = 0.005;
 
 }
 
