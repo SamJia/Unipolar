@@ -163,29 +163,11 @@ public:
 		for (int j = 0; j < 3; ++j) {
 			if (__builtin_popcountll(tmp.data_[j]) <= number)
 				number -= __builtin_popcountll(tmp.data_[j]);
-			else
-			{	// number++;
-				// int lower = 0, upper = 64, mid = 32, num;
-				// while (true) {
-				// 	mid = (lower + upper) / 2;
-				// 	num = __builtin_popcountll(tmp.data_[j] & (((uint64_t)2 << (mid)) - 1));
-				// 	// printf("tmp.data_[j]:%llx, mid:%d, num:%d, yanma:%llx, and:%llx\n", tmp.data_[j], mid, num, (((uint64_t)2 << (mid)) - 1), tmp.data_[j] & (((uint64_t)1 << (mid)) - 1));
-				// 	if(number == num)
-				// 		return base + 63 - __builtin_clzll(tmp.data_[j] & (((uint64_t)2 << (mid)) - 1));
-				// 	else if (number < num)
-				// 		upper = mid;
-				// 	else
-				// 		lower = mid + 1;
-				// }
+			else {
 				for (; number; --number) {
 					tmp.data_[j] &= tmp.data_[j] - 1;
 				}
 				return __builtin_ctzll(tmp.data_[j]) + base;
-				// if(__builtin_ctzll(tmp.data_[j]) != result){
-				// 	printf("%d %d %d\n", number, __builtin_ctzll(tmp.data_[j]), result);
-				// 	exit(0);
-				// }
-				// return result + base;
 			}
 			base += 64;
 		}
@@ -224,100 +206,6 @@ public:
 					printf("O  ");
 			printf("\n");
 		}
-		/*printf("   0  1  2  3  4  5  6  7  8  9  10 11 12\n");
-		for (int i = 0 ; i < BOARD_SIZE; ++i) {
-			if (i < 10)
-				printf("%d  ", i);
-			else
-				printf("%d ", i);
-			for (int j = 0; j < BOARD_SIZE; ++j)
-				printf("%c  ", board_[i * 13 + j].father < 0 ? (board_[i * 13 + j].air_count + '0') : 'X');
-			printf("\n");
-		}
-		printf("   0  1  2  3  4  5  6  7  8  9  10 11 12\n");
-		for (int i = 0 ; i < BOARD_SIZE; ++i) {
-			if (i < 10)
-				printf("%d  ", i);
-			else
-				printf("%d ", i);
-			for (int j = 0; j < BOARD_SIZE; ++j)
-				printf("%3d", board_[i * 13 + j].father);
-			printf("\n");
-		}
-		// printf("BLACK playable_pos_:\n");
-		// for (std::set<PositionIndex>::iterator it = playable_pos_[BLACK_POINT].begin(); it != playable_pos_[BLACK_POINT].end(); ++it)
-		// 	printf("%d ", *it);
-		// printf("\n");
-		printf("BLACK playable_bit_:\n");
-		playable_bit_[BLACK_POINT].Print();
-		printf("BLACK eye_:\n");
-		eye_[BLACK_POINT].Print();
-		printf("\n");
-		// printf("WHITE playable_pos_:\n");
-		// for (std::set<PositionIndex>::iterator it = playable_pos_[WHITE_POINT].begin(); it != playable_pos_[WHITE_POINT].end(); ++it)
-		// 	printf("%d ", *it);
-		// printf("\n");
-		printf("WHITE playable_bit_:\n");
-		playable_bit_[WHITE_POINT].Print();
-		printf("WHITE eye_:\n");
-		eye_[WHITE_POINT].Print();
-		printf("\n");
-		printf("Chain_set:\n");
-		for (int i = 0; i < BoardSizeSquare(BOARD_SIZE); ++i) {
-			if (board_[i].father < 0 && board_[i].state != EMPTY_POINT) {
-				printf("state:%d, ", board_[i].state);
-				printf("air_count:%d, air_set:", board_[i].air_count);
-				board_[i].air_set.Print();
-				printf(", points:[");
-				for (PositionIndex j = i, last_j = -1; j != last_j; last_j = j, j = board_[j].next)
-					printf("%d, ", j);
-				printf("]\n");
-			}
-		}
-		printf("\n");
-		printf("Ko:%d\n", ko_);
-		printf("BLACK piece count%d\n", piece_count_[BLACK_POINT]);
-		printf("WHITE piece count%d\n", piece_count_[WHITE_POINT]);*/
-	}
-
-	int Check() {
-		for (PositionIndex pos = 0; pos < BoardSizeSquare(BOARD_SIZE); ++pos) {
-			if (board_[pos].state == EMPTY_POINT) {
-				int tmp = 0;
-				for (int i = 1; i <= ADJ_POS_[pos][0]; ++i)
-					if (board_[ADJ_POS_[pos][i]].state == EMPTY_POINT)
-						++tmp;
-				if (tmp != board_[pos].air_count)
-					return pos;
-			}
-		}
-		for (PositionIndex pos = 0; pos < BoardSizeSquare(BOARD_SIZE); ++pos) {
-			if (board_[pos].state == EMPTY_POINT && board_[pos].air_count == 0) {
-				bool air[2][2] = {}; //[state][>1?]
-				PositionIndex adj_chain;
-				for (int i = 1; i <= ADJ_POS_[pos][0]; ++i) {
-					adj_chain = GetFather(ADJ_POS_[pos][i]);
-					air[board_[adj_chain].state][board_[adj_chain].air_count > 1] = true;
-				}
-				//white eat black or white connect to air
-				// printf("%d %d %d %d\n", air[0][0], air[0][1], air[1][0], air[1][1]);
-				// if (air[BLACK_POINT][0] | air[WHITE_POINT][1]) {
-				// 	if (!playable_bit_[WHITE_POINT][pos])
-				// 		return pos;
-				// }
-				// else if (playable_bit_[WHITE_POINT][pos])
-				// 	return pos;
-
-				// //black eat white or black connect to air
-				// if (air[WHITE_POINT][0] | air[BLACK_POINT][1]) {
-				// 	if (!playable_bit_[BLACK_POINT][pos])
-				// 		return pos;
-				// }
-				// else if (playable_bit_[BLACK_POINT][pos])
-				// 	return pos;
-			}
-		}
-		return -1;
 	}
 
 // private:
@@ -328,16 +216,6 @@ public:
 	void RemoveChain(PositionIndex pos);
 	PositionIndex AdjacentPosition(PositionIndex position, int adj_direction);
 	void CheckSpecialPoint(PositionIndex pos, bool add_score = false);
-
-	// void Able(PositionIndex pos, PointState state) {
-	// 	if (mc_ && eye_[state][pos])
-	// 		return;
-	// 	playable_bit_[state].set(pos);
-	// }
-
-	// void DisAble(PositionIndex pos, PointState state) {
-	// 	playable_bit_[state].reset(pos);
-	// }
 
 	void SetEye(PositionIndex pos, PointState state) {
 		eye_[state].set(pos);
@@ -375,23 +253,6 @@ public:
 	void RemoveDangerousEmpty(PositionIndex pos, PointState state) {
 		dangerous_empty_[state].reset(pos);
 	}
-
-	// void StartMC() {
-	// 	mc_ = true;
-	// 	int base;
-	// 	uint64_t tmp;
-	// 	for (int i = 0; i < 2; ++i) {
-	// 		base = 0;
-	// 		for (int j = 0; j < 3; ++j) {
-	// 			tmp = eye_[i].data_[j];
-	// 			while (tmp) {
-	// 				DisAble(base + __builtin_ctzll(tmp), i);
-	// 				tmp &= tmp - 1;
-	// 			}
-	// 			base += 64;
-	// 		}
-	// 	}
-	// }
 
 	List board_[BoardSizeSquare(BOARD_SIZE)];
 	BitSet empty_[2], eye_[2], safe_eye_[2], dangerous_[2], suiside_[2], dangerous_empty_[2];
@@ -433,10 +294,6 @@ void Board::ClearBoard() {
 	suiside_[0].reset();
 	suiside_[1].reset();
 	for (PositionIndex i = 0; i < BoardSizeSquare(BOARD_SIZE); ++i) {
-		// playable_pos_[0].insert(i);
-		// playable_pos_[1].insert(i);
-		// playable_pos_no_eye_[0].insert(i);
-		// playable_pos_no_eye_[1].insert(i);
 		board_[i].father = -1;
 		board_[i].state = EMPTY_POINT;
 		board_[i].air_set.reset();
@@ -511,12 +368,6 @@ double Board::PlayMove(const Move &move) {
 		// CheckEyeShape(ko_);
 		ko_ = -1;
 	}
-	// int wrong_pos = Check();
-	// if (wrong_pos >= 0) {
-	// 	Print();
-	// 	printf("Check out some Wrong at %d\n", wrong_pos);
-	// 	exit(0);
-	// }
 	if (move.position == POSITION_PASS)
 		return 0;
 	score = 0;
