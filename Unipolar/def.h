@@ -59,7 +59,7 @@ const double save_dangerous_eye = 2;
 const double save_dangerous_chain = 5;
 const double eat_chain = 4;
 const double threaten_oppose = 2;
-const double threaten_self = 2;
+const double threaten_self = -5;
 const double make_eye = 1.8;
 const double make_safe_eye = 3.5;
 

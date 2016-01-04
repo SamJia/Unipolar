@@ -591,7 +591,7 @@ double Board::PlayMove(const Move &move) {
 		RemoveChain(pos);
 	}
 	else if (board_[pos].air_count == 1) {
-		score -= -(board_[pos].father * threaten_self);
+		score += -(board_[pos].father * threaten_self);
 		CheckSpecialPoint(board_[pos].air_set.GetAirPos());
 	}
 	if (board_[pos].father != -1)
