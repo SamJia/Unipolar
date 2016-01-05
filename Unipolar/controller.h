@@ -186,9 +186,9 @@ int Controller::GTPGenmove(Board &board, TireTree &joseki, string &seq) {
 		joseki_bonus[i] = 0;
 
 	// a theshold for joseki analysis.
-	cout << "step is " << step_count << endl;
+	//cout << "step is " << step_count << endl;
 	if (step_count < JOSEKI_STEP) {
-		cout << "using joseki!\n";
+		//cout << "using joseki!\n";
 		// even if seq is null.
 		posi = joseki.findBest(seq, joseki_bonus);
 
@@ -209,11 +209,11 @@ int Controller::GTPGenmove(Board &board, TireTree &joseki, string &seq) {
 			}
 		}
 	}
-	for(int i = 0 ; i < 13; ++i){
-		for (int j = 0; j < 13; ++j)
-			printf("%.3f ", joseki_bonus[i*13+j]);
-		printf("\n");
-	}
+	//for(int i = 0 ; i < 13; ++i){
+	//	for (int j = 0; j < 13; ++j)
+	//		printf("%.3f ", joseki_bonus[i*13+j]);
+	//	printf("\n");
+	//}
 	Move move;
 	move = UCT(joseki_bonus).GenMove(board, state);
 	board.PlayMove(move);

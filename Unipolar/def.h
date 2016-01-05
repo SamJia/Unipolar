@@ -21,7 +21,7 @@ namespace unipolar {
 
 typedef uint32_t HashKey;
 typedef int16_t PositionIndex;
-const PositionIndex POSITION_PASS = -1;
+const PositionIndex POSITION_PASS = 169;
 typedef int AirCount;
 
 typedef int PointState;
