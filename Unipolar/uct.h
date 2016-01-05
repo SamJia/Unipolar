@@ -138,7 +138,7 @@ UCT::Node *UCT::FindBestChild(Node *node) {
 	double actUCB;
 	Node *maxNode = nullptr;
 	for (Node *p = node->son; p; p = p->bro) {
-		actUCB = UCB(p, node->num) + node->son_val_a[p->pos] / std::max(0.000001, node->son_num_a[p->pos]);
+		actUCB = UCB(p, node->num)/* + node->son_val_a[p->pos] / std::max(0.000001, node->son_num_a[p->pos])*/;
 		if (actUCB > maxUCB) {
 			maxUCB = actUCB;
 			maxNode = p;
@@ -157,7 +157,7 @@ UCT::Node *UCT::FindBestUCT(Node *node) {
 	double actScore;
 	Node *maxNode = nullptr;
 	for (Node *p = node->son; p; p = p->bro) {
-		actScore = Score(p) + joseki_bonus[p->pos] + node->son_val_a[p->pos] / std::max(0.000001, node->son_num_a[p->pos]);
+		actScore = Score(p) + joseki_bonus[p->pos]/* + node->son_val_a[p->pos] / std::max(0.000001, node->son_num_a[p->pos])*/;
 		if (actScore > maxScore) {
 			maxScore = actScore;
 			maxNode = p;
@@ -202,8 +202,10 @@ void UCT::MCSimulation(Board &board, Node *node, PointState state) {
 	for (int i = idx; i > 0; --i) {
 		record[i]->val += once_val;
 		record[i]->num += 1;
-		record[i-1]->son_val_a[record[i]->pos] += once_val / i;
-		record[i-1]->son_num_a[record[i]->pos] += 1.0 / i;
+		for(int j = 2 - (i & 1); j <= idx; j += 2){
+			record[i-1]->son_val_a[record[j]->pos] += once_val / ((j+1)>>1);
+			record[i-1]->son_num_a[record[j]->pos] += 1.0 / ((j+1)>>1);
+		}
 		once_val = 1 - once_val;
 	}
 	record[0]->num += 1;
@@ -286,7 +288,7 @@ void UCT::PrintUCT() {
 	for (int x = 0; x < BOARD_SIZE; ++x) {
 		printf("%02d ", x);
 		for (int y = 0; y < BOARD_SIZE; ++y) {
-			printf("%.3f ", root->son_val_a[x*13+y] / std::max(0.0001, root->son_num_a[x*13+y]));
+			printf("%.3f ", root->son_val_a[x * 13 + y] / std::max(0.0001, root->son_num_a[x * 13 + y]));
 		}
 		printf("\n");
 	}
@@ -295,7 +297,7 @@ void UCT::PrintUCT() {
 	for (int x = 0; x < BOARD_SIZE; ++x) {
 		printf("%02d ", x);
 		for (int y = 0; y < BOARD_SIZE; ++y) {
-			printf("%.3f ", root->son_num_a[x*13+y]);
+			printf("%.3f ", root->son_num_a[x * 13 + y]);
 		}
 		printf("\n");
 	}

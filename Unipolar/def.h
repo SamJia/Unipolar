@@ -49,6 +49,7 @@ inline void Swap(T &a, T &b){
 }
 
 const double uctconst = 0.4;
+const double amafconst = 1;
 typedef double Value;
 typedef int Count;
 
@@ -65,6 +66,7 @@ const double make_safe_eye = 3.5;
 
 double komi = 0.0;
 double bonus_ratio = 0.001;
+
 
 }
 

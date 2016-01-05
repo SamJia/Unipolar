@@ -113,7 +113,7 @@ int Controller::Run(Board &board) {
 }
 
 int Controller::GTPName() {
-	cout << "= Unipolar_with_jsk\n" << endl;
+	cout << "= Unipolar_with_jsk_amaf\n" << endl;
 	// printf("= Unipolar_with_jsk\n\n");
 	return 0;
 }
