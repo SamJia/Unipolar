@@ -49,8 +49,6 @@ int Controller::Run(Board &board) {
 	//Load the joseki
 	TireTree joseki;
 	step_count = 0;
-	// has to be absolute path!!
-	// ifstream in("D:\\Document\\AI\\Proj\\Unipolar\\Unipolar\\static_20.dic");
 	joseki.load();
 	string command;
 	// command.resize(100);
@@ -76,8 +74,11 @@ int Controller::Run(Board &board) {
 			GTPListCommands();
 		else if (command == "boardsize")
 			GTPBoardsize();
-		else if (command == "clear_board")
+		else if (command == "clear_board") {
 			GTPClearBoard(board);
+			step_count = 0;
+			seq = seqold = "";
+		}
 		else if (command == "komi")
 			GTPKomi();
 		else if (command == "play") {
@@ -188,11 +189,12 @@ int Controller::GTPGenmove(Board &board, TireTree &joseki, string &seq) {
 	// a theshold for joseki analysis.
 	cout << "step is " << step_count << endl;
 	if (step_count < JOSEKI_STEP) {
-		cout << "using joseki!\n";
+		cout << "using joseki: " << seq << endl;
 		// even if seq is null.
 		posi = joseki.findBest(seq, joseki_bonus);
 
 		if (posi == -1) {
+			cout << "joseki not found, alternative: " << seqold  << endl;
 			posi = joseki.findBest(seqold, joseki_bonus);
 			if (posi >= 0) {
 				int x = posi / BOARD_SIZE;
@@ -209,6 +211,7 @@ int Controller::GTPGenmove(Board &board, TireTree &joseki, string &seq) {
 			}
 		}
 	}
+	cout << "joseki_bonus: \n";
 	for(int i = 0 ; i < 13; ++i){
 		for (int j = 0; j < 13; ++j)
 			printf("%.3f ", joseki_bonus[i*13+j]);
