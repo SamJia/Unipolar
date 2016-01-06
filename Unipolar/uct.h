@@ -12,6 +12,7 @@
 #include <mutex>
 #include <set>
 #include <iostream>
+#include <algorithm>
 using namespace unipolar;
 
 double test_bonus[] = {
@@ -37,6 +38,7 @@ private:
 		Count num;
 		Value val, bon;
 		Node *son, *bro;
+		std::vector<Value> son_val_a, son_num_a;
 		Node(PositionIndex po = -1, Node *so = nullptr, Node *br = nullptr) : pos(po), num(0), val(0), bon(0), son(so), bro(br) {}
 		~Node() {
 			if (son)
@@ -52,8 +54,7 @@ public:
 			// 	memcpy(joseki_bonus, bonus, sizeof(bonus));
 			for (PositionIndex i = 0; i < BoardSizeSquare(BOARD_SIZE); ++i)
 				joseki_bonus[i] = bonus[i];
-		}
-		else {
+		} else {
 			for (PositionIndex i = 0; i < BoardSizeSquare(BOARD_SIZE); ++i)
 				joseki_bonus[i] = 0;
 		}
@@ -94,14 +95,20 @@ void UCT::Task(Board &board, PointState state, Node *node, int &num, int t) {
 
 void UCT::GenChild(Node *node, Board &board, PointState state) {
 	mtx.lock();
+	// node->val.resize(170, 0);
+	// node->num.resize(170, 0);
+	node->son_val_a.resize(170, 0);
+	node->son_num_a.resize(170, 0);
+	// node->val_p.resize(170, 0);
 	if (node->son == nullptr) {
 		std::vector<PositionIndex> playable = board.GetPlayablePosition(state);
 		if (playable.size() == 0) {
 			node->son = new Node(POSITION_PASS, nullptr, nullptr);
 			//printf("no playable\n");
 		}
-		for (int i = 0, size = playable.size(); i < size; ++i)
+		for (int i = 0, size = playable.size(); i < size; ++i) {
 			node->son = new Node(playable[i], nullptr, node->son);
+		}
 	}
 	mtx.unlock();
 
@@ -125,13 +132,13 @@ double UCT::Score(Node *node) {
 UCT::Node *UCT::FindBestChild(Node *node) {
 	if (node->son == nullptr) {
 		std::cout << "no child" << std::endl;
-	exit(0);
+		exit(0);
 	}
-	double maxUCB = UCB(node->son, node->num - 1);
+	double maxUCB = -100;
 	double actUCB;
-	Node *maxNode = node->son;
-	for (Node *p = node->son->bro; p; p = p->bro) {
-		actUCB = UCB(p, node->num);
+	Node *maxNode = nullptr;
+	for (Node *p = node->son; p; p = p->bro) {
+		actUCB = UCB(p, node->num)/* + node->son_val_a[p->pos] / std::max(0.000001, node->son_num_a[p->pos])*/;
 		if (actUCB > maxUCB) {
 			maxUCB = actUCB;
 			maxNode = p;
@@ -146,11 +153,11 @@ UCT::Node *UCT::FindBestUCT(Node *node) {
 		exit(0);
 	}
 	// add joseki bonus.
-	double maxScore = Score(node->son) + joseki_bonus[node->son->pos] + test_bonus[node->son->pos] / 100;
+	double maxScore = -100;
 	double actScore;
-	Node *maxNode = node->son;
-	for (Node *p = node->son->bro; p; p = p->bro) {
-		actScore = Score(p)  + joseki_bonus[p->pos] + test_bonus[p->pos] / 100;
+	Node *maxNode = nullptr;
+	for (Node *p = node->son; p; p = p->bro) {
+		actScore = Score(p) + joseki_bonus[p->pos]/* + node->son_val_a[p->pos] / std::max(0.000001, node->son_num_a[p->pos])*/;
 		if (actScore > maxScore) {
 			maxScore = actScore;
 			maxNode = p;
@@ -158,7 +165,7 @@ UCT::Node *UCT::FindBestUCT(Node *node) {
 	}
 	return maxNode;
 }
-
+int max_depth = 0;
 void UCT::MCSimulation(Board &board, Node *node, PointState state) {
 	Node *record[170];
 	Node *act = record[0] = node;
@@ -177,8 +184,7 @@ void UCT::MCSimulation(Board &board, Node *node, PointState state) {
 		}
 		state = 1 - state;
 	}
-	if (flag)
-	{
+	if (flag) {
 		if (act->num >= 1) {
 			idx += 1;
 			GenChild(act, board, state);
@@ -191,13 +197,18 @@ void UCT::MCSimulation(Board &board, Node *node, PointState state) {
 		once_val = MC().Simulate(board, state);
 	}
 	mtx.lock();
+	max_depth = std::max(max_depth, idx);
 	record[idx]->bon = once_bon;
-	for (int i = idx; i >= 0; --i)
-	{
+	for (int i = idx; i > 0; --i) {
 		record[i]->val += once_val;
 		record[i]->num += 1;
+		for(int j = 2 - (i & 1); j <= idx; j += 2){
+			record[i-1]->son_val_a[record[j]->pos] += once_val / ((j+1)>>1);
+			record[i-1]->son_num_a[record[j]->pos] += 1.0 / ((j+1)>>1);
+		}
 		once_val = 1 - once_val;
 	}
+	record[0]->num += 1;
 	mtx.unlock();
 }
 
@@ -220,6 +231,7 @@ Move UCT::GenMove(Board &board, PointState state) {
 		threads.push_back(std::thread([&]() {this->Task(board, state, root, count, end_time);}));
 	for (auto& th : threads)
 		th.join();
+	printf("max_depth:%d\n", max_depth);
 	std::cout << "totally " << count << " times of MC" << std::endl;
 	PrintUCT();
 	nextstep.state = state;
@@ -268,6 +280,24 @@ void UCT::PrintUCT() {
 		printf("%02d ", x);
 		for (int y = 0; y < BOARD_SIZE; ++y) {
 			printf("%4d ", uctnum[x][y]);
+		}
+		printf("\n");
+	}
+	printf("---THE VAL_A MATRIX---\n");
+	printf("   0    1    2    3    4    5    6    7    8    9    10   11   12\n");
+	for (int x = 0; x < BOARD_SIZE; ++x) {
+		printf("%02d ", x);
+		for (int y = 0; y < BOARD_SIZE; ++y) {
+			printf("%.3f ", root->son_val_a[x * 13 + y] / std::max(0.0001, root->son_num_a[x * 13 + y]));
+		}
+		printf("\n");
+	}
+	printf("---THE NUM_A MATRIX---\n");
+	printf("   0    1    2    3    4    5    6    7    8    9    10   11   12\n");
+	for (int x = 0; x < BOARD_SIZE; ++x) {
+		printf("%02d ", x);
+		for (int y = 0; y < BOARD_SIZE; ++y) {
+			printf("%.3f ", root->son_num_a[x * 13 + y]);
 		}
 		printf("\n");
 	}

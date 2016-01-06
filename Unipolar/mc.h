@@ -62,7 +62,7 @@ double MC::Simulate(Board &board, PointState state) {
 
 double MC::Evaluate(Board &board, PointState state) {
 	double piece_count[2];
-	piece_count[WHITE_POINT] = board.GetAreaCount(WHITE_POINT) + 6.5;
+	piece_count[WHITE_POINT] = board.GetAreaCount(WHITE_POINT) + komi;
 	piece_count[BLACK_POINT] = board.GetAreaCount(BLACK_POINT);
 	return piece_count[state] > piece_count[state ^ 1];
 }

@@ -21,7 +21,7 @@ namespace unipolar {
 
 typedef uint32_t HashKey;
 typedef int16_t PositionIndex;
-const PositionIndex POSITION_PASS = -1;
+const PositionIndex POSITION_PASS = 169;
 typedef int AirCount;
 
 typedef int PointState;
@@ -48,12 +48,17 @@ inline void Swap(T &a, T &b){
     b = tmp;
 }
 
+<<<<<<< HEAD
 const double uctconst = 0;
+=======
+const double uctconst = 0.4;
+const double amafconst = 1;
+>>>>>>> origin/master
 typedef double Value;
 typedef int Count;
 
 // for joseki theshold
-const int JOSEKI_STEP = 12;
+const int JOSEKI_STEP = 20;
 
 const double save_dangerous_eye = 2;
 const double save_dangerous_chain = 5;
@@ -63,7 +68,8 @@ const double threaten_self = -5;
 const double make_eye = 1.8;
 const double make_safe_eye = 3.5;
 
-const double bonus_ratio = 0;
+double komi = 0.0;
+double bonus_ratio = 0.001;
 
 }
 
