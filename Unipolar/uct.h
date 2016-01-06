@@ -12,7 +12,10 @@
 #include <mutex>
 #include <set>
 #include <iostream>
+#include <stdio.h>
+FILE *f = fopen("unipolar.txt", "w");
 using namespace unipolar;
+
 
 double test_bonus[] = {
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -229,10 +232,10 @@ Move UCT::GenMove(Board &board, PointState state) {
 }
 
 void UCT::PrintUCT() {
-	double uctval[BOARD_SIZE][BOARD_SIZE];
-	double uctbon[BOARD_SIZE][BOARD_SIZE];
-	double uctaddi[BOARD_SIZE][BOARD_SIZE];
-	int uctnum[BOARD_SIZE][BOARD_SIZE];
+	double uctval[BOARD_SIZE][BOARD_SIZE] = {{0}};
+	double uctbon[BOARD_SIZE][BOARD_SIZE] = {{0}};
+	double uctaddi[BOARD_SIZE][BOARD_SIZE] = {{0}};
+	int uctnum[BOARD_SIZE][BOARD_SIZE] = {{0}};
 	int i, j;
 	Node *act = root->son;
 	double totalnum = root->num;
@@ -245,45 +248,72 @@ void UCT::PrintUCT() {
 	}
 	printf("The total simulation time is %d\n", root->num);
 	printf("---THE VALUE MATRIX---\n");
+	fprintf(f, "---THE VALUE MATRIX---\n");
 	printf("   0    1    2    3    4    5    6    7    8    9    10   11   12\n");
+	fprintf(f, "   0    1    2    3    4    5    6    7    8    9    10   11   12\n");
 	for (int x = 0; x < BOARD_SIZE; ++x) {
 		printf("%02d ", x);
+		fprintf(f, "%02d ", x);
 		for (int y = 0; y < BOARD_SIZE; ++y) {
 			printf("%.3f ", uctval[x][y]);
+			fprintf(f, "%.3f ", uctval[x][y]);
 		}
 		printf("\n");
+		fprintf(f, "\n");
 	}
 	printf("---THE ADDI MATRIX---\n");
+	fprintf(f, "---THE ADDI MATRIX---\n");
 	printf("   0    1    2    3    4    5    6    7    8    9    10   11   12\n");
+	fprintf(f,"   0    1    2    3    4    5    6    7    8    9    10   11   12\n");
 	for (int x = 0; x < BOARD_SIZE; ++x) {
 		printf("%02d ", x);
+		fprintf(f,"%02d ", x);
 		for (int y = 0; y < BOARD_SIZE; ++y) {
 			printf("%.3f ", uctaddi[x][y]);
+			fprintf(f, "%.3f ", uctaddi[x][y]);
 		}
 		printf("\n");
+		fprintf(f, "\n");
 	}
 	printf("---THE NUMBER MATRIX---\n");
+	fprintf(f,"---THE NUMBER MATRIX---\n");
 	printf("   0    1    2    3    4    5    6    7    8    9    10   11   12\n");
+	fprintf(f,"   0    1    2    3    4    5    6    7    8    9    10   11   12\n");
 	for (int x = 0; x < BOARD_SIZE; ++x) {
 		printf("%02d ", x);
+		fprintf(f, "%02d ", x);
 		for (int y = 0; y < BOARD_SIZE; ++y) {
 			printf("%4d ", uctnum[x][y]);
+			fprintf(f,"%4d ", uctnum[x][y]);
 		}
 		printf("\n");
+		fprintf(f,"\n");
 	}
 	printf("---THE BONUS MATRIX---\n");
+	fprintf(f,"---THE BONUS MATRIX---\n");
 	printf("   0    1    2    3    4    5    6    7    8    9    10   11   12\n");
+	fprintf(f,"   0    1    2    3    4    5    6    7    8    9    10   11   12\n");
 	for (int x = 0; x < BOARD_SIZE; ++x) {
 		printf("%02d ", x);
+		fprintf(f,"%02d ", x);
 		for (int y = 0; y < BOARD_SIZE; ++y) {
 			printf("%.3f ", uctbon[x][y]);
+			fprintf(f,"%.3f ", uctbon[x][y]);
 		}
 		printf("\n");
+		fprintf(f,"\n");
 	}
 	act = FindBestUCT(root);
 	i = act->pos / BOARD_SIZE;
 	j = act->pos % BOARD_SIZE;
 	printf("The best next step: (%d, %d)\n", i, j);
+	fprintf(f,"The best next step: (%d, %d)\n", i, j+1);
+	char i_char = (i > 7 ? i + 1 : i) + 'A';
+	fprintf(f, "the next step is %c%d\n", i_char,j+1);
+	fprintf(f, "\n");
+	fprintf(f, "\n");
+	fprintf(f, "\n");
+	fprintf(f, "\n");
 }
 
 #endif
