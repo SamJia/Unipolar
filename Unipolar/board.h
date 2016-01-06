@@ -141,7 +141,7 @@ public:
 	double PlayMove(const Move &move);
 	std::vector<PositionIndex> GetPlayablePosition(PointState state) {
 		int base = 0;
-		BitSet tmp = empty_[state] - suiside_[state] - safe_eye_[state] - dangerous_empty_[state];
+		BitSet tmp = empty_[state] - suiside_[state] - safe_eye_[state]/* - dangerous_empty_[state]*/;
 		std::vector<PositionIndex> playable_pos;
 		playable_pos.reserve(tmp.count());
 		for (int j = 0; j < 3; ++j) {
@@ -154,12 +154,12 @@ public:
 		return playable_pos;
 	}
 	int GetPlayableCount(PointState state) {
-		return (empty_[state] - suiside_[state] - safe_eye_[state] - dangerous_empty_[state] - dangerous_empty_[state^1]).count();
+		return (empty_[state] - suiside_[state] - safe_eye_[state]/* - dangerous_empty_[state] - dangerous_empty_[state^1]*/).count();
 	}
 	PositionIndex GetPlayable(PointState state, int number) {
 		// printf("number:%d\n", number);
 		int base = 0;
-		BitSet tmp = empty_[state] - suiside_[state] - safe_eye_[state] - dangerous_empty_[state] - dangerous_empty_[state^1];
+		BitSet tmp = empty_[state] - suiside_[state] - safe_eye_[state]/* - dangerous_empty_[state] - dangerous_empty_[state^1]*/;
 		for (int j = 0; j < 3; ++j) {
 			if (__builtin_popcountll(tmp.data_[j]) <= number)
 				number -= __builtin_popcountll(tmp.data_[j]);
@@ -183,7 +183,7 @@ public:
 		return piece_count_[state];
 	}
 	PositionIndex GetAreaCount(PointState state) {
-		return piece_count_[state] + eye_[state].count() + dangerous_empty_[state].count();
+		return piece_count_[state] + eye_[state].count()/* + dangerous_empty_[state].count()*/;
 	}
 	bool Playable(PositionIndex pos, PointState state) {
 		return (empty_[state] - suiside_[state])[pos];
