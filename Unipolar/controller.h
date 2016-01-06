@@ -113,7 +113,7 @@ int Controller::Run(Board &board) {
 }
 
 int Controller::GTPName() {
-	cout << "= Unipolar_with_jsk_amaf\n" << endl;
+	cout << "= Unipolar_with_jsk_ucb\n" << endl;
 	// printf("= Unipolar_with_jsk\n\n");
 	return 0;
 }
@@ -209,11 +209,11 @@ int Controller::GTPGenmove(Board &board, TireTree &joseki, string &seq) {
 			}
 		}
 	}
-	//for(int i = 0 ; i < 13; ++i){
-	//	for (int j = 0; j < 13; ++j)
-	//		printf("%.3f ", joseki_bonus[i*13+j]);
-	//	printf("\n");
-	//}
+	// for(int i = 0 ; i < 13; ++i){
+	// 	for (int j = 0; j < 13; ++j)
+	// 		printf("%.3f ", joseki_bonus[i*13+j]);
+	// 	printf("\n");
+	// }
 	Move move;
 	move = UCT(joseki_bonus).GenMove(board, state);
 	board.PlayMove(move);

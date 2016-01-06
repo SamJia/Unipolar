@@ -24,7 +24,7 @@ typedef int16_t PositionIndex;
 const PositionIndex POSITION_PASS = 169;
 typedef int AirCount;
 
-typedef int PointState;
+typedef char PointState;
 const PointState BLACK_POINT = 0;
 const PointState WHITE_POINT = 1;
 const PointState EMPTY_POINT = 2;
@@ -48,12 +48,8 @@ inline void Swap(T &a, T &b){
     b = tmp;
 }
 
-<<<<<<< HEAD
-const double uctconst = 0;
-=======
 const double uctconst = 0.4;
 const double amafconst = 1;
->>>>>>> origin/master
 typedef double Value;
 typedef int Count;
 
@@ -70,6 +66,7 @@ const double make_safe_eye = 3.5;
 
 double komi = 0.0;
 double bonus_ratio = 0.001;
+
 
 }
 
