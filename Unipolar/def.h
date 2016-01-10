@@ -21,10 +21,10 @@ namespace unipolar {
 
 typedef uint32_t HashKey;
 typedef int16_t PositionIndex;
-const PositionIndex POSITION_PASS = -1;
+const PositionIndex POSITION_PASS = 169;
 typedef int AirCount;
 
-typedef int PointState;
+typedef char PointState;
 const PointState BLACK_POINT = 0;
 const PointState WHITE_POINT = 1;
 const PointState EMPTY_POINT = 2;
@@ -49,6 +49,7 @@ inline void Swap(T &a, T &b){
 }
 
 const double uctconst = 0.4;
+const double amafconst = 1;
 typedef double Value;
 typedef int Count;
 
@@ -65,6 +66,7 @@ const double make_safe_eye = 3.5;
 
 double komi = 0.0;
 double bonus_ratio = 0.001;
+
 
 }
 

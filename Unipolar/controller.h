@@ -114,7 +114,7 @@ int Controller::Run(Board &board) {
 }
 
 int Controller::GTPName() {
-	cout << "= Unipolar_with_jsk\n" << endl;
+	cout << "= Unipolar_with_jsk_ucb\n" << endl;
 	// printf("= Unipolar_with_jsk\n\n");
 	return 0;
 }
@@ -187,7 +187,7 @@ int Controller::GTPGenmove(Board &board, TireTree &joseki, string &seq) {
 		joseki_bonus[i] = 0;
 
 	// a theshold for joseki analysis.
-	cout << "step is " << step_count << endl;
+	//cout << "step is " << step_count << endl;
 	if (step_count < JOSEKI_STEP) {
 		cout << "using joseki: " << seq << endl;
 		// even if seq is null.
@@ -210,12 +210,6 @@ int Controller::GTPGenmove(Board &board, TireTree &joseki, string &seq) {
 				color = (color == 'b') ? 'w' : 'b';
 			}
 		}
-	}
-	cout << "joseki_bonus: \n";
-	for(int i = 0 ; i < 13; ++i){
-		for (int j = 0; j < 13; ++j)
-			printf("%.3f ", joseki_bonus[i*13+j]);
-		printf("\n");
 	}
 	Move move;
 	move = UCT(joseki_bonus).GenMove(board, state);
