@@ -83,8 +83,8 @@ double MC::Simulate(Board &board, PointState state,Amaf &amaf) {
 			exit(0);
 		}
 		mv.state = next_state;
-		mv.position = POSITION_PASS;
-		// mv.position = board.SpecialPointTest(next_state);
+		// mv.position = POSITION_PASS;
+		mv.position = board.SpecialPointTest(next_state);
 		if (mv.position == POSITION_PASS) {
 			playable_count = board.GetPlayableCount(next_state);
 			if (playable_count == 0) {

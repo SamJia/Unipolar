@@ -48,6 +48,7 @@ int Controller::Run(Board &board) {
 	// freopen("commands.txt", "r", stdin);
 	//Load the joseki
 	TireTree joseki;
+	joseki_on = true;
 	step_count = 0;
 	// has to be absolute path!!
 	// ifstream in("D:\\Document\\AI\\Proj\\Unipolar\\Unipolar\\static_20.dic");
@@ -83,16 +84,16 @@ int Controller::Run(Board &board) {
 		else if (command == "play") {
 			GTPPlay(board, seq);
 			++step_count;
-			if (bonus_ratio <= 0.005)
-				bonus_ratio += 0.0001;
+			if (bonus_ratio <= 0.2)
+				bonus_ratio += 0.001;
 			if (komi <= 6.5)
 				komi += 0.25;
 		}
 		else if (command == "genmove") {
 			GTPGenmove(board, joseki, seq);
 			++step_count;
-			if (bonus_ratio <= 0.005)
-				bonus_ratio += 0.0001;
+			if (bonus_ratio <= 0.2)
+				bonus_ratio += 0.001;
 			if (komi <= 6.5)
 				komi += 0.25;
 		}
@@ -208,7 +209,8 @@ int Controller::GTPGenmove(Board &board, TireTree &joseki, string &seq) {
 				color = (color == 'b') ? 'w' : 'b';
 			}
 		}
-	}
+	}else 
+		joseki_on = false;
 	// for(int i = 0 ; i < 13; ++i){
 	// 	for (int j = 0; j < 13; ++j)
 	// 		printf("%.3f ", joseki_bonus[i*13+j]);

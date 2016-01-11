@@ -22,6 +22,11 @@ private:
 		node(string x, string y):x(x),y(y),posi(-1), brother(NULL),child(NULL),num(0){}
 		node(int p):posi(p), brother(NULL),child(NULL),num(0){}
 	};
+	bool match(string ax, string bx, string ay, string by) {
+		int axx = ax[0]-'A', bxx = bx[0]-'A';
+		int byy = atoi(by.c_str()), ayy = atoi(ay.c_str());
+		return abs(axx-bxx) <= 3 && abs(ayy-byy) <= 3;
+	}
 	int convertPosi(string );
 	void remove(node *);
 	// bool isEqual();
@@ -63,7 +68,7 @@ void TireTree::insert(string &seq) {
 	mid_seq >> num;
 	root->num += num;
 	while ((tmpC = tmp->child) && mid_seq >> x >> y) {
-		if (tmpC->x == x && tmpC->y == y) {
+		if (tmpC->x == x && tmpC->y == y ) {
 			tmp = tmpC;
 			tmp->num += num;
 			continue;
@@ -104,7 +109,7 @@ int TireTree::findBest(string &pattern, double* bonus) {
 		bonus[i] = 0;
 
 	while(tmp && mid_seq >> x >> y) {
-	    if (tmp->x == x && tmp->y == y) {
+	    if (tmp->x == x && tmp->y == y || match(tmp->x, x, tmp->y, y)) {
 	    	tmpp = tmp;
 	    	tmp = tmp->child;
 	    	continue;
@@ -112,7 +117,7 @@ int TireTree::findBest(string &pattern, double* bonus) {
 	    	tmpp = tmp;
 	    	tmp = tmp->brother;
 	    	while (tmp) {
-	    		if (tmp->x == x && tmp->y == y) {
+	    		if (tmp->x == x && tmp->y == y || match(tmp->x, x, tmp->y, y)) {
 	    			tmpp = tmp;
 	    			tmp = tmp->child;
 	    			break;

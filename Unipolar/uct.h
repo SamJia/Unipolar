@@ -53,6 +53,8 @@ public:
 	void GenChild(Node *node, Board &board, PointState state);
 	double UCB(Node *node, Node *parent);
 	double Score(Node *node, Node *parent);
+	double Score(Node *node, int num, double mean_score, double biaozhun);
+
 	Node *FindBestChild(Node *node);
 	Node *FindBestUCT(Node *node);
 	void MCSimulation(Board &board, Node *node, PointState state);
@@ -110,11 +112,16 @@ void UCT::GenChild(Node *node, Board &board, PointState state) {
 }
 
 double UCT::UCB(Node *node, Node *parent) {
-	const double BIAS = 1.0 / 4500;
+	const double BIAS = 1.0 / 3000000;
 	if (node->num) {
 		if (parent->son_num_a[node->pos]) {
-			double beta = parent->son_num_a[node->pos] / (parent->son_num_a[node->pos] + node->num + parent->son_num_a[node->pos] * node->num * BIAS);
-			return (1.0 - beta) * node->val / node->num + beta * parent->son_val_a[node->pos] / parent->son_num_a[node->pos];
+			double beta = parent->son_num_a[node->pos] / 
+				(parent->son_num_a[node->pos] + 
+				node->num + parent->son_num_a[node->pos] * 
+				node->num * BIAS);
+			return (1.0 - beta) * node->val / 
+				node->num + beta * parent->son_val_a[node->pos] 
+				/ parent->son_num_a[node->pos];
 		} else {
 			return node->val / node->num;
 		}
@@ -130,9 +137,12 @@ double UCT::UCB(Node *node, Node *parent) {
 double UCT::Score(Node *node, Node *parent) {
 	if (node->num == 0)
 		return 0;
-	return node->bon * bonus_ratio + /*(node->val + parent->son_val_a[node->pos]) /*/ (node->num + parent->son_num_a[node->pos]);
+	return /*(node->val + parent->son_val_a[node->pos]) /*/ ((node->num + parent->son_num_a[node->pos]));
 }
 
+double UCT::Score(Node *node, int num, double mean_score, double biaozhun) {
+	return node->bon * bonus_ratio + (num - biaozhun) / mean_score;
+}
 Node *UCT::FindBestChild(Node *node) {
 	if (node->son == nullptr) {
 		std::cout << "no child" << std::endl;
@@ -160,13 +170,42 @@ Node *UCT::FindBestUCT(Node *node) {
 	double maxScore = -100;
 	double actScore;
 	Node *maxNode = nullptr;
+	double total_score = 0.0;
+	std::vector<Node*> v;
+	std::vector<int> scr;
 	for (Node *p = node->son; p; p = p->bro) {
-		actScore = Score(p, node) + joseki_bonus[p->pos]/* + node->son_val_a[p->pos] / std::max(0.000001, node->son_num_a[p->pos])*/;
+		actScore = Score(p, node)/* + node->son_val_a[p->pos] / std::max(0.000001, node->son_num_a[p->pos])*/;
+		total_score += actScore;
+		scr.push_back(actScore);
+		// if (joseki_on)
+		// 	actScore = joseki_bonus[p->pos];
+		// std::cout << "joseki_bonus" << joseki_bonus[p->pos] << " ";
+		// std::cout<< Score(p, node) << " " <<actScore<<std::endl;
+		v.push_back(p);
+	}
+
+	double mean_score = total_score / v.size();
+	// Z-score normalization
+	// double biaozhun = 0;
+	// for (int i = 0; i < v.size(); ++i) {
+	// 	biaozhun += abs(scr[i]-mean_score)*abs(scr[i]-mean_score);
+	// }
+	// biaozhun = sqrt(biaozhun);
+
+	for (int i = 0; i < v.size(); ++i) {
+		actScore = Score(v[i], scr[i], mean_score, 0);
+
+		if (joseki_on)
+			actScore = joseki_bonus[v[i]->pos];
+
 		if (actScore > maxScore) {
 			maxScore = actScore;
-			maxNode = p;
+			maxNode = v[i];
 		}
 	}
+	std::cout << "maxScore " << maxScore << " " << mean_score/* << " " << biaozhun*/<< std::endl;
+	if (maxScore == 0)
+		joseki_on = false;
 	return maxNode;
 }
 
@@ -197,7 +236,7 @@ void UCT::MCSimulation(Board &board, Node *node, PointState state) {
 		state = 1 - state;
 	}
 	if (flag) {
-		if (act->num >= 8) {
+		if (act->num >= 40) {
 			idx += 1;
 			GenChild(act, board, state);
 			if (act->son == nullptr)
@@ -225,9 +264,6 @@ void UCT::MCSimulation(Board &board, Node *node, PointState state) {
 			}
 		}
 		once_val = 1 - once_val;
-	}
-	if(state != BLACK_POINT){
-		printf("wrong state\n");
 	}
 	record[0]->num += 1;
 	mtx.unlock();
