@@ -59,7 +59,7 @@ def static(games):
 	moves_dic = {}
 	for game in games:
 		if "#" in game:
-			print game
+			# print game
 			continue
 
 		moves = eval(game)
@@ -71,8 +71,6 @@ def static(games):
 		for move in moves:
 			cnt += 1
 			move_list = split(move)
-			if cnt > 20:
-				break
 			# print move_list
 			try:
 				move  = rotate_1(move_list)
@@ -80,17 +78,22 @@ def static(games):
 				move2 = rotate_2(move_list)
 				move4 = rotate_4(move_list)
 
+				if move in move_seq and \
+				move_seq[move_seq.find(move)+len(move)] == " ":
+					print move_seq+" | "+move
+					break
 				move_seq  += ' '+move
 				move_seq2 += ' '+move2
 				move_seq3 += ' '+move3
 				move_seq4 += ' '+move4
-				moves_dic[move_seq]  = moves_dic.get(move_seq ,0) + 1
-				moves_dic[move_seq2] = moves_dic.get(move_seq2,0) + 1
-				moves_dic[move_seq3] = moves_dic.get(move_seq3,0) + 1
-				moves_dic[move_seq4] = moves_dic.get(move_seq4,0) + 1
 			except Exception,e:
-				print e
+				# print e
 				continue
+			moves_dic[move_seq]  = moves_dic.get(move_seq ,0) + 1
+			moves_dic[move_seq2] = moves_dic.get(move_seq2,0) + 1
+			moves_dic[move_seq3] = moves_dic.get(move_seq3,0) + 1
+			moves_dic[move_seq4] = moves_dic.get(move_seq4,0) + 1
+
 	return moves_dic
 
 def output(moves_dic,output_file):
@@ -99,7 +102,7 @@ def output(moves_dic,output_file):
 		times = moves_dic[item]
 		if times < 8:
 			continue
-		line = str(times)+str(item)+'\n'
+		line = str(times)+str(item)+'\\n'
 		# print line,
 		output_file.write(line)
 
