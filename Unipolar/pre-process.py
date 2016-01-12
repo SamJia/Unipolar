@@ -5,10 +5,10 @@ import os
 
 path = os.getcwd()
 files = os.listdir(path)
-output_80 = open("data/moves_80.dat","w")
-output_40 = open("data/moves_40.dat","w")
-output_20 = open("data/moves_20.dat","w")
-output_10 = open("data/moves_10.dat","w")
+output_80 = open("moves_80.dat","w")
+output_40 = open("moves_40.dat","w")
+output_20 = open("moves_20.dat","w")
+output_10 = open("moves_10.dat","w")
 offset = len("SO[http://www.littlegolem.com];")
 cnt_80 = 0
 cnt_40 = 0
