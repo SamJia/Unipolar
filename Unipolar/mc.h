@@ -61,6 +61,7 @@ double MC::Simulate(Board &board, PointState state, Amaf &amaf, TireTree &joseki
 	Move mv;
 	int count = board.GetPieceCount(0) + board.GetPieceCount(1);
 	bool joseki_valid = (step_count <= JOSEKI_STEP);
+	// printf("step_count: %d\n", step_count);
 	int playable_count;
 	std::vector<PositionIndex> playable_pos;
 	while (count < 200/*!playable_pos.empty()*/) {
@@ -79,12 +80,12 @@ double MC::Simulate(Board &board, PointState state, Amaf &amaf, TireTree &joseki
 		if(mv.position == POSITION_PASS) {
 			mv.position = board.GetSafePoint(next_state);
 		}
-		if(mv.position == POSITION_PASS) {
-			mv.position = board.GetEatPoint(next_state);
-		}
 		if(step_count > JOSEKI_STEP && mv.position == POSITION_PASS) {
 			// printf("y\n");
 			mv.position = board.GetMogoPattern(next_state);
+		}
+		if(mv.position == POSITION_PASS) {
+			mv.position = board.GetEatPoint(next_state);
 		}
 		if (mv.position == POSITION_PASS) {
 			playable_count = board.GetPlayableCount(next_state);

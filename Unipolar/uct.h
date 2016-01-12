@@ -48,6 +48,7 @@ public:
 	};
 	UCT() : root(new Node()) {
 		joseki_seq = "";	
+		joseki_p = new TireTree();
 	};
 	~UCT() {
 		delete root;
@@ -254,7 +255,7 @@ Move UCT::GenMove(Board &board, PointState state) {
 	if (root->son == nullptr)
 		return Move(EMPTY_POINT, POSITION_PASS);
 	int count = 0;
-	int end_time = t + CLOCKS_PER_SEC * 3;
+	int end_time = t + CLOCKS_PER_SEC * TIME_PER_STEP;
 	std::vector<std::thread> threads;
 	threads.reserve(10);
 	for (int i = 0; i < THREAD_NUM; ++i){

@@ -114,14 +114,13 @@ void TireTree::insert(string &seq) {
 }
 
 int TireTree::findBest(string &pattern/*, double* bonus*/) {
+	
 	stringstream mid_seq(pattern);
 	string x, y;
 	node *tmp = root->child, *tmpp = root, *parent = root;
 	// allow one step error, and record that error stone.
 	bool tolerate = true;
 	node *actual = new node(-1 -1);
-	// for(int i = 0; i < unipolar::BoardSizeSquare(unipolar::BOARD_SIZE); ++i)
-	// 	bonus[i] = 0;
 
 	while(tmp && mid_seq >> x >> y) {
 		if(!tolerate && actual->x == x && actual->y == y) {
@@ -168,6 +167,7 @@ int TireTree::findBest(string &pattern/*, double* bonus*/) {
 	    	actual = new node(x, y);
 	    }
 	}
+
 	int MAX = -1, total = 0;
 	node *max_node = NULL;
 	while(tmp) {

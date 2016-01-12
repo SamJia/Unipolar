@@ -187,7 +187,7 @@ int Controller::GTPGenmove(Board &board, TireTree &joseki, string &seq) {
 	// for(int i = 0; i < unipolar::BoardSizeSquare(unipolar::BOARD_SIZE); ++i)
 	// 	joseki_bonus[i] = 0;
 
-	if (step_count >= JOSEKI_STEP) {
+	if (step_count > JOSEKI_STEP) {
 		move = UCT().GenMove(board, state);
 	} else {
 		move = UCT(seq, &joseki).GenMove(board, state);

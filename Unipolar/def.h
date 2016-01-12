@@ -54,7 +54,9 @@ typedef double Value;
 typedef int Count;
 
 // for joseki theshold
-const int JOSEKI_STEP = 16;
+const int JOSEKI_STEP = 12;
+
+const int TIME_PER_STEP = 3;
 
 // for expand in uct
 const int EXPAND_NUM = 8;
