@@ -191,12 +191,10 @@ int Controller::GTPGenmove(Board &board, TireTree &joseki, string &seq) {
 		move = UCT().GenMove(board, state);
 	} else {
 		move = UCT(seq, &joseki).GenMove(board, state);
-		printf("test\n");
 		joseki.updateSeq(seq, move.position);
 	}
 
 	board.PlayMove(move);
-	printf("test\n");
 
 	if (move.position == POSITION_PASS) {
 		cout << "= PASS\n" << endl;

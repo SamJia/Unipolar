@@ -119,16 +119,13 @@ int TireTree::findBest(string &pattern/*, double* bonus*/) {
 	node *tmp = root->child, *tmpp = root, *parent = root;
 	// allow one step error, and record that error stone.
 	bool tolerate = true;
-	node *actual = NULL;
+	node *actual = new node(-1 -1);
 	// for(int i = 0; i < unipolar::BoardSizeSquare(unipolar::BOARD_SIZE); ++i)
 	// 	bonus[i] = 0;
 
 	while(tmp && mid_seq >> x >> y) {
-		if(x == "N" && y == "13") {
-			tmp = NULL;
-			break;
-		}
 		if(!tolerate && actual->x == x && actual->y == y) {
+			// printf("yes\n");
 			tmp = NULL;
 			break;
 		}
@@ -153,8 +150,10 @@ int TireTree::findBest(string &pattern/*, double* bonus*/) {
 	    if(!tmp && tolerate) {
 	    	tolerate = false;
 	    	tmp = parent->child;
+	    	// cout << parent->x << ' ' << parent->y << endl;
 	    	while(tmp) {
 		    	if(match(tmp->x, x, tmp->y, y)) {
+	    		// cout << x << ' ' << y << endl;
 		    		parent = tmpp = tmp;
 		    		tmp = tmp->child;
 		    		break;
@@ -163,13 +162,16 @@ int TireTree::findBest(string &pattern/*, double* bonus*/) {
 		    		tmp = tmp->brother;
 		    	}
 	    	}
+    		// cout << tmp-> x << ' ' << tmp->y << endl;
+	    	// cout << pattern << endl;
+	    	// cout << tmp->x << " " << tmp->y;
 	    	actual = new node(x, y);
 	    }
 	}
 	int MAX = -1, total = 0;
 	node *max_node = NULL;
 	while(tmp) {
-	    if (tmp->num > MAX){
+	    if (tmp->num > MAX && actual->x != tmp->x && actual->y != tmp->y){
 	    	MAX = tmp->num;
 	    	max_node = tmp;
 	    }

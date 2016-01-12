@@ -63,31 +63,28 @@ double MC::Simulate(Board &board, PointState state, Amaf &amaf, TireTree &joseki
 	bool joseki_valid = (step_count <= JOSEKI_STEP);
 	int playable_count;
 	std::vector<PositionIndex> playable_pos;
-	// printf("joseki num: %d\n", joseki.size());
-	// printf("get in with last move: %d\n", board.last_move);
-	// std::cout << "joseki_seq: " << joseki_seq << std::endl;
 	while (count < 200/*!playable_pos.empty()*/) {
 		++count;
 		mv.state = next_state;
 		mv.position = POSITION_PASS;
-		// if(joseki_valid) {
-		// 	mv.position = joseki.findBest(joseki_seq);
-		// 	// printf("The best found is: %d\n", mv.position);
-		// 	joseki.updateSeq(joseki_seq, mv.position);
-		// 	if(mv.position == POSITION_PASS) {
-		// 		joseki_valid = false;
-		// 		// printf("joseki_valid: %d\n", joseki_valid);
-		// 	}
-		// } 
+		if(joseki_valid) {
+			mv.position = joseki.findBest(joseki_seq);
+			// printf("The best found is: %d\n", mv.position);
+			joseki.updateSeq(joseki_seq, mv.position);
+			if(mv.position == POSITION_PASS) {
+				joseki_valid = false;
+				// printf("joseki_valid: %d\n", joseki_valid);
+			}
+		} 
 		if(mv.position == POSITION_PASS) {
 			mv.position = board.GetSafePoint(next_state);
 		}
 		if(mv.position == POSITION_PASS) {
-			mv.position == POSITION_PASS;
-			mv.position = board.GetMogoPattern(next_state);
-		}
-		if(mv.position == POSITION_PASS) {
 			mv.position = board.GetEatPoint(next_state);
+		}
+		if(step_count > JOSEKI_STEP && mv.position == POSITION_PASS) {
+			// printf("y\n");
+			mv.position = board.GetMogoPattern(next_state);
 		}
 		if (mv.position == POSITION_PASS) {
 			playable_count = board.GetPlayableCount(next_state);

@@ -7,7 +7,7 @@ int main() {
 	// string s2 = "14 B D 10 W C 4 B L 10 W K 4 B L 7";
 	// string s1 = "12 B D 10 W C 4 B L 10 W K 3";
 	// string s3 = "14 B D 10 W C 4 B L 10 W K 4";
-	string s4 = "N 13 G 7 N 13";
+	string s4 = "N 6 L 3";
 	TireTree tt;
 	// tt.insert(s1);
 	// tt.insert(s2);

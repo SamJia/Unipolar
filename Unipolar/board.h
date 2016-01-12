@@ -757,7 +757,6 @@ bool Board::MatchHane(PositionIndex pos, PointState state) {
 PositionIndex Board::GetMogoPattern(PointState state) {
 	PositionIndex matches[8];
 	int count = 0;
-	int position = POSITION_PASS;
 	for(int i = 0; i < 8; ++i) {
 		PositionIndex pos = last_move + delta[i];
 		if(!OnBoard(pos) || !Playable(pos,state))
@@ -773,13 +772,7 @@ PositionIndex Board::GetMogoPattern(PointState state) {
 		}
 		// ...
 	}
-	if(count) {
-		position = matches[rand()*count/(RAND_MAX+1)];
-		// printf("play pattern: %d\n", position);
-		// Print();
-	}
-
-	return position;
+	return count? matches[rand()*count/(RAND_MAX+1)] : POSITION_PASS;
 
 }
 

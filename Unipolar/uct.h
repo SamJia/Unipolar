@@ -303,20 +303,20 @@ void UCT::PrintUCT() {
 		printf("\n");
 		fprintf(f, "\n");
 	}
-	printf("---THE ADDI MATRIX---\n");
-	fprintf(f, "---THE ADDI MATRIX---\n");
-	printf("   0    1    2    3    4    5    6    7    8    9    10   11   12\n");
-	fprintf(f,"   0    1    2    3    4    5    6    7    8    9    10   11   12\n");
-	for (int x = 0; x < BOARD_SIZE; ++x) {
-		printf("%02d ", x);
-		fprintf(f,"%02d ", x);
-		for (int y = 0; y < BOARD_SIZE; ++y) {
-			printf("%.3f ", uctaddi[x][y]);
-			fprintf(f, "%.3f ", uctaddi[x][y]);
-		}
-		printf("\n");
-		fprintf(f, "\n");
-	}
+	// printf("---THE ADDI MATRIX---\n");
+	// fprintf(f, "---THE ADDI MATRIX---\n");
+	// printf("   0    1    2    3    4    5    6    7    8    9    10   11   12\n");
+	// fprintf(f,"   0    1    2    3    4    5    6    7    8    9    10   11   12\n");
+	// for (int x = 0; x < BOARD_SIZE; ++x) {
+	// 	printf("%02d ", x);
+	// 	fprintf(f,"%02d ", x);
+	// 	for (int y = 0; y < BOARD_SIZE; ++y) {
+	// 		printf("%.3f ", uctaddi[x][y]);
+	// 		fprintf(f, "%.3f ", uctaddi[x][y]);
+	// 	}
+	// 	printf("\n");
+	// 	fprintf(f, "\n");
+	// }
 	printf("---THE NUMBER MATRIX---\n");
 	fprintf(f,"---THE NUMBER MATRIX---\n");
 	printf("   0    1    2    3    4    5    6    7    8    9    10   11   12\n");
@@ -331,15 +331,15 @@ void UCT::PrintUCT() {
 		printf("\n");
 		fprintf(f,"\n");
 	}
-	printf("---THE VAL_A MATRIX---\n");
-	printf("   0    1    2    3    4    5    6    7    8    9    10   11   12\n");
-	for (int x = 0; x < BOARD_SIZE; ++x) {
-		printf("%02d ", x);
-		for (int y = 0; y < BOARD_SIZE; ++y) {
-			printf("%.3f ", root->son_val_a[x * 13 + y] / std::max(0.0001, root->son_num_a[x * 13 + y]));
-		}
-		printf("\n");
-	}
+	// printf("---THE VAL_A MATRIX---\n");
+	// printf("   0    1    2    3    4    5    6    7    8    9    10   11   12\n");
+	// for (int x = 0; x < BOARD_SIZE; ++x) {
+	// 	printf("%02d ", x);
+	// 	for (int y = 0; y < BOARD_SIZE; ++y) {
+	// 		printf("%.3f ", root->son_val_a[x * 13 + y] / std::max(0.0001, root->son_num_a[x * 13 + y]));
+	// 	}
+	// 	printf("\n");
+	// }
 	printf("---THE NUM_A MATRIX---\n");
 	printf("   0    1    2    3    4    5    6    7    8    9    10   11   12\n");
 	for (int x = 0; x < BOARD_SIZE; ++x) {
@@ -349,20 +349,20 @@ void UCT::PrintUCT() {
 		}
 		printf("\n");
 	}
-	printf("---THE BONUS MATRIX---\n");
-	fprintf(f,"---THE BONUS MATRIX---\n");
-	printf("   0    1    2    3    4    5    6    7    8    9    10   11   12\n");
-	fprintf(f,"   0    1    2    3    4    5    6    7    8    9    10   11   12\n");
-	for (int x = 0; x < BOARD_SIZE; ++x) {
-		printf("%02d ", x);
-		fprintf(f,"%02d ", x);
-		for (int y = 0; y < BOARD_SIZE; ++y) {
-			printf("%.3f ", uctbon[x][y]);
-			fprintf(f,"%.3f ", uctbon[x][y]);
-		}
-		printf("\n");
-		fprintf(f,"\n");
-	}
+	// printf("---THE BONUS MATRIX---\n");
+	// fprintf(f,"---THE BONUS MATRIX---\n");
+	// printf("   0    1    2    3    4    5    6    7    8    9    10   11   12\n");
+	// fprintf(f,"   0    1    2    3    4    5    6    7    8    9    10   11   12\n");
+	// for (int x = 0; x < BOARD_SIZE; ++x) {
+	// 	printf("%02d ", x);
+	// 	fprintf(f,"%02d ", x);
+	// 	for (int y = 0; y < BOARD_SIZE; ++y) {
+	// 		printf("%.3f ", uctbon[x][y]);
+	// 		fprintf(f,"%.3f ", uctbon[x][y]);
+	// 	}
+	// 	printf("\n");
+	// 	fprintf(f,"\n");
+	// }
 	act = FindBestUCT(root);
 	i = act->pos / BOARD_SIZE;
 	j = act->pos % BOARD_SIZE;
