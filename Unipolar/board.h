@@ -134,6 +134,18 @@ private:
 		List() : state(EMPTY_POINT) {}
 	};
 public:
+	friend class MC;
+
+	List board_[BoardSizeSquare(BOARD_SIZE)];
+	BitSet empty_[2], eye_[2], safe_eye_[2], dangerous_[2], suiside_[2], dangerous_empty_[2];
+	PositionIndex piece_count_[2];
+	PositionIndex ko_, last_move;
+	bool mc_;
+	static PositionIndex ADJ_POS_[BoardSizeSquare(BOARD_SIZE)][5];
+	double score;
+	int delta[8] = {-1-BOARD_SIZE,0-BOARD_SIZE,1-BOARD_SIZE,1,1+BOARD_SIZE,0+BOARD_SIZE,-1+BOARD_SIZE,-1};
+
+
 	Board() = default;
 	~Board() = default;
 	static void Init();
@@ -173,7 +185,8 @@ public:
 		}
 		return POSITION_PASS;
 	}
-	PositionIndex SpecialPointTest(PointState state);
+	PositionIndex GetSafePoint(PointState state);
+	PositionIndex GetEatPoint(PointState state);
 	void PrintVector(std::vector<PositionIndex> v) {
 		for (auto i : v)
 			printf("%d ", i);
@@ -188,7 +201,7 @@ public:
 	bool Playable(PositionIndex pos, PointState state) {
 		return (empty_[state] - suiside_[state])[pos];
 	}
-	friend class MC;
+
 	// DISALLOW_COPY_AND_ASSIGN_AND_MOVE(Board)
 	void Print() {
 		printf("   0  1  2  3  4  5  6  7  8  9  10 11 12\n");
@@ -208,7 +221,6 @@ public:
 		}
 	}
 
-// private:
 	PositionIndex GetFather(PositionIndex pos);
 	void Merge(PositionIndex pos1, PositionIndex pos2);
 	void ToEmpty(PositionIndex pos);
@@ -254,13 +266,25 @@ public:
 		dangerous_empty_[state].reset(pos);
 	}
 
-	List board_[BoardSizeSquare(BOARD_SIZE)];
-	BitSet empty_[2], eye_[2], safe_eye_[2], dangerous_[2], suiside_[2], dangerous_empty_[2];
-	PositionIndex piece_count_[2];
-	PositionIndex ko_;
-	bool mc_;
-	static PositionIndex ADJ_POS_[BoardSizeSquare(BOARD_SIZE)][5];
-	double score;
+	bool OnBoard(PositionIndex pos) {
+		return (pos >= 0 && pos < BoardSizeSquare(BOARD_SIZE));
+	}
+	bool SameState(PositionIndex pos, PointState state) {
+		return (board_[pos].state == state);
+	}
+	bool OppositeState(PositionIndex pos, PointState state) {
+		return (board_[pos].state == 1-state);
+	}
+	bool ExceptState(PositionIndex pos, PointState state) {
+		return (board_[pos].state != state);
+	}
+
+
+	// below are the pattern functions, implemented in pattern.cpp
+
+	PositionIndex GetMogoPattern(PointState state);
+	bool MatchCut(PositionIndex pos, PointState state);
+	bool MatchHane(PositionIndex pos, PointState state);
 };
 
 PositionIndex Board::ADJ_POS_[BoardSizeSquare(BOARD_SIZE)][5];
@@ -306,7 +330,7 @@ void Board::ClearBoard() {
 	mc_ = false;
 }
 
-PositionIndex Board::SpecialPointTest(PointState state) {
+PositionIndex Board::GetSafePoint(PointState state) {
 	double max_score = 1, score;
 	PositionIndex best_pos = POSITION_PASS, pos, adj_chain;
 	BitSet tmp = (dangerous_[state] - suiside_[state]) * empty_[state];
@@ -334,7 +358,12 @@ PositionIndex Board::SpecialPointTest(PointState state) {
 		}
 		base += 64;
 	}
-	tmp = dangerous_[state ^ 1] * empty_[state];
+	return best_pos;
+}
+PositionIndex Board::GetEatPoint(PointState state) {
+	double max_score = 1, score;
+	PositionIndex best_pos = POSITION_PASS, pos, adj_chain;
+	BitSet tmp = dangerous_[state ^ 1] * empty_[state];
 	if (ko_ >= 0 && tmp[ko_]) {
 		printf("ko_ occur in oppose dangerous\n");
 		exit(0);
@@ -350,8 +379,8 @@ PositionIndex Board::SpecialPointTest(PointState state) {
 					score += -board_[adj_chain].father;
 				}
 			}
-			if ((score * 1.1) > max_score) {
-				max_score = score * 1.1;
+			if (score > max_score) {
+				max_score = score;
 				best_pos = pos;
 			}
 		}
@@ -449,6 +478,8 @@ double Board::PlayMove(const Move &move) {
 		ko_ = -1;
 	if (ko_ >= 0)
 		RemoveEmpty(ko_, move.state ^ 1);
+
+	last_move = move.position;
 	return score;
 }
 
@@ -642,5 +673,115 @@ void Board::CheckSpecialPoint(PositionIndex pos, bool add_score) {
 		RemoveDangerous(pos, BLACK_POINT);
 	}
 }
+
+
+// match situation like this:
+// 		. o .
+// 		x . x
+// 		_ _ _
+// suppose we are 'o', '_' means not opposite.
+// can be rotated in clockwisely.
+bool Board::MatchCut(PositionIndex pos, PointState state) {
+	for(int dir = 0; dir < 8; dir += 2) {
+		PositionIndex around[8];
+		for(int i = 0; i < 8; ++i) {
+			around[i] = pos + delta[(dir+i) % 8];
+		}
+		// 1,3,5,6,7 on board.
+		if(!OnBoard(around[1]) || !OnBoard(around[3]) || !OnBoard(around[5]) || !OnBoard(around[6]) || !OnBoard(around[7]))
+			continue;
+		if(board_[around[1]].state == state 	&&
+		   board_[around[3]].state == 1-state 	&&
+		   board_[around[7]].state == 1-state 	&&
+		   board_[around[4]].state != state 	&&
+		   board_[around[5]].state != state 	&&
+		   board_[around[6]].state != state)
+			return true;
+	}
+	return false;
+}
+//
+bool Board::MatchHane(PositionIndex pos, PointState state) {
+	for(int dir = 0; dir < 8; dir += 2) {
+		PositionIndex around[8];
+		for(int i = 0; i < 8; ++i) {
+			around[i] = pos + delta[(dir+i) % 8];
+		}
+		if(!OnBoard(around[0]) || ! OnBoard(around[1]))
+			continue;
+		if(board_[around[0]].state != 1-board_[around[1]].state)
+			continue;
+		if(OnBoard(around[7]) && OnBoard(around[3]) && OnBoard(around[5])) {
+			if(board_[around[7]].state == 1-state) {
+				if(board_[around[3]].state == 1-state && board_[around[5]].state == 1-state)
+					return false;
+				return true;
+			} else {
+				if(board_[around[3]].state == EMPTY_POINT && board_[around[5]].state == EMPTY_POINT)
+					return true;
+			}
+		}
+		if(OnBoard(around[2]) && OnBoard(around[3])) {
+			if(board_[around[2]].state == state && board_[around[3]].state != 1-state)
+				return true;
+		}
+
+		// symmetric ones.
+		for(int i = 0; i < 8; ++i) {
+			around[i] = pos + delta[(dir-i+8) % 8];
+		}
+		if(!OnBoard(around[0]) || ! OnBoard(around[1]))
+			continue;
+		if(board_[around[0]].state != 1-board_[around[1]].state)
+			continue;
+		if(OnBoard(around[7]) && OnBoard(around[3]) && OnBoard(around[5])) {
+			if(board_[around[7]].state == 1-state) {
+				if(board_[around[3]].state == 1-state && board_[around[5]].state == 1-state)
+					return false;
+				return true;
+			} else {
+				if(board_[around[3]].state == EMPTY_POINT && board_[around[5]].state == EMPTY_POINT)
+					return true;
+			}
+		}
+		if(OnBoard(around[2]) && OnBoard(around[3])) {
+			if(board_[around[2]].state == state && board_[around[3]].state != 1-state)
+				return true;
+		}
+
+	}
+
+	return false;
+}
+
+PositionIndex Board::GetMogoPattern(PointState state) {
+	PositionIndex matches[8];
+	int count = 0;
+	int position = POSITION_PASS;
+	for(int i = 0; i < 8; ++i) {
+		PositionIndex pos = last_move + delta[i];
+		if(!OnBoard(pos) || !Playable(pos,state))
+			continue;
+		// match patterns begin.
+		if(MatchCut(pos, state)) {
+			matches[count++] = pos;
+			continue;
+		}
+		if(MatchHane(pos, state)) {
+			matches[count++] = pos;
+			continue;
+		}
+		// ...
+	}
+	if(count) {
+		position = matches[rand()*count/(RAND_MAX+1)];
+		// printf("play pattern: %d\n", position);
+		// Print();
+	}
+
+	return position;
+
+}
+
 
 #endif

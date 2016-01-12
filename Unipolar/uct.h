@@ -3,6 +3,7 @@
 #include "board.h"
 #include "def.h"
 #include "mc.h"
+#include "joseki.h"
 #include <cstring>
 #include <cassert>
 #include <cstdlib>
@@ -40,19 +41,17 @@ class UCT {
 public:
 
 public:
-	double joseki_bonus[BoardSizeSquare(BOARD_SIZE)];
-	UCT(double* bonus = NULL) : root(new Node()) {
-		if (bonus) {
-			// 	memcpy(joseki_bonus, bonus, sizeof(bonus));
-			for (PositionIndex i = 0; i < BoardSizeSquare(BOARD_SIZE); ++i)
-				joseki_bonus[i] = bonus[i];
-		} else {
-			for (PositionIndex i = 0; i < BoardSizeSquare(BOARD_SIZE); ++i)
-				joseki_bonus[i] = 0;
-		}
+	string joseki_seq;	
+	TireTree *joseki_p;
+	UCT(string seq, TireTree *jose) : root(new Node()), joseki_seq(seq) {
+		joseki_p = jose;
+	};
+	UCT() : root(new Node()) {
+		joseki_seq = "";	
 	};
 	~UCT() {
 		delete root;
+		// delete joseki;
 	};
 	void Task(Board &board, PointState state, Node *node, int &num, int t, int seed);
 	void GenChild(Node *node, Board &board, PointState state);
@@ -60,7 +59,7 @@ public:
 	double Score(Node *node, Node *parent);
 	Node *FindBestChild(Node *node);
 	Node *FindBestUCT(Node *node);
-	void MCSimulation(Board &board, Node *node, PointState state);
+	void MCSimulation(Board &board, Node *node, PointState state, string joseki_seq);
 	Move GenMove(Board &board, PointState state);
 	void CopyUCT(Node *node, double **valueboard, int **numboard, double **bonusboard);
 	void PrintUCT();
@@ -77,8 +76,9 @@ void UCT::Task(Board &board, PointState state, Node *node, int &num, int t, int 
 		++num;
 		mtx.unlock();
 		Board board_copy(board);
+		string seq_copy = joseki_seq;
 		// MC().Simulate(board_copy, state);
-		MCSimulation(board_copy, node, state);
+		MCSimulation(board_copy, node, state, seq_copy);
 		//std::cout << std::this_thread::get_id() << std::endl;
 		// printf("one MCSimulation done\n");
 		// exit(0);
@@ -166,7 +166,7 @@ Node *UCT::FindBestUCT(Node *node) {
 	double actScore;
 	Node *maxNode = nullptr;
 	for (Node *p = node->son; p; p = p->bro) {
-		actScore = Score(p, node) + joseki_bonus[p->pos]/* + node->son_val_a[p->pos] / std::max(0.000001, node->son_num_a[p->pos])*/;
+		actScore = Score(p, node)/* + node->son_val_a[p->pos] / std::max(0.000001, node->son_num_a[p->pos])*/;
 		if (actScore > maxScore) {
 			maxScore = actScore;
 			maxNode = p;
@@ -176,7 +176,7 @@ Node *UCT::FindBestUCT(Node *node) {
 }
 
 int max_depth = 0;
-void UCT::MCSimulation(Board &board, Node *node, PointState state) {
+void UCT::MCSimulation(Board &board, Node *node, PointState state, string joseki_seq) {
 	// printf("MCSimulation\n");
 	std::vector<Node *> record;
 	Amaf amaf;
@@ -194,6 +194,9 @@ void UCT::MCSimulation(Board &board, Node *node, PointState state) {
 		record.push_back(act);
 		amaf.set(act->pos, state);
 		once_bon = board.PlayMove(Move(state, act->pos));
+		if (joseki_seq != "") {
+			joseki_p->updateSeq(joseki_seq, act->pos);
+		}
 		if (act->pos == POSITION_PASS && record[idx - 1]->pos == POSITION_PASS) {
 			once_val = MC().Evaluate(board, state);
 			flag = false;
@@ -202,18 +205,22 @@ void UCT::MCSimulation(Board &board, Node *node, PointState state) {
 		state = 1 - state;
 	}
 	if (flag) {
-		if (act->num >= 8) {
+		if (act->num >= EXPAND_NUM) {
 			idx += 1;
 			GenChild(act, board, state);
 			if (act->son == nullptr)
 				std::cout << "gen failed" << std::endl;
 			act = FindBestChild(act);
+			// add to seq;
 			record.push_back(act);
 			amaf.set(act->pos, state);
 			once_bon = board.PlayMove(Move(state, act->pos));
+			if (joseki_seq != "") {
+				joseki_p->updateSeq(joseki_seq, act->pos);
+			}
 			state = 1 - state;
 		}
-		once_val = MC().Simulate(board, state, amaf);
+		once_val = MC().Simulate(board, state, amaf, *joseki_p, joseki_seq);
 	}
 	mtx.lock();
 	idx = record.size()-1;
@@ -230,9 +237,6 @@ void UCT::MCSimulation(Board &board, Node *node, PointState state) {
 			}
 		}
 		once_val = 1 - once_val;
-	}
-	if(state != BLACK_POINT){
-		printf("wrong state\n");
 	}
 	record[0]->num += 1;
 	mtx.unlock();
@@ -253,7 +257,7 @@ Move UCT::GenMove(Board &board, PointState state) {
 	int end_time = t + CLOCKS_PER_SEC * 3;
 	std::vector<std::thread> threads;
 	threads.reserve(10);
-	for (int i = 0; i < 8; ++i){
+	for (int i = 0; i < THREAD_NUM; ++i){
 		int seed = rand();
 		threads.push_back(std::thread([&]() {this->Task(board, state, root, count, end_time, seed);}));
 	}
@@ -261,10 +265,11 @@ Move UCT::GenMove(Board &board, PointState state) {
 		th.join();
 	printf("max_depth:%d\n", max_depth);
 	std::cout << "totally " << count << " times of MC" << std::endl;
-	PrintUCT();
+	// PrintUCT();
 	nextstep.state = state;
 	nextstep.position = FindBestUCT(root)->pos;
-	// PrintUCT();
+	PrintUCT();
+	std::cout << joseki_seq << std::endl;
 	return nextstep;
 }
 

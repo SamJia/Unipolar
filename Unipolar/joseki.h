@@ -22,6 +22,11 @@ private:
 		node(string x, string y):x(x),y(y),posi(-1), brother(NULL),child(NULL),num(0){}
 		node(int p):posi(p), brother(NULL),child(NULL),num(0){}
 	};
+	bool match(string ax, string bx, string ay, string by) {
+		int axx = ax[0]-'A', bxx = bx[0]-'A';
+		int byy = atoi(by.c_str()), ayy = atoi(ay.c_str());
+		return abs(axx-bxx) <= 1 && abs(ayy-byy) <= 1;
+	}
 	int convertPosi(string );
 	void remove(node *);
 	// bool isEqual();
@@ -40,7 +45,8 @@ public:
 	}
 	void load();
 	void insert(string &seq);
-	int findBest(string &seq, double* bonus);
+	int findBest(string &seq/*, double* bonus*/);
+	void updateSeq(string &seq, unipolar::PositionIndex pos);
 	// void normalize();
 };
 
@@ -53,6 +59,17 @@ void TireTree::remove(node *n) {
 	return;
 }
 
+void TireTree::updateSeq(string &seq, unipolar::PositionIndex pos) {
+	int x = pos / unipolar::BOARD_SIZE;
+	int y = pos % unipolar::BOARD_SIZE + 1;
+	char x_char = (x > 7 ? x + 1 : x) + 'A';
+	char tmp_str[50000], color;
+	color = (color == 'b') ? 'w' : 'b';
+	snprintf(tmp_str, sizeof(tmp_str), "%s %c %d", seq.c_str(), x_char, y);
+	seq = (string)tmp_str;
+	// printf("joseki\n");
+}
+
 void TireTree::insert(string &seq) {
 	state = 1;
 	string x, y;
@@ -63,7 +80,7 @@ void TireTree::insert(string &seq) {
 	mid_seq >> num;
 	root->num += num;
 	while ((tmpC = tmp->child) && mid_seq >> x >> y) {
-		if (tmpC->x == x && tmpC->y == y) {
+		if (tmpC->x == x && tmpC->y == y ) {
 			tmp = tmpC;
 			tmp->num += num;
 			continue;
@@ -96,24 +113,35 @@ void TireTree::insert(string &seq) {
 	}
 }
 
-int TireTree::findBest(string &pattern, double* bonus) {
+int TireTree::findBest(string &pattern/*, double* bonus*/) {
 	stringstream mid_seq(pattern);
 	string x, y;
-	node *tmp = root->child, *tmpp = root;
-	for(int i = 0; i < unipolar::BoardSizeSquare(unipolar::BOARD_SIZE); ++i)
-		bonus[i] = 0;
+	node *tmp = root->child, *tmpp = root, *parent = root;
+	// allow one step error, and record that error stone.
+	bool tolerate = true;
+	node *actual = NULL;
+	// for(int i = 0; i < unipolar::BoardSizeSquare(unipolar::BOARD_SIZE); ++i)
+	// 	bonus[i] = 0;
 
 	while(tmp && mid_seq >> x >> y) {
-	    if (tmp->x == x && tmp->y == y) {
-	    	tmpp = tmp;
+		if(x == "N" && y == "13") {
+			tmp = NULL;
+			break;
+		}
+		if(!tolerate && actual->x == x && actual->y == y) {
+			tmp = NULL;
+			break;
+		}
+	    if (tmp->x == x && tmp->y == y /*|| match(tmp->x, x, tmp->y, y)*/) {
+	    	parent = tmpp = tmp;
 	    	tmp = tmp->child;
 	    	continue;
 	    } else {
 	    	tmpp = tmp;
 	    	tmp = tmp->brother;
 	    	while (tmp) {
-	    		if (tmp->x == x && tmp->y == y) {
-	    			tmpp = tmp;
+	    		if (tmp->x == x && tmp->y == y/* || match(tmp->x, x, tmp->y, y)*/) {
+	    			parent = tmpp = tmp;
 	    			tmp = tmp->child;
 	    			break;
 	    		} else {
@@ -121,6 +149,21 @@ int TireTree::findBest(string &pattern, double* bonus) {
 	    			tmp = tmp->brother;
 	    		}
 	    	}
+	    }
+	    if(!tmp && tolerate) {
+	    	tolerate = false;
+	    	tmp = parent->child;
+	    	while(tmp) {
+		    	if(match(tmp->x, x, tmp->y, y)) {
+		    		parent = tmpp = tmp;
+		    		tmp = tmp->child;
+		    		break;
+		    	} else {
+		    		tmpp = tmp;
+		    		tmp = tmp->brother;
+		    	}
+	    	}
+	    	actual = new node(x, y);
 	    }
 	}
 	int MAX = -1, total = 0;
@@ -135,22 +178,22 @@ int TireTree::findBest(string &pattern, double* bonus) {
 		int y = y = atoi(tmp->y.c_str()) - 1;
 		// cout << tmp->num << ' ' << total << endl;
 		total += tmp->num;
-		bonus[x*13+y] = tmp->num;
+		// bonus[x*13+y] = tmp->num;
     	tmp = tmp->brother;
 	}
 
 	// cout << total << endl;
-	for(int i = 0; i < unipolar::BoardSizeSquare(unipolar::BOARD_SIZE); ++i) {
-		if(bonus[i] < 1e-6)
-			bonus[i] = 0;
-		else 
-			bonus[i] /= total;
-		// limit the number.
-		if(bonus[i] < 1e-4)
-			bonus[i] = 0;
-	}	
+	// for(int i = 0; i < unipolar::BoardSizeSquare(unipolar::BOARD_SIZE); ++i) {
+	// 	if(bonus[i] < 1e-6)
+	// 		bonus[i] = 0;
+	// 	else 
+	// 		bonus[i] /= total;
+	// 	// limit the number.
+	// 	if(bonus[i] < 1e-4)
+	// 		bonus[i] = 0;
+	// }	
 	if(!max_node)
-		return -1;
+		return unipolar::POSITION_PASS;
 	else {
 		char x_char = max_node->x[0];
 		int x = (x_char > 'I' ? x_char - 1 : x_char) - 'A';

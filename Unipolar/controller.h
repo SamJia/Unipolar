@@ -38,7 +38,6 @@ private:
 	int GTPFinalScore();
 	int GTPFinalStatusList();
 	double komi_;
-	int step_count;
 };
 
 int Controller::Run(Board &board) {
@@ -51,6 +50,7 @@ int Controller::Run(Board &board) {
 	step_count = 0;
 	joseki.load();
 	string command;
+	seq = seqold = " ";
 	// command.resize(100);
 	// fout << "start reading commands" << endl;
 	while (true) {
@@ -77,29 +77,29 @@ int Controller::Run(Board &board) {
 		else if (command == "clear_board") {
 			GTPClearBoard(board);
 			step_count = 0;
-			seq = seqold = "";
+			seq = seqold = " ";
 		}
 		else if (command == "komi")
 			GTPKomi();
 		else if (command == "play") {
 			GTPPlay(board, seq);
 			++step_count;
-			if (bonus_ratio <= 0.005)
-				bonus_ratio += 0.0001;
+			if (bonus_ratio <= 0.2)
+				bonus_ratio += 0.001;
 			if (komi <= 6.5)
 				komi += 0.25;
 		}
 		else if (command == "genmove") {
 			GTPGenmove(board, joseki, seq);
 			++step_count;
-			if (bonus_ratio <= 0.005)
-				bonus_ratio += 0.0001;
+			if (bonus_ratio <= 0.2)
+				bonus_ratio += 0.001;
 			if (komi <= 6.5)
 				komi += 0.25;
 		}
 		else if (command == "showboard")
 			GTPShowboard(board);
-		else if (command == "quit")
+		else if (command == "quit") 
 			GTPQuit();
 		else if (command == "final_score")
 			GTPFinalScore();
@@ -181,39 +181,23 @@ int Controller::GTPGenmove(Board &board, TireTree &joseki, string &seq) {
 	cin >> color;
 	PointState state = (color == 'b') ? BLACK_POINT : WHITE_POINT;
 	int posi = -1;
-
-	double joseki_bonus[unipolar::BoardSizeSquare(unipolar::BOARD_SIZE)];
-	for(int i = 0; i < unipolar::BoardSizeSquare(unipolar::BOARD_SIZE); ++i)
-		joseki_bonus[i] = 0;
-
-	// a theshold for joseki analysis.
-	//cout << "step is " << step_count << endl;
-	if (step_count < JOSEKI_STEP) {
-		cout << "using joseki: " << seq << endl;
-		// even if seq is null.
-		posi = joseki.findBest(seq, joseki_bonus);
-
-		if (posi == -1) {
-			cout << "joseki not found, alternative: " << seqold  << endl;
-			posi = joseki.findBest(seqold, joseki_bonus);
-			if (posi >= 0) {
-				int x = posi / BOARD_SIZE;
-				int y = posi % BOARD_SIZE + 1;
-				char x_char = (x > 7 ? x + 1 : x) + 'A';
-				char tmp_str[50000];
-				color = (color == 'b') ? 'w' : 'b';
-				snprintf(tmp_str, sizeof(tmp_str), "%s %c %d", seqold.c_str(), x_char, y);
-				seq = (string)tmp_str;
-				// cout<<"sb:"<<seq<<endl;
-				posi = joseki.findBest(seq, joseki_bonus);
-				// cout<<posi<<endl;
-				color = (color == 'b') ? 'w' : 'b';
-			}
-		}
-	}
 	Move move;
-	move = UCT(joseki_bonus).GenMove(board, state);
+
+	// double joseki_bonus[unipolar::BoardSizeSquare(unipolar::BOARD_SIZE)];
+	// for(int i = 0; i < unipolar::BoardSizeSquare(unipolar::BOARD_SIZE); ++i)
+	// 	joseki_bonus[i] = 0;
+
+	if (step_count >= JOSEKI_STEP) {
+		move = UCT().GenMove(board, state);
+	} else {
+		move = UCT(seq, &joseki).GenMove(board, state);
+		printf("test\n");
+		joseki.updateSeq(seq, move.position);
+	}
+
 	board.PlayMove(move);
+	printf("test\n");
+
 	if (move.position == POSITION_PASS) {
 		cout << "= PASS\n" << endl;
 		return 0;
@@ -221,12 +205,6 @@ int Controller::GTPGenmove(Board &board, TireTree &joseki, string &seq) {
 	int x = move.position / BOARD_SIZE, y = move.position % BOARD_SIZE + 1;
 	char x_char = (x > 7 ? x + 1 : x) + 'A';
 	cout << "= " << x_char << y << '\n' << endl;
-	// printf("= %c%d\n\n", x_char, y);
-
-	char tmp_str[50000];
-	snprintf(tmp_str, sizeof(tmp_str), "%s %c %d", seq.c_str(), x_char, y);
-	seqold = seq = string(tmp_str);
-	// cout << "next seq: " << seq << endl;
 	return 0;
 }
 

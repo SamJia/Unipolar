@@ -54,7 +54,12 @@ typedef double Value;
 typedef int Count;
 
 // for joseki theshold
-const int JOSEKI_STEP = 20;
+const int JOSEKI_STEP = 16;
+
+// for expand in uct
+const int EXPAND_NUM = 8;
+
+const int THREAD_NUM = 8;
 
 const double save_dangerous_eye = 2;
 const double save_dangerous_chain = 5;
@@ -65,9 +70,8 @@ const double make_eye = 1.8;
 const double make_safe_eye = 3.5;
 
 double komi = 0.0;
-double bonus_ratio = 0.001;
-
-
+double bonus_ratio = 0.05;
+int step_count = 0;
 }
 
 #endif
