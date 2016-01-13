@@ -71,10 +71,13 @@ double MC::Simulate(Board &board, PointState state, Amaf &amaf, TireTree &joseki
 		if(joseki_valid) {
 			mv.position = joseki.findBest(joseki_seq);
 			// printf("The best found is: %d\n", mv.position);
-			joseki.updateSeq(joseki_seq, mv.position);
-			if(mv.position == POSITION_PASS) {
+			if(mv.position == POSITION_PASS || !board.Playable(mv.position, state)) {
 				joseki_valid = false;
+				mv.position = POSITION_PASS;
 				// printf("joseki_valid: %d\n", joseki_valid);
+			} else {
+				// std::cout<< joseki_seq << std::endl;
+				joseki.updateSeq(joseki_seq, mv.position);
 			}
 		} 
 		if(mv.position == POSITION_PASS) {
