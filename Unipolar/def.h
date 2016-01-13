@@ -58,7 +58,7 @@ const int JOSEKI_STEP = 12;
 
 const int TIME_PER_STEP = 3;
 
-const int THREAD_NUM = 8;
+const int THREAD_NUM = 1;
 
 // for expand in uct
 const int EXPAND_NUM = 8;
@@ -70,6 +70,8 @@ const double threaten_oppose = 2;
 const double threaten_self = -5;
 const double make_eye = 1.8;
 const double make_safe_eye = 3.5;
+const double tolerate_upper_bound = 30;
+const double match_range = 6;
 
 double komi = 0.0;
 double bonus_ratio = 0.05;
