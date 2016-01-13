@@ -139,10 +139,10 @@ public:
 	List board_[BoardSizeSquare(BOARD_SIZE)];
 	BitSet empty_[2], eye_[2], safe_eye_[2], dangerous_[2], suiside_[2], dangerous_empty_[2];
 	PositionIndex piece_count_[2];
-	PositionIndex ko_, last_move;
-	bool mc_;
+	PositionIndex ko_, last_move, last_atari[2];
 	static PositionIndex ADJ_POS_[BoardSizeSquare(BOARD_SIZE)][5];
 	double score;
+	bool mc_;
 	int delta[8] = {-1-BOARD_SIZE,0-BOARD_SIZE,1-BOARD_SIZE,1,1+BOARD_SIZE,0+BOARD_SIZE,-1+BOARD_SIZE,-1};
 
 
@@ -185,8 +185,8 @@ public:
 		}
 		return POSITION_PASS;
 	}
-	PositionIndex GetSafePoint(PointState state);
-	PositionIndex GetEatPoint(PointState state);
+	void GetSafePoint(PositionIndex &last_safe, PositionIndex &best_save, PointState state);
+	void GetEatPoint(PositionIndex &last_eat, PositionIndex &best_eat, PointState state);
 	void PrintVector(std::vector<PositionIndex> v) {
 		for (auto i : v)
 			printf("%d ", i);
@@ -269,15 +269,6 @@ public:
 	bool OnBoard(PositionIndex pos) {
 		return (pos >= 0 && pos < BoardSizeSquare(BOARD_SIZE));
 	}
-	bool SameState(PositionIndex pos, PointState state) {
-		return (board_[pos].state == state);
-	}
-	bool OppositeState(PositionIndex pos, PointState state) {
-		return (board_[pos].state == 1-state);
-	}
-	bool ExceptState(PositionIndex pos, PointState state) {
-		return (board_[pos].state != state);
-	}
 
 
 	// below are the pattern functions, implemented in pattern.cpp
@@ -301,6 +292,8 @@ void Board::Init() {
 		if (i + BOARD_SIZE < BoardSizeSquare(BOARD_SIZE))
 			ADJ_POS_[i][++ADJ_POS_[i][0]] = i + BOARD_SIZE;
 	}
+	// last_atari[0] = last_atari[1] = last_move = POSITION_PASS;
+
 	// for (int i = 0; i < BoardSizeSquare(BOARD_SIZE); ++i) {
 	// 	printf("{%d,%d,%d,%d,%d},\n", ADJ_POS_[i][0], ADJ_POS_[i][1], ADJ_POS_[i][2], ADJ_POS_[i][3], ADJ_POS_[i][4]);
 	// }
@@ -330,63 +323,101 @@ void Board::ClearBoard() {
 	mc_ = false;
 }
 
-PositionIndex Board::GetSafePoint(PointState state) {
-	double max_score = 1, score;
-	PositionIndex best_pos = POSITION_PASS, pos, adj_chain;
+void Board::GetSafePoint(PositionIndex &last_safe, PositionIndex &best_save, PointState state) {
 	BitSet tmp = (dangerous_[state] - suiside_[state]) * empty_[state];
+	BitSet merged_air_set;
+	double max_score = 0, score;
+	
+	last_safe = best_save = POSITION_PASS;
+	PositionIndex pos;
+	
 	if (ko_ >= 0 && tmp[ko_]) {
 		printf("ko_ occur in my dangerous\n");
 		exit(0);
 	}
+
 	for (int i = 0, base = 0; i < 3; ++i) {
 		while (tmp.data_[i]) {
+			PositionIndex adj_chain[4], tmp_chain;
+			int adj_count = 0;
+			score = 1;
+			
 			pos = base + __builtin_ctzll(tmp.data_[i]);
-			// printf("check dangerous pos %d\n", pos);
+			merged_air_set = board_[pos].air_set;
 			tmp.data_[i] &= tmp.data_[i] - 1;
-			BitSet merged_air_set = board_[pos].air_set;
+			// printf("check dangerous pos %d\n", pos);
+
 			for (int j = 1; j <= ADJ_POS_[pos][0]; ++j) {
 				if (board_[ADJ_POS_[pos][j]].state == state) {
-					adj_chain = GetFather(ADJ_POS_[pos][j]);
-					merged_air_set += board_[adj_chain].air_set;
+					tmp_chain = GetFather(ADJ_POS_[pos][j]);
+					bool flag = true;
+					for (int k = 0; k < adj_count; ++k) {
+						if (tmp_chain == adj_chain[k]) {
+							flag = false;
+						}
+					}
+					if (flag) {
+						adj_chain[adj_count++] = tmp_chain;
+						merged_air_set += board_[tmp_chain].air_set;
+						score += -board_[tmp_chain].father;
+					}
 				}
 			}
-			score = merged_air_set.count() - 1;
+			// if the merged string still dangerous
+			if (merged_air_set.count() - 1 <= 1)
+				continue;
 			if (score > max_score) {
 				max_score = score;
-				best_pos = pos;
+				best_save = pos;
 			}
+			if (pos == last_atari[state])
+				last_safe = pos;
 		}
 		base += 64;
 	}
-	return best_pos;
 }
-PositionIndex Board::GetEatPoint(PointState state) {
-	double max_score = 1, score;
-	PositionIndex best_pos = POSITION_PASS, pos, adj_chain;
+void Board::GetEatPoint(PositionIndex &last_eat, PositionIndex &best_eat, PointState state) {
+	PositionIndex best_pos = POSITION_PASS, pos, adj_chain[4], tmp_chain;
 	BitSet tmp = dangerous_[state ^ 1] * empty_[state];
+	last_eat = best_eat = POSITION_PASS;
+	// printf("test: %d,%d\n", last_atari[state^1]);
+	double max_score = 0, score;
 	if (ko_ >= 0 && tmp[ko_]) {
 		printf("ko_ occur in oppose dangerous\n");
 		exit(0);
 	}
+
 	for (int i = 0, base = 0; i < 3; ++i) {
 		while (tmp.data_[i]) {
+			int adj_count = 0;
+			score = 0;
 			pos = base + __builtin_ctzll(tmp.data_[i]);
 			tmp.data_[i] &= tmp.data_[i] - 1;
-			score = 0;
+
 			for (int j = 1; j <= ADJ_POS_[pos][0]; ++j) {
 				if (board_[ADJ_POS_[pos][j]].state == (state ^ 1)) {
-					adj_chain = GetFather(ADJ_POS_[pos][j]);
-					score += -board_[adj_chain].father;
+					tmp_chain = GetFather(ADJ_POS_[pos][j]);
+					bool flag = true;
+					for (int k = 0; k < adj_count; ++k) {
+						if (tmp_chain == adj_chain[k]) {
+							flag = false;
+						}
+					}
+					if (flag) {
+						adj_chain[adj_count++] = tmp_chain;
+						score += -board_[tmp_chain].father;
+					}					
 				}
 			}
 			if (score > max_score) {
 				max_score = score;
-				best_pos = pos;
+				best_eat = pos;
 			}
+			if (pos == last_atari[state^1])
+				last_eat = pos;
 		}
 		base += 64;
 	}
-	return best_pos;
 }
 
 double Board::PlayMove(const Move &move) {
@@ -457,6 +488,7 @@ double Board::PlayMove(const Move &move) {
 			if (board_[v[i]].state != EMPTY_POINT) {
 				score += -(board_[v[i]].father * threaten_oppose);
 				CheckSpecialPoint(board_[v[i]].air_set.GetAirPos());
+				last_atari[board_[v[i]].state] = board_[v[i]].air_set.GetAirPos();
 			}
 			else
 				CheckSpecialPoint(v[i]);
@@ -473,6 +505,7 @@ double Board::PlayMove(const Move &move) {
 	else if (board_[pos].air_count == 1) {
 		score += -(board_[pos].father * threaten_self);
 		CheckSpecialPoint(board_[pos].air_set.GetAirPos());
+		last_atari[board_[pos].state] = board_[pos].air_set.GetAirPos();
 	}
 	if (board_[pos].father != -1)
 		ko_ = -1;

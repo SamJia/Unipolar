@@ -78,24 +78,24 @@ double MC::Simulate(Board &board, PointState state, Amaf &amaf, TireTree &joseki
 			}
 		} 
 		if(mv.position == POSITION_PASS) {
-			mv.position = board.GetSafePoint(next_state);
-		}
-		if(step_count > JOSEKI_STEP && mv.position == POSITION_PASS) {
-			// printf("y\n");
-			mv.position = board.GetMogoPattern(next_state);
-		}
-		if(mv.position == POSITION_PASS) {
-			mv.position = board.GetEatPoint(next_state);
+			PositionIndex last_eat, best_eat, last_safe, best_safe;
+			last_eat = last_safe = best_safe = best_eat = POSITION_PASS;
+			board.GetSafePoint(last_safe, best_safe, next_state);
+			board.GetEatPoint(last_eat, best_eat, next_state);
+			mv.position = last_eat;
+			if(mv.position == POSITION_PASS)
+				mv.position = last_safe;
+			if(mv.position == POSITION_PASS)
+				mv.position = best_safe;
+			// if(step_count > JOSEKI_STEP && mv.position == POSITION_PASS)
+			// 	mv.position = board.GetMogoPattern(next_state);
+			if(mv.position == POSITION_PASS)
+				mv.position = best_eat;
+
 		}
 		if (mv.position == POSITION_PASS) {
 			playable_count = board.GetPlayableCount(next_state);
 			if (playable_count == 0) {
-				// board.empty_[state].Print();
-				// board.suiside_[state].Print();
-				// board.safe_eye_[state].Print();
-				// board.dangerous_empty_[state].Print();
-				// board.dangerous_empty_[state^1].Print();
-				// (board.empty_[state] - board.suiside_[state] - board.safe_eye_[state] - board.dangerous_empty_[state] - board.dangerous_empty_[state^1]).Print();
 				break;
 			}
 			mv.position = board.GetPlayable(mv.state, rand() * playable_count / (RAND_MAX + 1));

@@ -58,10 +58,10 @@ const int JOSEKI_STEP = 12;
 
 const int TIME_PER_STEP = 3;
 
+const int THREAD_NUM = 8;
+
 // for expand in uct
 const int EXPAND_NUM = 8;
-
-const int THREAD_NUM = 8;
 
 const double save_dangerous_eye = 2;
 const double save_dangerous_chain = 5;
