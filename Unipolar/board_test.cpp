@@ -51,10 +51,15 @@ int main() {
         scanf("%d %d", &p1, &p2);
         int p = p1*13+p2;
         board.PlayMove(Move(s, p));
-        // board.GetSafePoint(last_safe, best_safe, s);
-        // cout << last_safe << ' ' << best_safe << endl;
+        board.GetSafePoint(last_safe, best_safe, s);
+        if(s == 0)
+        	cout << "For X\n";
+        else 
+        	cout << "For O\n";
+
+        cout << "safe" << last_safe << ' ' << best_safe << endl;
         board.GetEatPoint(last_eat, best_eat, s);
-        cout << last_eat << ' ' << best_eat << endl;
+        cout << "eat" << last_eat << ' ' << best_eat << endl;
         // UCT uct;
         //printf("---START---\n");
         // Move np = uct.GenMove(board, 1 - s);

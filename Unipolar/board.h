@@ -276,6 +276,7 @@ public:
 	PositionIndex GetMogoPattern(PointState state);
 	bool MatchCut(PositionIndex pos, PointState state);
 	bool MatchHane(PositionIndex pos, PointState state);
+	bool MatchBorder(PositionIndex pos, PointState state);
 };
 
 PositionIndex Board::ADJ_POS_[BoardSizeSquare(BOARD_SIZE)][5];
@@ -840,7 +841,7 @@ bool Board::MatchHane(PositionIndex pos, PointState my_state) {
 	return false;
 }
 
-bool Board::MatchBoarder(PositionIndex pos, PointState my_state) {
+bool Board::MatchBorder(PositionIndex pos, PointState my_state) {
 	int i = pos / BOARD_SIZE, j = pos % BOARD_SIZE;
 	int dir = 0, around[8];
 	if (!i)
@@ -852,7 +853,7 @@ bool Board::MatchBoarder(PositionIndex pos, PointState my_state) {
 	if (j == BOARD_SIZE-1)
 		dir = 0;
 	for(int k = 0; k < 8; ++k) 
-		around[k] = pos + delta[(state+k)%8];
+		around[k] = pos + delta[(dir+k)%8];
 
 	if(OnBoard(around[0]) && OnBoard(around[1]) && OnBoard(around[7])) {
 		if(board_[around[1]].state == EMPTY_POINT 
@@ -946,7 +947,7 @@ PositionIndex Board::GetMogoPattern(PointState state) {
 				continue;
 			}
 		} else {
-			if(MatchBoarder(pos, state)) {
+			if(MatchBorder(pos, state)) {
 				matches[count++] = pos;
 				continue;
 			}
