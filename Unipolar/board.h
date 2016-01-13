@@ -714,50 +714,89 @@ void Board::CheckSpecialPoint(PositionIndex pos, bool add_score) {
 // 		_ _ _
 // suppose we are 'o', '_' means not opposite.
 // can be rotated in clockwisely.
-bool Board::MatchCut(PositionIndex pos, PointState state) {
+bool Board::MatchCut(PositionIndex pos, PointState my_state) {
 	for(int dir = 0; dir < 8; dir += 2) {
 		PositionIndex around[8];
 		for(int i = 0; i < 8; ++i) {
 			around[i] = pos + delta[(dir+i) % 8];
 		}
-		// 1,3,5,6,7 on board.
 		if(!OnBoard(around[1]) || !OnBoard(around[3]) || !OnBoard(around[5]) || !OnBoard(around[6]) || !OnBoard(around[7]))
 			continue;
-		if(board_[around[1]].state == state 	&&
-		   board_[around[3]].state == 1-state 	&&
-		   board_[around[7]].state == 1-state 	&&
-		   board_[around[4]].state != state 	&&
-		   board_[around[5]].state != state 	&&
-		   board_[around[6]].state != state)
-			return true;
+		if(board_[around[1]].state == EMPTY_POINT)
+			continue;
+		PointState state = board_[around[1]].state;
+		if(board_[around[7]].state != 1-state)
+			continue;
+		if(board_[around[3]].state != 1-state)
+			continue;
+		if(board_[around[4]].state == 1-state)
+			continue;
+		if(board_[around[5]].state == 1-state)
+			continue;
+		if(board_[around[6]].state == 1-state)
+			continue;
+		return true;
+		// if(board_[around[1]].state == state 	&&
+		//    board_[around[3]].state == 1-state 	&&
+		//    board_[around[7]].state == 1-state 	&&
+		//    board_[around[4]].state != state 	&&
+		//    board_[around[5]].state != state 	&&
+		//    board_[around[6]].state != state)
+		// 	return true;
 	}
 	return false;
 }
 //
-bool Board::MatchHane(PositionIndex pos, PointState state) {
+bool Board::MatchHane(PositionIndex pos, PointState my_state) {
 	for(int dir = 0; dir < 8; dir += 2) {
 		PositionIndex around[8];
 		for(int i = 0; i < 8; ++i) {
 			around[i] = pos + delta[(dir+i) % 8];
 		}
-		if(!OnBoard(around[0]) || ! OnBoard(around[1]))
+		if(!OnBoard(around[0]) || board_[around[0]].state == EMPTY_POINT)
 			continue;
-		if(board_[around[0]].state != 1-board_[around[1]].state)
+		PointState state = board_[around[0]].state;
+		if(!OnBoard(around[1]) || board_[around[1]].state != 1-state)
 			continue;
-		if(OnBoard(around[7]) && OnBoard(around[3]) && OnBoard(around[5])) {
+
+		if(OnBoard(around[7])) {
 			if(board_[around[7]].state == 1-state) {
-				if(board_[around[3]].state == 1-state && board_[around[5]].state == 1-state)
-					return false;
-				return true;
-			} else {
-				if(board_[around[3]].state == EMPTY_POINT && board_[around[5]].state == EMPTY_POINT)
+				if(!OnBoard(around[5]) || !OnBoard(around[3]))
+					continue;
+				if(!(!board_[around[5]].state == EMPTY_POINT && board_[around[3]].state == 1-state) 
+				&& !(!board_[around[3]].state == EMPTY_POINT && board_[around[5]].state == 1-state))
 					return true;
 			}
-		}
-		if(OnBoard(around[2]) && OnBoard(around[3])) {
-			if(board_[around[2]].state == state && board_[around[3]].state != 1-state)
+			if(board_[around[7]].state == state && !OnBoard(around[3]) && !OnBoard(around[5]))
 				return true;
 		}
+		if(OnBoard(around[2]) && OnBoard(around[3]) &&
+		   board_[around[2]].state == state && board_[around[3]].state == EMPTY_POINT)
+			return true;
+		if(!OnBoard(around[2]) && !OnBoard(around[3]) && !OnBoard(around[5]))
+			return true;
+		if(!OnBoard(around[2]) && !OnBoard(around[3]) && OnBoard(around[2]) 
+		&& board_[around[2]].state == 1-state && state == my_state)
+			return true;
+
+		// if(!OnBoard(around[0]) || ! OnBoard(around[1]))
+		// 	continue;
+		// if(board_[around[0]].state != 1-board_[around[1]].state)
+		// 	continue;
+		// if(OnBoard(around[7]) && OnBoard(around[3]) && OnBoard(around[5])) {
+		// 	if(board_[around[7]].state == 1-state) {
+		// 		if(board_[around[3]].state == 1-state && board_[around[5]].state == 1-state)
+		// 			return false;
+		// 		return true;
+		// 	} else {
+		// 		if(board_[around[3]].state == EMPTY_POINT && board_[around[5]].state == EMPTY_POINT)
+		// 			return true;
+		// 	}
+		// }
+		// if(OnBoard(around[2]) && OnBoard(around[3])) {
+		// 	if(board_[around[2]].state == state && board_[around[3]].state != 1-state)
+		// 		return true;
+		// }
 
 		// symmetric ones.
 		for(int i = 0; i < 8; ++i) {
@@ -765,25 +804,121 @@ bool Board::MatchHane(PositionIndex pos, PointState state) {
 		}
 		if(!OnBoard(around[0]) || ! OnBoard(around[1]))
 			continue;
-		if(board_[around[0]].state != 1-board_[around[1]].state)
+		state = board_[around[0]].state;
+		if(board_[around[1]].state != 1-state)
 			continue;
-		if(OnBoard(around[7]) && OnBoard(around[3]) && OnBoard(around[5])) {
-			if(board_[around[7]].state == 1-state) {
-				if(board_[around[3]].state == 1-state && board_[around[5]].state == 1-state)
-					return false;
-				return true;
-			} else {
-				if(board_[around[3]].state == EMPTY_POINT && board_[around[5]].state == EMPTY_POINT)
-					return true;
-			}
-		}
-		if(OnBoard(around[2]) && OnBoard(around[3])) {
-			if(board_[around[2]].state == state && board_[around[3]].state != 1-state)
-				return true;
-		}
+		if(OnBoard(around[7]) && board_[around[7]].state == state
+		&& !OnBoard(around[3]) && !OnBoard(around[5]))
+			return true;
+		if(!OnBoard(around[2]) && !OnBoard(around[3]) && !OnBoard(around[5]))
+			return true;
+		if(!OnBoard(around[2]) && !OnBoard(around[3]) && OnBoard(around[2]) 
+		&& board_[around[2]].state == 1-state && state == my_state)
+			return true;
+
+		// if(!OnBoard(around[0]) || ! OnBoard(around[1]))
+		// 	continue;
+		// if(board_[around[0]].state != 1-board_[around[1]].state)
+		// 	continue;
+		// if(OnBoard(around[7]) && OnBoard(around[3]) && OnBoard(around[5])) {
+		// 	if(board_[around[7]].state == 1-state) {
+		// 		if(board_[around[3]].state == 1-state && board_[around[5]].state == 1-state)
+		// 			return false;
+		// 		return true;
+		// 	} else {
+		// 		if(board_[around[3]].state == EMPTY_POINT && board_[around[5]].state == EMPTY_POINT)
+		// 			return true;
+		// 	}
+		// }
+		// if(OnBoard(around[2]) && OnBoard(around[3])) {
+		// 	if(board_[around[2]].state == state && board_[around[3]].state != 1-state)
+		// 		return true;
+		// }
 
 	}
 
+	return false;
+}
+
+bool Board::MatchBoarder(PositionIndex pos, PointState my_state) {
+	int i = pos / BOARD_SIZE, j = pos % BOARD_SIZE;
+	int dir = 0, around[8];
+	if (!i)
+		dir = 2;
+	if (i == BOARD_SIZE-1)
+		dir = 6;
+	if (!j)
+		dir = 4;
+	if (j == BOARD_SIZE-1)
+		dir = 0;
+	for(int k = 0; k < 8; ++k) 
+		around[k] = pos + delta[(state+k)%8];
+
+	if(OnBoard(around[0]) && OnBoard(around[1]) && OnBoard(around[7])) {
+		if(board_[around[1]].state == EMPTY_POINT 
+		&& board_[around[0]].state + board_[around[7]].state == 1)
+			return true;
+	}
+
+	if(OnBoard(around[1]) && OnBoard(around[2]) && OnBoard(around[3])) {
+		if(board_[around[1]].state == EMPTY_POINT 
+		&& board_[around[2]].state + board_[around[3]].state == 1)
+			return true;
+	}
+
+	if(OnBoard(around[1]) && OnBoard(around[3]) && OnBoard(around[7])) {
+		if(board_[around[7]].state == board_[around[1]].state 
+		&& board_[around[1]].state + board_[around[3]].state == 1)
+			return true;
+	}
+
+	if(OnBoard(around[1]) && OnBoard(around[3]) && OnBoard(around[7])) {
+		if(board_[around[3]].state == board_[around[1]].state 
+		&& board_[around[1]].state + board_[around[7]].state == 1)
+			return true;
+	}
+
+	if(OnBoard(around[1]) && OnBoard(around[2])) {
+		if(board_[around[1]].state == my_state 
+		&& board_[around[1]].state + board_[around[2]].state == 1)
+			return true;
+	}
+
+	if(OnBoard(around[0]) && OnBoard(around[1])) {
+		if(board_[around[1]].state == my_state 
+		&& board_[around[0]].state + board_[around[1]].state == 1)
+			return true;
+	}
+
+	if(OnBoard(around[1]) && OnBoard(around[2]) && OnBoard(around[3])) {
+		if(board_[around[3]].state != board_[around[1]].state
+		&& board_[around[2]].state == my_state 
+		&& board_[around[1]].state + board_[around[2]].state == 1)
+			return true;
+	}
+
+	if(OnBoard(around[1]) && OnBoard(around[0]) && OnBoard(around[7])) {
+		if(board_[around[7]].state != board_[around[1]].state
+		&& board_[around[0]].state == my_state 
+		&& board_[around[1]].state + board_[around[0]].state == 1)
+			return true;
+	}
+
+	if(OnBoard(around[1]) && OnBoard(around[2]) && OnBoard(around[3]) && OnBoard(around[7])) {
+		if(board_[around[1]].state != board_[around[3]].state
+		&& board_[around[2]].state == my_state 
+		&& board_[around[1]].state + board_[around[2]].state == 1
+		&& board_[around[3]].state + board_[around[7]].state == 1)
+			return true;
+	}
+
+	if(OnBoard(around[1]) && OnBoard(around[0]) && OnBoard(around[3]) && OnBoard(around[7])) {
+		if(board_[around[1]].state != board_[around[7]].state
+		&& board_[around[0]].state == my_state 
+		&& board_[around[1]].state + board_[around[0]].state == 1
+		&& board_[around[7]].state + board_[around[3]].state == 1)
+			return true;
+	}
 	return false;
 }
 
@@ -792,18 +927,30 @@ PositionIndex Board::GetMogoPattern(PointState state) {
 	int count = 0;
 	for(int i = 0; i < 8; ++i) {
 		PositionIndex pos = last_move + delta[i];
+		int bi = pos / BOARD_SIZE;
+		int bj = pos % BOARD_SIZE;
 		if(!OnBoard(pos) || !Playable(pos,state))
 			continue;
+		// not at corner
+		if ((!bi && !bj) || (bi == BOARD_SIZE-1 && !bj) || (bi == BOARD_SIZE-1 && bj == BOARD_SIZE-1) || (bi == 0 && bj == BOARD_SIZE - 1)) // at corner
+			continue;
+
 		// match patterns begin.
-		if(MatchCut(pos, state)) {
-			matches[count++] = pos;
-			continue;
+		if (bi > 0 && bi < BOARD_SIZE-1 && bj > 0 && bj < BOARD_SIZE-1) {
+			if(MatchHane(pos, state)) {
+				matches[count++] = pos;
+				continue;
+			}
+			if(MatchCut(pos, state)) {
+				matches[count++] = pos;
+				continue;
+			}
+		} else {
+			if(MatchBoarder(pos, state)) {
+				matches[count++] = pos;
+				continue;
+			}
 		}
-		if(MatchHane(pos, state)) {
-			matches[count++] = pos;
-			continue;
-		}
-		// ...
 	}
 	return count? matches[rand()*count/(RAND_MAX+1)] : POSITION_PASS;
 

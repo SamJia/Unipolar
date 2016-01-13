@@ -87,8 +87,8 @@ double MC::Simulate(Board &board, PointState state, Amaf &amaf, TireTree &joseki
 				mv.position = last_safe;
 			if(mv.position == POSITION_PASS)
 				mv.position = best_safe;
-			// if(step_count > JOSEKI_STEP && mv.position == POSITION_PASS)
-			// 	mv.position = board.GetMogoPattern(next_state);
+			if(mv.position == POSITION_PASS)
+				mv.position = board.GetMogoPattern(next_state);
 			if(mv.position == POSITION_PASS)
 				mv.position = best_eat;
 
