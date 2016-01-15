@@ -8,6 +8,7 @@
 #include <time.h>
 #include <queue>
 #include "def.h"
+#include "board.h"
 
 using namespace std;
 
@@ -19,13 +20,13 @@ private:
 		int num;
 		node *brother;
 		node *child;
-		node(string x, string y):x(x),y(y),posi(-1), brother(NULL),child(NULL),num(0){}
-		node(int p):posi(p), brother(NULL),child(NULL),num(0){}
+		node(string x, string y):x(x),y(y),posi(-1), brother(nullptr),child(nullptr),num(0){}
+		node(int p):posi(p), brother(nullptr),child(nullptr),num(0){}
 	};
-	bool match(string ax, string bx, string ay, string by) {
+	int match(string ax, string bx, string ay, string by) {
 		int axx = ax[0]-'A', bxx = bx[0]-'A';
 		int byy = atoi(by.c_str()), ayy = atoi(ay.c_str());
-		return abs(axx-bxx) <= 3 && abs(ayy-byy) <= 3;
+		return abs(axx-bxx) + abs(ayy-byy);
 	}
 	int convertPosi(string );
 	void remove(node *);
@@ -45,12 +46,13 @@ public:
 	}
 	void load();
 	void insert(string &seq);
-	int findBest(string &seq, double* bonus);
+	int findBest(string &seq/*, double* bonus*/);
+	void updateSeq(string &seq, unipolar::PositionIndex pos);
 	// void normalize();
 };
 
 void TireTree::remove(node *n) {
-	if (n == NULL)
+	if (n == nullptr)
 		return;
 	remove(n->child);
 	remove(n->brother);
@@ -58,12 +60,23 @@ void TireTree::remove(node *n) {
 	return;
 }
 
+void TireTree::updateSeq(string &seq, unipolar::PositionIndex pos) {
+	int x = pos / unipolar::BOARD_SIZE;
+	int y = pos % unipolar::BOARD_SIZE + 1;
+	char x_char = (x > 7 ? x + 1 : x) + 'A';
+	char tmp_str[50000], color;
+	color = (color == 'b') ? 'w' : 'b';
+	snprintf(tmp_str, sizeof(tmp_str), "%s %c %d", seq.c_str(), x_char, y);
+	seq = (string)tmp_str;
+	// printf("joseki\n");
+}
+
 void TireTree::insert(string &seq) {
 	state = 1;
 	string x, y;
 	int len = seq.length(), idx = 0;
 	int num = 0;
-	node *tmpC = NULL, *tmp = root, *tmpB = NULL;
+	node *tmpC = nullptr, *tmp = root, *tmpB = nullptr;
 	stringstream mid_seq(seq);
 	mid_seq >> num;
 	root->num += num;
@@ -101,24 +114,31 @@ void TireTree::insert(string &seq) {
 	}
 }
 
-int TireTree::findBest(string &pattern, double* bonus) {
+int TireTree::findBest(string &pattern/*, double* bonus*/) {
+	
 	stringstream mid_seq(pattern);
 	string x, y;
-	node *tmp = root->child, *tmpp = root;
-	for(int i = 0; i < unipolar::BoardSizeSquare(unipolar::BOARD_SIZE); ++i)
-		bonus[i] = 0;
+	node *tmp = root->child, *tmpp = root, *parent = root;
+	// allow one step error, and record that error stone.
+	int tolerate = 0;
+	node *actual = new node(-1 -1);
 
 	while(tmp && mid_seq >> x >> y) {
-	    if (tmp->x == x && tmp->y == y || match(tmp->x, x, tmp->y, y)) {
-	    	tmpp = tmp;
+		if(tolerate >= tolerate_upper_bound && actual->x == x && actual->y == y) {
+			// printf("yes\n");
+			tmp = nullptr;
+			break;
+		}
+	    if (tmp->x == x && tmp->y == y /*|| match(tmp->x, x, tmp->y, y)*/) {
+	    	parent = tmpp = tmp;
 	    	tmp = tmp->child;
 	    	continue;
 	    } else {
 	    	tmpp = tmp;
 	    	tmp = tmp->brother;
 	    	while (tmp) {
-	    		if (tmp->x == x && tmp->y == y || match(tmp->x, x, tmp->y, y)) {
-	    			tmpp = tmp;
+	    		if (tmp->x == x && tmp->y == y/* || match(tmp->x, x, tmp->y, y)*/) {
+	    			parent = tmpp = tmp;
 	    			tmp = tmp->child;
 	    			break;
 	    		} else {
@@ -127,11 +147,43 @@ int TireTree::findBest(string &pattern, double* bonus) {
 	    		}
 	    	}
 	    }
+	    if(!tmp && tolerate < tolerate_upper_bound) {
+	    	// tolerate = false;
+	    	tmp = parent->child;
+	    	// cout << parent->x << ' ' << parent->y << endl;
+	    	node *save_tmp = tmp, *save_tmpp = tmpp;
+	    	node *cloest_tmpp = nullptr;
+	    	node *cloest_tmp = nullptr;
+	    	int cur_match_diff = 10086;
+	    	while (tmp) {
+	    		if (match(tmp->x, x, tmp->y, y) < cur_match_diff) {
+	    			cloest_tmp = tmp;
+	    			cloest_tmpp = tmpp;
+	    			cur_match_diff = match(tmp->x, x, tmp->y, y);
+	    		}
+	    		tmpp = tmp;
+	    		tmp = tmp->brother;
+	    	}
+	    	if (cur_match_diff <= match_range) {
+		    	tmp = cloest_tmp;
+		    	tmpp = cloest_tmpp;
+		    	tolerate += cur_match_diff;
+		    } else {
+		    	tmp = save_tmp;
+		    	tmpp = save_tmpp;
+		    }
+
+    		// cout << tmp-> x << ' ' << tmp->y << endl;
+	    	// cout << pattern << endl;
+	    	// cout << tmp->x << " " << tmp->y;
+	    	actual = new node(x, y);
+	    }
 	}
+
 	int MAX = -1, total = 0;
-	node *max_node = NULL;
+	node *max_node = nullptr;
 	while(tmp) {
-	    if (tmp->num > MAX){
+	    if (tmp->num > MAX && actual->x != tmp->x && actual->y != tmp->y){
 	    	MAX = tmp->num;
 	    	max_node = tmp;
 	    }
@@ -140,22 +192,22 @@ int TireTree::findBest(string &pattern, double* bonus) {
 		int y = y = atoi(tmp->y.c_str()) - 1;
 		// cout << tmp->num << ' ' << total << endl;
 		total += tmp->num;
-		bonus[x*13+y] = tmp->num;
+		// bonus[x*13+y] = tmp->num;
     	tmp = tmp->brother;
 	}
 
 	// cout << total << endl;
-	for(int i = 0; i < unipolar::BoardSizeSquare(unipolar::BOARD_SIZE); ++i) {
-		if(bonus[i] < 1e-6)
-			bonus[i] = 0;
-		else 
-			bonus[i] /= total;
-		// limit the number.
-		if(bonus[i] < 1e-4)
-			bonus[i] = 0;
-	}	
+	// for(int i = 0; i < unipolar::BoardSizeSquare(unipolar::BOARD_SIZE); ++i) {
+	// 	if(bonus[i] < 1e-6)
+	// 		bonus[i] = 0;
+	// 	else 
+	// 		bonus[i] /= total;
+	// 	// limit the number.
+	// 	if(bonus[i] < 1e-4)
+	// 		bonus[i] = 0;
+	// }	
 	if(!max_node)
-		return -1;
+		return unipolar::POSITION_PASS;
 	else {
 		char x_char = max_node->x[0];
 		int x = (x_char > 'I' ? x_char - 1 : x_char) - 'A';
@@ -179,7 +231,7 @@ void TireTree::load() {
 		
 }
 // void TireTree::normalize(){
-// 	node *tmp = root->child, *tmpHead = NULL, *tmpB = NULL;
+// 	node *tmp = root->child, *tmpHead = nullptr, *tmpB = nullptr;
 // 	while(tmp) {
 // 		tmpHead = tmp;
 // 		double sum = tmp->num;

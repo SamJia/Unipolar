@@ -3,6 +3,7 @@
 #include "board.h"
 #include "def.h"
 #include "mc.h"
+#include "joseki.h"
 #include <cstring>
 #include <cassert>
 #include <cstdlib>
@@ -12,8 +13,13 @@
 #include <mutex>
 #include <set>
 #include <iostream>
+#include <stdio.h>
 #include <algorithm>
+
+FILE *f = fopen("unipolar.txt", "w");
+
 using namespace unipolar;
+
 
 double test_bonus[] = {
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -35,29 +41,26 @@ class UCT {
 public:
 
 public:
-	double joseki_bonus[BoardSizeSquare(BOARD_SIZE)];
-	UCT(double* bonus = NULL) : root(new Node()) {
-		if (bonus) {
-			// 	memcpy(joseki_bonus, bonus, sizeof(bonus));
-			for (PositionIndex i = 0; i < BoardSizeSquare(BOARD_SIZE); ++i)
-				joseki_bonus[i] = bonus[i];
-		} else {
-			for (PositionIndex i = 0; i < BoardSizeSquare(BOARD_SIZE); ++i)
-				joseki_bonus[i] = 0;
-		}
+	string joseki_seq;
+	TireTree *joseki_p;
+	UCT(string seq, TireTree *jose) : root(new Node()), joseki_seq(seq) {
+		joseki_p = jose;
+	};
+	UCT() : root(new Node()) {
+		joseki_seq = "";
+		joseki_p = new TireTree();
 	};
 	~UCT() {
 		delete root;
+		// delete joseki;
 	};
 	void Task(Board &board, PointState state, Node *node, int &num, int t, int seed);
 	void GenChild(Node *node, Board &board, PointState state);
 	double UCB(Node *node, Node *parent);
 	double Score(Node *node, Node *parent);
-	double Score(Node *node, int num, double mean_score, double biaozhun);
-
 	Node *FindBestChild(Node *node);
 	Node *FindBestUCT(Node *node);
-	void MCSimulation(Board &board, Node *node, PointState state);
+	void MCSimulation(Board &board, Node *node, PointState state, string joseki_seq);
 	Move GenMove(Board &board, PointState state);
 	void CopyUCT(Node *node, double **valueboard, int **numboard, double **bonusboard);
 	void PrintUCT();
@@ -74,8 +77,9 @@ void UCT::Task(Board &board, PointState state, Node *node, int &num, int t, int 
 		++num;
 		mtx.unlock();
 		Board board_copy(board);
+		string seq_copy = joseki_seq;
 		// MC().Simulate(board_copy, state);
-		MCSimulation(board_copy, node, state);
+		MCSimulation(board_copy, node, state, seq_copy);
 		//std::cout << std::this_thread::get_id() << std::endl;
 		// printf("one MCSimulation done\n");
 		// exit(0);
@@ -112,16 +116,11 @@ void UCT::GenChild(Node *node, Board &board, PointState state) {
 }
 
 double UCT::UCB(Node *node, Node *parent) {
-	const double BIAS = 1.0 / 3000000;
+	const double BIAS = 1.0 / 4500;
 	if (node->num) {
 		if (parent->son_num_a[node->pos]) {
-			double beta = parent->son_num_a[node->pos] / 
-				(parent->son_num_a[node->pos] + 
-				node->num + parent->son_num_a[node->pos] * 
-				node->num * BIAS);
-			return (1.0 - beta) * node->val / 
-				node->num + beta * parent->son_val_a[node->pos] 
-				/ parent->son_num_a[node->pos];
+			double beta = parent->son_num_a[node->pos] / (parent->son_num_a[node->pos] + node->num + parent->son_num_a[node->pos] * node->num * BIAS);
+			return (1.0 - beta) * node->val / node->num + beta * parent->son_val_a[node->pos] / parent->son_num_a[node->pos];
 		} else {
 			return node->val / node->num;
 		}
@@ -137,12 +136,9 @@ double UCT::UCB(Node *node, Node *parent) {
 double UCT::Score(Node *node, Node *parent) {
 	if (node->num == 0)
 		return 0;
-	return /*(node->val + parent->son_val_a[node->pos]) /*/ ((node->num + parent->son_num_a[node->pos]));
+	return node->bon * bonus_ratio + /*(node->val + parent->son_val_a[node->pos]) /*/ (node->num + parent->son_num_a[node->pos]);
 }
 
-double UCT::Score(Node *node, int num, double mean_score, double biaozhun) {
-	return node->bon * bonus_ratio + (num - biaozhun) / mean_score;
-}
 Node *UCT::FindBestChild(Node *node) {
 	if (node->son == nullptr) {
 		std::cout << "no child" << std::endl;
@@ -170,47 +166,18 @@ Node *UCT::FindBestUCT(Node *node) {
 	double maxScore = -100;
 	double actScore;
 	Node *maxNode = nullptr;
-	double total_score = 0.0;
-	std::vector<Node*> v;
-	std::vector<int> scr;
 	for (Node *p = node->son; p; p = p->bro) {
 		actScore = Score(p, node)/* + node->son_val_a[p->pos] / std::max(0.000001, node->son_num_a[p->pos])*/;
-		total_score += actScore;
-		scr.push_back(actScore);
-		// if (joseki_on)
-		// 	actScore = joseki_bonus[p->pos];
-		// std::cout << "joseki_bonus" << joseki_bonus[p->pos] << " ";
-		// std::cout<< Score(p, node) << " " <<actScore<<std::endl;
-		v.push_back(p);
-	}
-
-	double mean_score = total_score / v.size();
-	// Z-score normalization
-	// double biaozhun = 0;
-	// for (int i = 0; i < v.size(); ++i) {
-	// 	biaozhun += abs(scr[i]-mean_score)*abs(scr[i]-mean_score);
-	// }
-	// biaozhun = sqrt(biaozhun);
-
-	for (int i = 0; i < v.size(); ++i) {
-		actScore = Score(v[i], scr[i], mean_score, 0);
-
-		if (joseki_on)
-			actScore = joseki_bonus[v[i]->pos];
-
 		if (actScore > maxScore) {
 			maxScore = actScore;
-			maxNode = v[i];
+			maxNode = p;
 		}
 	}
-	std::cout << "maxScore " << maxScore << " " << mean_score/* << " " << biaozhun*/<< std::endl;
-	if (maxScore == 0)
-		joseki_on = false;
 	return maxNode;
 }
 
 int max_depth = 0;
-void UCT::MCSimulation(Board &board, Node *node, PointState state) {
+void UCT::MCSimulation(Board &board, Node *node, PointState state, string joseki_seq) {
 	// printf("MCSimulation\n");
 	std::vector<Node *> record;
 	Amaf amaf;
@@ -228,6 +195,9 @@ void UCT::MCSimulation(Board &board, Node *node, PointState state) {
 		record.push_back(act);
 		amaf.set(act->pos, state);
 		once_bon = board.PlayMove(Move(state, act->pos));
+		if (joseki_seq != "") {
+			joseki_p->updateSeq(joseki_seq, act->pos);
+		}
 		if (act->pos == POSITION_PASS && record[idx - 1]->pos == POSITION_PASS) {
 			once_val = MC().Evaluate(board, state);
 			flag = false;
@@ -236,18 +206,22 @@ void UCT::MCSimulation(Board &board, Node *node, PointState state) {
 		state = 1 - state;
 	}
 	if (flag) {
-		if (act->num >= 40) {
+		if (act->num >= EXPAND_NUM) {
 			idx += 1;
 			GenChild(act, board, state);
 			if (act->son == nullptr)
 				std::cout << "gen failed" << std::endl;
 			act = FindBestChild(act);
+			// add to seq;
 			record.push_back(act);
 			amaf.set(act->pos, state);
 			once_bon = board.PlayMove(Move(state, act->pos));
+			if (joseki_seq != "") {
+				joseki_p->updateSeq(joseki_seq, act->pos);
+			}
 			state = 1 - state;
 		}
-		once_val = MC().Simulate(board, state, amaf);
+		once_val = MC().Simulate(board, state, amaf, *joseki_p, joseki_seq);
 	}
 	mtx.lock();
 	idx = record.size()-1;
@@ -281,10 +255,10 @@ Move UCT::GenMove(Board &board, PointState state) {
 	if (root->son == nullptr)
 		return Move(EMPTY_POINT, POSITION_PASS);
 	int count = 0;
-	int end_time = t + CLOCKS_PER_SEC * 3;
+	int end_time = t + CLOCKS_PER_SEC * TIME_PER_STEP;
 	std::vector<std::thread> threads;
 	threads.reserve(10);
-	for (int i = 0; i < 8; ++i){
+	for (int i = 0; i < THREAD_NUM; ++i){
 		int seed = rand();
 		threads.push_back(std::thread([&]() {this->Task(board, state, root, count, end_time, seed);}));
 	}
@@ -292,18 +266,19 @@ Move UCT::GenMove(Board &board, PointState state) {
 		th.join();
 	printf("max_depth:%d\n", max_depth);
 	std::cout << "totally " << count << " times of MC" << std::endl;
-	PrintUCT();
+	// PrintUCT();
 	nextstep.state = state;
 	nextstep.position = FindBestUCT(root)->pos;
-	// PrintUCT();
+	PrintUCT();
+	std::cout << joseki_seq << std::endl;
 	return nextstep;
 }
 
 void UCT::PrintUCT() {
-	double uctval[BOARD_SIZE][BOARD_SIZE];
-	double uctbon[BOARD_SIZE][BOARD_SIZE];
-	double uctaddi[BOARD_SIZE][BOARD_SIZE];
-	int uctnum[BOARD_SIZE][BOARD_SIZE];
+	double uctval[BOARD_SIZE][BOARD_SIZE] = {{0}};
+	double uctbon[BOARD_SIZE][BOARD_SIZE] = {{0}};
+	double uctaddi[BOARD_SIZE][BOARD_SIZE] = {{0}};
+	int uctnum[BOARD_SIZE][BOARD_SIZE] = {{0}};
 	int i, j;
 	Node *act = root->son;
 	double totalnum = root->num;
@@ -316,41 +291,56 @@ void UCT::PrintUCT() {
 	}
 	printf("The total simulation time is %d\n", root->num);
 	printf("---THE VALUE MATRIX---\n");
+	fprintf(f, "---THE VALUE MATRIX---\n");
 	printf("   0    1    2    3    4    5    6    7    8    9    10   11   12\n");
+	fprintf(f, "   0    1    2    3    4    5    6    7    8    9    10   11   12\n");
 	for (int x = 0; x < BOARD_SIZE; ++x) {
 		printf("%02d ", x);
+		fprintf(f, "%02d ", x);
 		for (int y = 0; y < BOARD_SIZE; ++y) {
 			printf("%.3f ", uctval[x][y]);
+			fprintf(f, "%.3f ", uctval[x][y]);
 		}
 		printf("\n");
+		fprintf(f, "\n");
 	}
-	printf("---THE ADDI MATRIX---\n");
-	printf("   0    1    2    3    4    5    6    7    8    9    10   11   12\n");
-	for (int x = 0; x < BOARD_SIZE; ++x) {
-		printf("%02d ", x);
-		for (int y = 0; y < BOARD_SIZE; ++y) {
-			printf("%.3f ", uctaddi[x][y]);
-		}
-		printf("\n");
-	}
+	// printf("---THE ADDI MATRIX---\n");
+	// fprintf(f, "---THE ADDI MATRIX---\n");
+	// printf("   0    1    2    3    4    5    6    7    8    9    10   11   12\n");
+	// fprintf(f,"   0    1    2    3    4    5    6    7    8    9    10   11   12\n");
+	// for (int x = 0; x < BOARD_SIZE; ++x) {
+	// 	printf("%02d ", x);
+	// 	fprintf(f,"%02d ", x);
+	// 	for (int y = 0; y < BOARD_SIZE; ++y) {
+	// 		printf("%.3f ", uctaddi[x][y]);
+	// 		fprintf(f, "%.3f ", uctaddi[x][y]);
+	// 	}
+	// 	printf("\n");
+	// 	fprintf(f, "\n");
+	// }
 	printf("---THE NUMBER MATRIX---\n");
+	fprintf(f,"---THE NUMBER MATRIX---\n");
 	printf("   0    1    2    3    4    5    6    7    8    9    10   11   12\n");
+	fprintf(f,"   0    1    2    3    4    5    6    7    8    9    10   11   12\n");
 	for (int x = 0; x < BOARD_SIZE; ++x) {
 		printf("%02d ", x);
+		fprintf(f, "%02d ", x);
 		for (int y = 0; y < BOARD_SIZE; ++y) {
 			printf("%4d ", uctnum[x][y]);
+			fprintf(f,"%4d ", uctnum[x][y]);
 		}
 		printf("\n");
+		fprintf(f,"\n");
 	}
-	printf("---THE VAL_A MATRIX---\n");
-	printf("   0    1    2    3    4    5    6    7    8    9    10   11   12\n");
-	for (int x = 0; x < BOARD_SIZE; ++x) {
-		printf("%02d ", x);
-		for (int y = 0; y < BOARD_SIZE; ++y) {
-			printf("%.3f ", root->son_val_a[x * 13 + y] / std::max(0.0001, root->son_num_a[x * 13 + y]));
-		}
-		printf("\n");
-	}
+	// printf("---THE VAL_A MATRIX---\n");
+	// printf("   0    1    2    3    4    5    6    7    8    9    10   11   12\n");
+	// for (int x = 0; x < BOARD_SIZE; ++x) {
+	// 	printf("%02d ", x);
+	// 	for (int y = 0; y < BOARD_SIZE; ++y) {
+	// 		printf("%.3f ", root->son_val_a[x * 13 + y] / std::max(0.0001, root->son_num_a[x * 13 + y]));
+	// 	}
+	// 	printf("\n");
+	// }
 	printf("---THE NUM_A MATRIX---\n");
 	printf("   0    1    2    3    4    5    6    7    8    9    10   11   12\n");
 	for (int x = 0; x < BOARD_SIZE; ++x) {
@@ -360,19 +350,31 @@ void UCT::PrintUCT() {
 		}
 		printf("\n");
 	}
-	printf("---THE BONUS MATRIX---\n");
-	printf("   0    1    2    3    4    5    6    7    8    9    10   11   12\n");
-	for (int x = 0; x < BOARD_SIZE; ++x) {
-		printf("%02d ", x);
-		for (int y = 0; y < BOARD_SIZE; ++y) {
-			printf("%.3f ", uctbon[x][y]);
-		}
-		printf("\n");
-	}
+	// printf("---THE BONUS MATRIX---\n");
+	// fprintf(f,"---THE BONUS MATRIX---\n");
+	// printf("   0    1    2    3    4    5    6    7    8    9    10   11   12\n");
+	// fprintf(f,"   0    1    2    3    4    5    6    7    8    9    10   11   12\n");
+	// for (int x = 0; x < BOARD_SIZE; ++x) {
+	// 	printf("%02d ", x);
+	// 	fprintf(f,"%02d ", x);
+	// 	for (int y = 0; y < BOARD_SIZE; ++y) {
+	// 		printf("%.3f ", uctbon[x][y]);
+	// 		fprintf(f,"%.3f ", uctbon[x][y]);
+	// 	}
+	// 	printf("\n");
+	// 	fprintf(f,"\n");
+	// }
 	act = FindBestUCT(root);
 	i = act->pos / BOARD_SIZE;
 	j = act->pos % BOARD_SIZE;
 	printf("The best next step: (%d, %d)\n", i, j);
+	fprintf(f,"The best next step: (%d, %d)\n", i, j+1);
+	char i_char = (i > 7 ? i + 1 : i) + 'A';
+	fprintf(f, "the next step is %c%d\n", i_char,j+1);
+	fprintf(f, "\n");
+	fprintf(f, "\n");
+	fprintf(f, "\n");
+	fprintf(f, "\n");
 }
 
 #endif

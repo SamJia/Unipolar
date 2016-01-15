@@ -9,6 +9,7 @@
 #include <fstream>
 #include "board.h"
 #include "def.h"
+#include "joseki.h"
 using namespace unipolar;
 
 std::mutex mtx;
@@ -37,7 +38,7 @@ struct Amaf {
 		return data[idx];
 	}
 	void set(PositionIndex pos, PointState state) {
-		if (data[pos] == EMPTY_POINT){
+		if (data[pos] == EMPTY_POINT) {
 			// printf("%d %d\n", pos, state);
 			data[pos] = state;
 		}
@@ -49,57 +50,75 @@ class MC {
 public:
 	MC() = default;
 	~MC() = default;
-	double Simulate(Board &board, PointState state, Amaf &amaf);
+	double Simulate(Board &board, PointState state, Amaf &amaf, TireTree &joseki, string &joseki_seq);
 	double Evaluate(Board &Board, PointState state);
 // private:
 };
 
-double MC::Simulate(Board &board, PointState state,Amaf &amaf) {
-	/*
-	Basic idea:
-		Copy the board.
-		Randomly select among playable positions and play in turn.
-		Until it ends.
-		Evaluate the situation and return a heuristic number for that.
+double MC::Simulate(Board &board, PointState state, Amaf &amaf, TireTree &joseki, string &joseki_seq) {
 
-	Here it goes.
-	*/
-	// board.StartMC();
 	PointState next_state = state;
 	Move mv;
 	int count = board.GetPieceCount(0) + board.GetPieceCount(1);
-	bool last_pass = false;
+	bool joseki_valid = (step_count <= JOSEKI_STEP);
+	// printf("step_count: %d\n", step_count);
 	int playable_count;
 	std::vector<PositionIndex> playable_pos;
-// 	std::ofstream fout2("num.txt", std::ios::app);
-// 	std::ofstream fout("test.sgf");
-// 	fout << "(;FF[4]CA[UTF-8]AP[GoGui:1.4.9]SZ[13]\
-// KM[6.5]PB[gogui-twogtp]PW[gogui-twogtp]DT[2015-12-16]";
-	while (count < 200/*!playable_pos.empty()*/) {
+	// ofstream fout("test.sgf");
+	// fout << "(;FF[4]CA[UTF-8]AP[GoGui:1.4.9]SZ[13]\nKM[6.5]PB[gogui-twogtp]PW[gogui-twogtp]DT[2015-12-16]\n";
+	int pass_count = 0;
+	while (count < 400/*!playable_pos.empty()*/) {
+		// printf("one step\n");
 		++count;
-		if (count > 1000) {
-			board.Print();
-			printf("too much MC\n");
-			exit(0);
-		}
 		mv.state = next_state;
-		// mv.position = POSITION_PASS;
-		mv.position = board.SpecialPointTest(next_state);
+		mv.position = POSITION_PASS;
+        if(joseki_valid) {
+			mv.position = joseki.findBest(joseki_seq);
+			// printf("The best found is: %d\n", mv.position);
+			if(mv.position == POSITION_PASS || !board.Playable(mv.position, state)) {
+				joseki_valid = false;
+				mv.position = POSITION_PASS;
+				// printf("joseki_valid: %d\n", joseki_valid);
+			} else {
+				// std::cout<< joseki_seq << std::endl;
+				joseki.updateSeq(joseki_seq, mv.position);
+			}
+		}
+        if(mv.position == POSITION_PASS) {
+            mv.position = board.CheckAtari(mv.state);
+        }
+        if(mv.position == POSITION_PASS)
+			mv.position = board.CheckEat(mv.state);
+		// 	PositionIndex last_eat, best_eat, last_safe, best_safe;
+		// 	last_eat = last_safe = best_safe = best_eat = POSITION_PASS;
+		// 	board.GetSafePoint(last_safe, best_safe, next_state);
+		// 	board.GetEatPoint(last_eat, best_eat, next_state);
+		// 	mv.position = last_eat;
+		// 	if(mv.position == POSITION_PASS)
+		// 		mv.position = last_safe;
+		// 	if(mv.position == POSITION_PASS)
+		// 		mv.position = best_safe;
+		if(step_count > JOSEKI_STEP && mv.position == POSITION_PASS)
+		 	mv.position = board.GetMogoPattern(next_state);
+		// 	if(mv.position == POSITION_PASS)
+		// 		mv.position = best_eat;
+
+		// }
 		if (mv.position == POSITION_PASS) {
 			playable_count = board.GetPlayableCount(next_state);
-			if (playable_count == 0) {
-				// board.empty_[state].Print();
-				// board.suiside_[state].Print();
-				// board.safe_eye_[state].Print();
-				// board.dangerous_empty_[state].Print();
-				// board.dangerous_empty_[state^1].Print();
-				// (board.empty_[state] - board.suiside_[state] - board.safe_eye_[state] - board.dangerous_empty_[state] - board.dangerous_empty_[state^1]).Print();
-				break;
+			if (playable_count != 0){
+				pass_count = 0;
+				mv.position = board.GetPlayable(mv.state, rand() * playable_count / (RAND_MAX + 1));
+			} else {
+				pass_count++;
+				if (pass_count == 2)
+					break;
 			}
-			mv.position = board.GetPlayable(mv.state, rand() * playable_count / (RAND_MAX + 1));
 		}
-		// printf("PlayMove\n");
-		// fout << ';' << (mv.state == BLACK_POINT ? 'B' : 'W') << '[' << (char)('a' + mv.position / 13) << (char)(('a' + mv.position % 13)) << ']';
+		// if (mv.position == POSITION_PASS)
+		// 	fout << (mv.state == BLACK_POINT ? ";B[]" : ";W[]");
+		// else
+		// 	fout << (mv.state == BLACK_POINT ? ";B[" : ";W[") << (char)('a' + mv.position / 13) << (char)('a' + mv.position % 13) << ']';
 		board.PlayMove(mv);
 		amaf.set(mv.position, mv.state);
 		next_state ^= 1;
@@ -112,8 +131,10 @@ double MC::Simulate(Board &board, PointState state,Amaf &amaf) {
 }
 
 double MC::Evaluate(Board &board, PointState state) {
-	double piece_count[2];
-	piece_count[WHITE_POINT] = board.GetAreaCount(WHITE_POINT) + komi;
+	double piece_count[2], komi_new;
+	if(step_count > 100)
+        komi_new = komi + 3;
+	piece_count[WHITE_POINT] = board.GetAreaCount(WHITE_POINT) + komi_new;
 	piece_count[BLACK_POINT] = board.GetAreaCount(BLACK_POINT);
 	return piece_count[state] > piece_count[state ^ 1];
 }

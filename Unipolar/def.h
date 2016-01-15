@@ -54,7 +54,14 @@ typedef double Value;
 typedef int Count;
 
 // for joseki theshold
-const int JOSEKI_STEP = 16;
+const int JOSEKI_STEP = 12;
+
+const int TIME_PER_STEP = 3;
+
+const int THREAD_NUM = 8;
+
+// for expand in uct
+const int EXPAND_NUM = 8;
 
 const double save_dangerous_eye = 2;
 const double save_dangerous_chain = 5;
@@ -63,11 +70,12 @@ const double threaten_oppose = 2;
 const double threaten_self = -5;
 const double make_eye = 1.8;
 const double make_safe_eye = 3.5;
+const double tolerate_upper_bound = 30;
+const double match_range = 6;
 
 double komi = 0.0;
-double bonus_ratio = 0.05;
-bool joseki_on;
-
+double bonus_ratio = 0.2;
+int step_count = 0;
 }
 
 #endif

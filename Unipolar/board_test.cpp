@@ -1,41 +1,66 @@
-#include "controller.h"
-#include <string>
-#include <cstdlib>
+#include <vector>
+#include <cstdio>
+#include <cstdint>
+#include <cstring>
+// #include <intrin.h>
 #include <ctime>
+// #include <bitset>
+// #include "board_.h"
+#include <set>
+#include <algorithm>
+#include <iostream>
+#include "def.h"
+#include "mc.h"
+#include "uct.h"
+#include "joseki.h"
+#include "controller.h"
+// #include "uct_vector.h"
+// #include "uct_vector_ptr.h"
+// #include "uct_test.h"
+#include <set>
+#include <stdio.h>
+#define SQUARE(x) ((x)*(x))
+#define SIZE 100000
+using namespace std;
+
+int Hakmen(unsigned int n)
+{
+	unsigned int tmp = n - ((n >> 1) & 033333333333) - ((n >> 2) & 011111111111);
+	return ((tmp + (tmp >> 3)) & 030707070707) % 63;
+}
 
 int main() {
-	srand(time(0));
-	Board::Init();
-	double value = 0;
-	Board board;
-	for (int i = 0; i < 1000; ++i) {
-		board.ClearBoard();
-		MC().Simulate(board, 0);
-	}
-
-	// Move move = UCT().GenMove(board, 0);
-	// printf("%d, %d\n", move.position, move.state);
-	// const Board board3(board);
-	// Board board2(board3);
-	// std::string command;
-	// int tmp1, tmp2, tmp3;
-	// while(true){
-	// 	printf("command:");
-	// 	std::cin >> command;
-	// 	if(command == "disp")
-	// 		board2.Print();
-	// 	else if(command == "clear")
-	// 		board2.ClearBoard();
-	// 	else if(command == "play"){
-	// 		std::cin >> tmp1 >> tmp2 >> tmp3;
-	// 		board2.PlayMove(Move(tmp1, tmp2 * 13 + tmp3));
-	// 	}
+	// TireTree joseki;
+	// ifstream in("static_20.dic");
+	// string a;
+	// while (getline(in, a)) {
+	// 	joseki.insert(a);
 	// }
-	// // uint64_t a = -1;
-	// // printf("%llu\n", a);
-	// // printf("%d\n", __builtin_ctzll(a));
-	// BitSet bitset;
-	// bitset.Set(77);
-	// // bitset.Set(27);
-	// printf("%d\n", bitset.GetAirPos());
+
+	// float j[169];
+	// for(int i = 0; i < 169; ++i)
+	// 	j[i] = 0;
+	Board::Init();
+	Board board;
+	board.ClearBoard();
+	int n = 20;
+	int p1, p2;
+	PointState s = 0;
+	PositionIndex last_safe, best_safe, last_eat, best_eat;
+	while(n >= 0) {
+        scanf("%d %d", &p1, &p2);
+        int p = p1*13+p2;
+        board.PlayMove(Move(s, p));
+        // board.GetSafePoint(last_safe, best_safe, s);
+        // cout << last_safe << ' ' << best_safe << endl;
+        board.GetEatPoint(last_eat, best_eat, s);
+        cout << last_eat << ' ' << best_eat << endl;
+        // UCT uct;
+        //printf("---START---\n");
+        // Move np = uct.GenMove(board, 1 - s);
+        // uct.PrintUCT();
+        // board.PlayMove(np);
+        s = 1-s;
+        board.Print();
+	}
 }
